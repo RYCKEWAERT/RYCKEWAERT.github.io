@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Site of Maxime Ryckewaert</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .tab {
+            overflow: hidden;
+            border-bottom: 1px solid #ccc;
+        }
+        .tab button {
+            background-color: inherit;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #ccc;
+        }
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border-top: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Welcome to the personal site of Maxime Ryckewaert</h1>
+
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'Biography')">Biography</button>
+    <button class="tablinks" onclick="openTab(event, 'Publications')">Publications</button>
+    <button class="tablinks" onclick="openTab(event, 'Gallery')">Gallery</button>
+    <button class="tablinks" onclick="openTab(event, 'Hobbies')">Hobbies</button>
+</div>
+
+<div id="Biography" class="tabcontent">
+    <h2>Biography</h2>
+    <p>Your biography here.</p>
+</div>
+
+<div id="Publications" class="tabcontent">
+    <h2>Publications</h2>
+    <p>Your publications here.</p>
+</div>
+
+<div id="Gallery" class="tabcontent">
+    <h2>Gallery</h2>
+    <p>Your gallery here.</p>
+</div>
+
+<div id="Hobbies" class="tabcontent">
+    <h2>Hobbies</h2>
+    <p>Your hobbies here.</p>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>
+
+</body>
+</html>
