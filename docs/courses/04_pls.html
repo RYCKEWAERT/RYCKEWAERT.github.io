@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chemometrics Part 4 — PLS Regression – Maxime Ryckewaert</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../img/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-73541bc22a58d4f352630c27eceb7769.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BNTDSZCX3X'"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-BNTDSZCX3X'', { 'anonymize_ip': true});
+</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+<script>
+
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+
+</script>
+
+<script type="module">import "https://cdn.plot.ly/plotly-3.5.0.min"</script>
+
+
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../img/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../img/logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Maxime Ryckewaert</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../research.html"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-courses" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Courses</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-courses">    
+        <li>
+    <a class="dropdown-item" href="../courses/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/dimensionality-reduction.html">
+ <span class="dropdown-text">Dimensionality Reduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/neural-networks.html">
+ <span class="dropdown-text">Neural Networks</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/deepmaxent.html">
+ <span class="dropdown-text">Species Distribution Modelling</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../courses/01_exploration.html">
+ <span class="dropdown-text">Chemometrics — Part 1: Exploration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/02_preprocessing.html">
+ <span class="dropdown-text">Chemometrics — Part 2: Preprocessing</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/03_pca.html">
+ <span class="dropdown-text">Chemometrics — Part 3: PCA</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/04_pls.html">
+ <span class="dropdown-text">Chemometrics — Part 4: PLS Regression</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li>
+    <a class="dropdown-item" href="../projects/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/project-1.html">
+ <span class="dropdown-text">Species Distribution Modelling</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../cv.html"> 
+<span class="menu-text">CV</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../hobbies.html"> 
+<span class="menu-text">Hobbies</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contact.html"> 
+<span class="menu-text">Contact</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/RYCKEWAERT"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/maxime-ryckewaert-3627095a/"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="mailto:maxime.ryckewaert@cirad.fr"> <i class="bi bi-envelope" role="img" aria-label="Email">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#train-test-split" id="toc-train-test-split" class="nav-link" data-scroll-target="#train-test-split">Train / test split</a></li>
+  <li><a href="#cross-validation-to-select-the-number-of-pls-components" id="toc-cross-validation-to-select-the-number-of-pls-components" class="nav-link" data-scroll-target="#cross-validation-to-select-the-number-of-pls-components">Cross-validation to select the number of PLS components</a></li>
+  <li><a href="#final-model-training-and-evaluation" id="toc-final-model-training-and-evaluation" class="nav-link" data-scroll-target="#final-model-training-and-evaluation">Final model: training and evaluation</a></li>
+  <li><a href="#predicted-vs-measured-scatter-plot" id="toc-predicted-vs-measured-scatter-plot" class="nav-link" data-scroll-target="#predicted-vs-measured-scatter-plot">Predicted vs measured scatter plot</a></li>
+  <li><a href="#regression-coefficients-β-vector" id="toc-regression-coefficients-β-vector" class="nav-link" data-scroll-target="#regression-coefficients-β-vector">Regression coefficients (β vector)</a></li>
+  <li><a href="#residual-analysis" id="toc-residual-analysis" class="nav-link" data-scroll-target="#residual-analysis">Residual analysis</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Chemometrics Part 4 — PLS Regression</h1>
+<p class="subtitle lead">From cross-validation to β coefficients for sugar content prediction</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="learning-objectives">
+<p><strong>Learning objectives</strong></p>
+<p>After completing this module you should be able to:</p>
+<ol type="1">
+<li>Explain why PLS is preferred over OLS and PCR for spectroscopic data.</li>
+<li>Select the number of PLS components by 5-fold cross-validation (RMSECV).</li>
+<li>Evaluate a calibration model using RMSEC, RMSEP, and R².</li>
+<li>Interpret the regression coefficient vector (β) as a spectral fingerprint of the target.</li>
+<li>Diagnose overfitting and bias from residual plots.</li>
+</ol>
+</div>
+<blockquote class="blockquote">
+<p><strong>Dataset citation:</strong> Ryckewaert, M. <em>et al.</em> (2023). Dataset containing spectral data from hyperspectral imaging and sugar content measurements of grape berries in various maturity stages. <em>Data in Brief</em>. <a href="https://doi.org/10.1016/j.dib.2022.108822" class="uri">https://doi.org/10.1016/j.dib.2022.108822</a></p>
+</blockquote>
+<hr>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Partial Least Squares Regression (PLS-R) is the workhorse method for quantitative NIR spectroscopy. Unlike PCA — which finds latent components maximising variance in <span class="math inline">\(\mathbf{X}\)</span> — PLS finds components that maximise the <strong>covariance</strong> between <span class="math inline">\(\mathbf{X}\)</span> and the response <span class="math inline">\(\mathbf{y}\)</span>:</p>
+<p><span class="math display">\[\mathbf{X} = \mathbf{T}\mathbf{P}^\top + \mathbf{E}, \quad
+  \mathbf{y} = \mathbf{T}\mathbf{q}^\top + \mathbf{f}\]</span></p>
+<p>The scores <span class="math inline">\(\mathbf{T}\)</span> are shared across both decompositions — they describe variation in the spectra <em>that is relevant</em> to predicting sugar content. Key advantages:</p>
+<ul>
+<li>Handles highly collinear predictors (adjacent wavelengths are correlated)</li>
+<li>Works when <span class="math inline">\(p \gg n\)</span></li>
+<li>Produces interpretable regression coefficients on the wavelength axis</li>
+</ul>
+<div id="3fa0e315" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cross_decomposition <span class="im">import</span> PLSRegression</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, cross_val_predict</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> r2_score</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotly.subplots <span class="im">import</span> make_subplots</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>NAVY  <span class="op">=</span> <span class="st">'#1b3a5c'</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>TEAL  <span class="op">=</span> <span class="st">'#2a7f7f'</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>GREEN <span class="op">=</span> <span class="st">'#78BE20'</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>GRAY  <span class="op">=</span> <span class="st">'#868e96'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="36c99877" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'data/chemometrics/DATASET.csv'</span>, sep<span class="op">=</span><span class="st">';'</span>, index_col<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>spectral_cols <span class="op">=</span> [c <span class="cf">for</span> c <span class="kw">in</span> df.columns <span class="cf">if</span> c.startswith(<span class="st">'x.'</span>)]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df[spectral_cols].values</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">'Sugar content (g/l)'</span>].values</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>wavelengths <span class="op">=</span> np.array([<span class="bu">float</span>(c.replace(<span class="st">'x.'</span>, <span class="st">''</span>, <span class="dv">1</span>)) <span class="cf">for</span> c <span class="kw">in</span> spectral_cols])</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"X: </span><span class="sc">{</span>X<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">  |  y: </span><span class="sc">{</span>y<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Sugar content: </span><span class="sc">{</span>y<span class="sc">.</span><span class="bu">min</span>()<span class="sc">:.1f}</span><span class="ss"> – </span><span class="sc">{</span>y<span class="sc">.</span><span class="bu">max</span>()<span class="sc">:.1f}</span><span class="ss"> g/L  (mean </span><span class="sc">{</span>y<span class="sc">.</span>mean()<span class="sc">:.1f}</span><span class="ss">)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>X: (274, 204)  |  y: (274,)
+Sugar content: 101.0 – 282.7 g/L  (mean 189.1)</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="train-test-split" class="level2">
+<h2 class="anchored" data-anchor-id="train-test-split">Train / test split</h2>
+<p>We reserve 20% of samples as a held-out test set. Because sugar content is a continuous variable, we <strong>stratify on quantile bins</strong> (5 bins) to ensure the test set covers the full concentration range.</p>
+<div id="a4f205e7" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>y_binned <span class="op">=</span> pd.qcut(pd.Series(y), q<span class="op">=</span><span class="dv">5</span>, labels<span class="op">=</span><span class="va">False</span>).values</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>, stratify<span class="op">=</span>y_binned</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Train: </span><span class="sc">{</span>X_train<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> samples  |  Test: </span><span class="sc">{</span>X_test<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss"> samples"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Train sugar range: </span><span class="sc">{</span>y_train<span class="sc">.</span><span class="bu">min</span>()<span class="sc">:.1f}</span><span class="ss"> – </span><span class="sc">{</span>y_train<span class="sc">.</span><span class="bu">max</span>()<span class="sc">:.1f}</span><span class="ss"> g/L"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test  sugar range: </span><span class="sc">{</span>y_test<span class="sc">.</span><span class="bu">min</span>()<span class="sc">:.1f}</span><span class="ss"> – </span><span class="sc">{</span>y_test<span class="sc">.</span><span class="bu">max</span>()<span class="sc">:.1f}</span><span class="ss"> g/L"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Train: 219 samples  |  Test: 55 samples
+Train sugar range: 101.0 – 282.7 g/L
+Test  sugar range: 131.3 – 271.0 g/L</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="cross-validation-to-select-the-number-of-pls-components" class="level2">
+<h2 class="anchored" data-anchor-id="cross-validation-to-select-the-number-of-pls-components">Cross-validation to select the number of PLS components</h2>
+<p>We select the number of latent components <span class="math inline">\(k\)</span> by minimising the <strong>Root Mean Square Error of Cross-Validation (RMSECV)</strong> over 5 folds on the training set:</p>
+<p><span class="math display">\[\text{RMSECV} = \sqrt{\frac{1}{n_{\text{train}}}\sum_{i=1}^{n_{\text{train}}}
+  \left(y_i - \hat{y}_i^{\text{CV}}\right)^2}\]</span></p>
+<div id="24a03b63" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>max_components <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>rmsecv_list <span class="op">=</span> []</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, max_components <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    pls <span class="op">=</span> PLSRegression(n_components<span class="op">=</span>n, scale<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    y_cv <span class="op">=</span> cross_val_predict(pls, X_train, y_train, cv<span class="op">=</span><span class="dv">5</span>).ravel()</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    rmsecv_list.append(np.sqrt(np.mean((y_train <span class="op">-</span> y_cv) <span class="op">**</span> <span class="dv">2</span>)))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>rmsecv <span class="op">=</span> np.array(rmsecv_list)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>best_n <span class="op">=</span> <span class="bu">int</span>(np.argmin(rmsecv)) <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Optimal n_components = </span><span class="sc">{</span>best_n<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"RMSECV at optimum    = </span><span class="sc">{</span>rmsecv[best_n <span class="op">-</span> <span class="dv">1</span>]<span class="sc">:.2f}</span><span class="ss"> g/L"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Optimal n_components = 10
+RMSECV at optimum    = 20.68 g/L</code></pre>
+</div>
+</div>
+<div id="cell-fig-rmsecv" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatter(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1</span>, max_components <span class="op">+</span> <span class="dv">1</span>)), y<span class="op">=</span>rmsecv,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">'lines+markers'</span>, line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>NAVY, width<span class="op">=</span><span class="dv">2</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    marker<span class="op">=</span><span class="bu">dict</span>(size<span class="op">=</span><span class="dv">6</span>, color<span class="op">=</span>NAVY), name<span class="op">=</span><span class="st">'RMSECV'</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>fig.add_vline(x<span class="op">=</span>best_n, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>TEAL, line_width<span class="op">=</span><span class="fl">1.8</span>,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>              annotation_text<span class="op">=</span><span class="ss">f'Optimal: </span><span class="sc">{</span>best_n<span class="sc">}</span><span class="ss"> components'</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>              annotation_position<span class="op">=</span><span class="st">'top right'</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Number of PLS components'</span>, xaxis<span class="op">=</span><span class="bu">dict</span>(dtick<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">'RMSECV (g/L)'</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'PLS cross-validation: selecting the number of components'</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'simple_white'</span>, height<span class="op">=</span><span class="dv">370</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fig-rmsecv" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rmsecv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="b97e3ee6-702d-4c2e-a70f-c2f07d90ed6e" class="plotly-graph-div" style="height:370px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("b97e3ee6-702d-4c2e-a70f-c2f07d90ed6e")) {                    Plotly.newPlot(                        "b97e3ee6-702d-4c2e-a70f-c2f07d90ed6e",                        [{"line":{"color":"#1b3a5c","width":2},"marker":{"color":"#1b3a5c","size":6},"mode":"lines+markers","name":"RMSECV","x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],"y":{"dtype":"f8","bdata":"slntJjFiQUDO1918DIQ6QB8tzyuWojdAObeDZLZDOED2dqsLfhU3QPYenv5VlzZAdFxwlMITNkBARMcF1W41QOmtGtu01jRA72+oloGtNEDxvqP7z\u002fk0QBqfQ9I46jRAzzGzQWjHNEAcygl\u002fOFQ1QDFknBUn6zVAelecJYWZNkCgWoo\u002fSQk3QPxZOI7aozdA2FevQjh2OEC2vIiYpgk5QA=="},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2d"}],"histogram":[{"marker":{"line":{"color":"white","width":0.6}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(237,237,237)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(217,217,217)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"colorscale":{"diverging":[[0.0,"rgb(103,0,31)"],[0.1,"rgb(178,24,43)"],[0.2,"rgb(214,96,77)"],[0.3,"rgb(244,165,130)"],[0.4,"rgb(253,219,199)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(209,229,240)"],[0.7,"rgb(146,197,222)"],[0.8,"rgb(67,147,195)"],[0.9,"rgb(33,102,172)"],[1.0,"rgb(5,48,97)"]],"sequential":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"sequentialminus":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"colorway":["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","radialaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"zaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"}},"shapedefaults":{"fillcolor":"black","line":{"width":0},"opacity":0.3},"ternary":{"aaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"baxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","caxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"}}},"shapes":[{"line":{"color":"#2a7f7f","dash":"dash","width":1.8},"type":"line","x0":10,"x1":10,"xref":"x","y0":0,"y1":1,"yref":"y domain"}],"annotations":[{"showarrow":false,"text":"Optimal: 10 components","x":10,"xanchor":"left","xref":"x","y":1,"yanchor":"top","yref":"y domain"}],"xaxis":{"title":{"text":"Number of PLS components"},"dtick":1},"yaxis":{"title":{"text":"RMSECV (g\u002fL)"}},"title":{"text":"PLS cross-validation: selecting the number of components"},"height":370},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('b97e3ee6-702d-4c2e-a70f-c2f07d90ed6e');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rmsecv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: RMSECV as a function of the number of PLS components. The optimal model minimises cross-validated prediction error.
+</figcaption>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="final-model-training-and-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="final-model-training-and-evaluation">Final model: training and evaluation</h2>
+<div id="de08695d" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pls_final <span class="op">=</span> PLSRegression(n_components<span class="op">=</span>best_n, scale<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>pls_final.fit(X_train, y_train)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>y_pred_train <span class="op">=</span> pls_final.predict(X_train).ravel()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>y_pred_test  <span class="op">=</span> pls_final.predict(X_test).ravel()</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>rmsec <span class="op">=</span> np.sqrt(np.mean((y_train <span class="op">-</span> y_pred_train) <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>rmsep <span class="op">=</span> np.sqrt(np.mean((y_test  <span class="op">-</span> y_pred_test)  <span class="op">**</span> <span class="dv">2</span>))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>r2c   <span class="op">=</span> r2_score(y_train, y_pred_train)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>r2p   <span class="op">=</span> r2_score(y_test,  y_pred_test)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"n_components = </span><span class="sc">{</span>best_n<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Calibration: RMSEC = </span><span class="sc">{</span>rmsec<span class="sc">:.2f}</span><span class="ss"> g/L  |  R²C = </span><span class="sc">{</span>r2c<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Prediction:  RMSEP = </span><span class="sc">{</span>rmsep<span class="sc">:.2f}</span><span class="ss"> g/L  |  R²P = </span><span class="sc">{</span>r2p<span class="sc">:.4f}</span><span class="ss">"</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"RMSECV:             </span><span class="sc">{</span>rmsecv[best_n<span class="op">-</span><span class="dv">1</span>]<span class="sc">:.2f}</span><span class="ss"> g/L  (compare with RMSEP)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>n_components = 10
+Calibration: RMSEC = 17.95 g/L  |  R²C = 0.7540
+Prediction:  RMSEP = 14.10 g/L  |  R²P = 0.8083
+RMSECV:             20.68 g/L  (compare with RMSEP)</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="predicted-vs-measured-scatter-plot" class="level2">
+<h2 class="anchored" data-anchor-id="predicted-vs-measured-scatter-plot">Predicted vs measured scatter plot</h2>
+<div id="cell-fig-scatter" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>lims <span class="op">=</span> [<span class="bu">float</span>(y.<span class="bu">min</span>()) <span class="op">-</span> <span class="dv">8</span>, <span class="bu">float</span>(y.<span class="bu">max</span>()) <span class="op">+</span> <span class="dv">8</span>]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatter(</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>y_train, y<span class="op">=</span>y_pred_train, mode<span class="op">=</span><span class="st">'markers'</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    marker<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>GRAY, size<span class="op">=</span><span class="dv">6</span>, opacity<span class="op">=</span><span class="fl">0.6</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'white'</span>, width<span class="op">=</span><span class="fl">0.3</span>)),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Calibration'</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatter(</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>y_test, y<span class="op">=</span>y_pred_test, mode<span class="op">=</span><span class="st">'markers'</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    marker<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>NAVY, size<span class="op">=</span><span class="dv">8</span>, opacity<span class="op">=</span><span class="fl">0.85</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'white'</span>, width<span class="op">=</span><span class="fl">0.4</span>)),</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Prediction (test)'</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatter(</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span>lims, y<span class="op">=</span>lims, mode<span class="op">=</span><span class="st">'lines'</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'black'</span>, dash<span class="op">=</span><span class="st">'dash'</span>, width<span class="op">=</span><span class="fl">1.2</span>),</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'1:1 line'</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Measured sugar content (g/L)'</span>,</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">'Predicted sugar content (g/L)'</span>,</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    xaxis_range<span class="op">=</span>lims, yaxis_range<span class="op">=</span>lims,</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span>(<span class="ss">f'PLS regression — predicted vs measured'</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>           <span class="ss">f'&lt;br&gt;&lt;sup&gt;n_comp=</span><span class="sc">{</span>best_n<span class="sc">}</span><span class="ss"> | RMSEP=</span><span class="sc">{</span>rmsep<span class="sc">:.1f}</span><span class="ss"> g/L | R²=</span><span class="sc">{</span>r2p<span class="sc">:.3f}</span><span class="ss">&lt;/sup&gt;'</span>),</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'simple_white'</span>, height<span class="op">=</span><span class="dv">480</span>,</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    legend<span class="op">=</span><span class="bu">dict</span>(orientation<span class="op">=</span><span class="st">'h'</span>, y<span class="op">=</span><span class="fl">1.08</span>)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fig-scatter" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="255227ff-ee10-4bac-a29f-ef764aef5bd3" class="plotly-graph-div" style="height:480px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("255227ff-ee10-4bac-a29f-ef764aef5bd3")) {                    Plotly.newPlot(                        "255227ff-ee10-4bac-a29f-ef764aef5bd3",                        [{"marker":{"color":"#868e96","line":{"color":"white","width":0.3},"opacity":0.6,"size":6},"mode":"markers","name":"Calibration","x":{"dtype":"f8","bdata":"XI\u002fC9SgkZ0D8qfHSTe5mQB+F61G4PmlAWmQ73091ZUA730+Nl4JmQGDl0CLbgWpABFYOLbKDcEAEVg4tsqltQB1aZDvfj2dA9P3UeOkyYECgGi\u002fdJBZaQAIrhxbZ+mtA2c73U+OdZEC28\u002f3UeE1iQMUgsHJo73BA2\u002fl+arxMZkBaZDvfT3VlQLgehetR\u002fGNA3SQGgZX7Z0DdJAaBlftnQFYOLbKdF2JApHA9CtdzbUB7FK5H4RZmQBsv3SQG4WVAuB6F61H8Y0AfhetRuD5pQPyp8dJN7mZAeekmMQhoZEA5tMh2vtNkQDm0yHa+02RAWmQ73091ZUB9PzVeusVnQPp+arx0P2VA2c73U+OdZEA3iUFg5SRjQLgehetR\u002fGNA1XjpJjFAcUAfhetRuD5pQJhuEoPAWmNAoBov3SQWakB9PzVeusVnQMdLN4lBxG9AeekmMQhoZEBGtvP91OxuQBkEVg4tMmRAeekmMQhoZEB56SYxCGhkQHsUrkfhFmZA3SQGgZX7Z0D4U+Olm5BjQIPAyqFF0mxAoBov3SQWakBCYOXQIo9rQHnpJjEIaGRA+n5qvHQ\u002fZUAj2\u002fl+apxsQAAAAAAATGpA30+Nl26qaUAbL90kBuFlQLgehetR\u002fGNAokW28\u002f3Ea0D4U+Olm5BjQARWDi2yg3BA+n5qvHQ\u002fZUC6SQwCK6tlQPyp8dJN7mZAvHSTGARaZ0DZzvdT451kQPyp8dJN7mZA+n5qvHQ\u002fZUDByqFFtrdqQHnpJjEIaGRAmpmZmZkJZUAEVg4tsoNwQNnO91PjnWRA+n5qvHQ\u002fZUCe76fGS2doQIPAyqFF0mxAAAAAAABMakC6SQwCK6tlQLx0kxgEWmdAw\u002fUoXI9mbEA3iUFg5SRjQFpkO99PdWVA5dAi2\u002fm2XkA1XrpJDHZhQH9qvHSTdGlA+n5qvHQ\u002fZUD4U+Olm5BjQDeJQWDlJGNAuB6F61H8Y0BaZDvfT3VlQHe+nxovuWJAYhBYObQwbEAfhetRuD5ZQKRwPQrXc21A\u002fKnx0k3uZkCamZmZmQllQLx0kxgEWmdAuB6F61H8Y0A3iUFg5SRjQL6fGi\u002fdCGlAGQRWDi0yZEDhehSuR1lrQB+F61G4PllA46WbxCAIbUDjpZvEIAhtQDvfT42XgmZApHA9CtdzbUCDwMqhRdJsQCcxCKwc+m9A2\u002fl+arxMZkC+nxov3QhpQDm0yHa+02RAWDm0yHbGY0DZzvdT451kQFTjpZvEaGBAtvP91HhNYkB7FK5H4RZmQD0K16NwMWhABFYOLbKpbUAEVg4tsoNwQEa28\u002f3U7G5A2c73U+OdZEACK4cW2fprQBsv3SQG4WVAO99PjZeCZkAZBFYOLTJkQHe+nxovuWJAgZVDi2wja0BaZDvfT3VlQCcxCKwc+m9AlkOLbOercUB7FK5H4RZmQOF6FK5HWWtAhetRuB6BbkC4HoXrUfxjQAaBlUOLWG9AexSuR+EWZkDHSzeJQcRvQFTjpZvEaGBAXI\u002fC9SgkZ0AZBFYOLTJkQBkEVg4tMmRAeekmMQhoZEBYObTIdsZjQPhT46WbkGNAVOOlm8RocEA\u002fNV66SeBpQHnpJjEIaGRA2\u002fl+arxMZkC4HoXrUfxjQHsUrkfhFmZAoBov3SQWWkA9CtejcDFoQEJg5dAij2tAmG4Sg8BaY0D4U+Olm5BjQPp+arx0P2VA\u002fKnx0k3uZkA3iUFg5SRjQKAaL90kFmpAYhBYObQwXEA730+Nl4JmQNv5fmq8TGZA30+Nl26qaUCe76fGS2doQN9PjZduqmlAO99PjZeCZkB9PzVeusVnQCPb+X5qnGxApHA9CtdzbUAEVg4tsoNwQLgehetR\u002fGNAoBov3SQWakD4U+Olm5BjQJqZmZmZCWVAw\u002fUoXI9mbECBlUOLbCNrQP7UeOkmnWhAw\u002fUoXI9mbEB56SYxCGhkQPyp8dJN7mZAexSuR+EWZkAfhetRuD5pQPyp8dJN7mZA30+Nl26qaUDVeOkmMUBxQAaBlUOLWG9A+n5qvHQ\u002fZUAbL90kBuFlQJ7vp8ZLZ2hAwcqhRba3akAnMQisHPpvQHnpJjEIaGRAO99PjZeCZkAEVg4tsoNwQIGVQ4tsI2tAvHSTGARaZ0DZzvdT451kQN9PjZduqmlAQmDl0CKPa0Db+X5qvExmQMP1KFyPZmxAwcqhRba3akBcj8L1KCRnQBkEVg4tMmRAPQrXo3AxaEC28\u002f3UeE1iQJZDi2znq3FAQmDl0CKPa0AZBFYOLTJkQJzEILByuGZA+FPjpZuQY0DdJAaBlftnQJqZmZmZCWVAexSuR+EWZkC8dJMYBFpnQD0K16NwMWhA"},"y":{"dtype":"f8","bdata":"npZrBn02aECS3KTo+KNnQEJ8F+pWTmpA2+atCDK9ZUCgwKe2lRNnQNpO13eL6WtA1Q7aMbMDb0CO8xIsogluQOUjFOKXf2dA9ov37oKPYUDpnAbYk09nQIGhPCz+UGtAcVrL06tkZECRhz0BWj9mQG8SLvcpAnFAQYxuBtE+ZkCIod4zhZVkQHyr44XqU2RARPHUPHxmaUD5dsRVbFBoQMxSfYdzj2JALHo8DtQpbEBxlOT3rAtlQDmy1cCxIWZAHpZ48VZpY0Cw8zYfsmhqQE7pJDhcLmdAMI1geq3aZUBQQSNvVpdkQEP7cKIqUmZALpqHQzJfZkASBAiGAoZnQD5KgbjopWZA5sYHXqLMakAdb87sbIRiQODehEpwwGVAZX3RWv4ycEDMand0nExkQHzhqvRIimJAAPQ0RJS7akAHHsof0BZoQCu+7Zah7W5AYZfkdPmiZEBTm65ANuJsQHLU2\u002fkPp2RA70Geu\u002fggY0Dfhha\u002fyL1nQJCapMK58GNAMnRW4fyXaEAlIPA6j+5lQFSJIavkBmtAyI+ODOegakBCkW9jwudqQPVELevjZ2RAxj13hTZMY0B6YzKAWl5pQK4NV2aX52tAtW2WEGDOaUDiw8F2BXZmQPCVJlQuYWRA\u002fOSfWHsMbUDwFJn\u002foU9jQFGWxuTXL25A8uYwW2VNZEC+W0WxLUBlQLayTFiLiGZA+B51hBqyY0BGCob4RZNkQJdxdDMauGVAnd1TAoKMZkA+xKMnygNpQBSwMUO80GJAkymXzTtMZEA+eF\u002f3QghvQB9q\u002fXdY6GVA3O6UiqvdZEBg2UH+07BnQMqBkPS7M2pAwhNl6oIBbECUUEyC2GlmQNBU3U+v62dAZEzBwNcfakBilmiuJ5hhQDDBVM\u002fkZGVAJFIG5J\u002fcYECwpvF6CXpkQAjGt9Y3pmlASzwhh5craEAczRWNg+RjQDdWt3nJNGNAM47KAkHgYkAcxrBGnnFjQPLvdc7SOWBAXIb+5qsHbUBK6hTlUvphQMwPVov1am1AsU14fiNYZkAL9DHrQd1mQOGOfAeWemZAVOv9K97NZECnx1oYCPJjQClDFSo3SXFA4DmymLRCZEAyY\u002fP6pUxpQJHLDFPQZ2JAq9uWA5aVbEAHVZsYlvFsQHA5ruNrgGZAol1\u002fsPJWbEDh\u002ffhSUDhsQCSGxhTyKm5AkQMl1lZRZ0B\u002fhjT03WdpQJvV7K6SIGVAJ6ohpA1+Y0D5qybnZxBhQFYr+Qo+jWNALq06UXgMZkCMBR5wecRkQIVYeBRxoGVAK0cdxbMIbkDI1IUndX5wQOjbjs7MpGxAAxJ\u002fREslZUBrHUxbH01pQB+ZW6gW+GNAzSdS+SI0Z0ApkjKxu3xjQJwdjyMjl2JAXm\u002fwCOMCa0BYvXQJ295mQJaEHvuGa29ADnvGSB4DcUDitqYllq9nQO1kIuUNMGZA+JhSqjg3bkCKVhT3lCFkQIxFMwE3vmdA73vv999SZkCZD5zC5r9vQG7Kor9eHmFAA730FCtCaEDcKAnyxZJkQOESHhvDM2VAi9gUNxQlZUCsyOsF421kQNqSNhsRGmNA3JSj5W04bkACB+ItR+hpQKcLoD6aVWRA6QoN7kDUaEA0ll+cHJBjQGbCLsrTMmZAZgSvb8v+ZUC3+XnJJ6FqQCJCQvHBFmlAC++uFi+QZUDF3HW3i0dkQFA3+ga5VmVAPVbC7NOvZkDJ6OXJqtlhQNAQOrmDD2pABiNjpg92ZECiLAigh7dnQKfAxdaq3mVAPDM+zAtJa0CeLJ1oB3doQCWNOn3IkGhAANHUFUA3ZkBdhDFhpzdnQEZ4zIuR8mpAChNZ2Eyha0DvF6QITDRwQLok3rhRdWRAkNbfVaotaUC7Dq0z+rxiQH4ohbwJQ2ZAGI7EwbHma0AWAXu8ZtZtQAtxh2hZXGhAfofbnEH0aED5FMkykpBkQDNsoN4BK2dAm4pgOLu1Y0DYfiSrgn1pQFhNAhEaFWRAb0+66bBGaECqUGCONDNvQOyyJtAeIWlA9BCH2cUyY0D6It5QoXNkQCkr7YzxFWhAXnyn4eIrakCyaAHWCA1tQE+Q\u002fQPfC2ZA+9RnjFUnZ0Bx5BmajkBwQCBVLB40LWpAkr7o++QzZ0D2XHyOvUFtQLMlCjBs4GpAsvFhQKD2a0ALROd7WtlnQB\u002fCNbN7SWpAKsp+\u002fhJXbEASYlX2oeVnQCkG1p0quGRAl9uKvqhwZ0AFnyJ0CGxjQDZx0Y4Rzm9AXTmfMp0KbECoQcfR\u002fbBjQJQbnGlEomZAwCwUoc7AZECkAZGRNzBnQLjaXgpKrWRAnhqHx9RtZUC2jQmO+5pkQGD7Li3XmWJA"},"type":"scatter"},{"marker":{"color":"#1b3a5c","line":{"color":"white","width":0.4},"opacity":0.85,"size":8},"mode":"markers","name":"Prediction (test)","x":{"dtype":"f8","bdata":"WmQ73091ZUDZzvdT451kQB+F61G4PmlAGQRWDi0yZEAZBFYOLTJkQFpkO99PdWVAObTIdr7TZED+1HjpJp1oQN0kBoGV+2dAPQrXo3AxaEAZBFYOLTJkQDm0yHa+02RAvp8aL90IaUC8dJMYBFpnQDvfT42XgmZAnu+nxktnaECamZmZmQllQMUgsHJo73BAeekmMQhoZECBlUOLbCNrQIXrUbgegW5AAiuHFtn6a0A3iUFg5SRjQLx0kxgEWmdAwcqhRba3akA3iUFg5SRjQAIrhxbZ+mtAokW28\u002f3Ea0BU46WbxGhgQMP1KFyPZmxAfT81XrrFZ0CDwMqhRdJsQH0\u002fNV66xWdAd76fGi+5YkDhehSuR1lrQPp+arx0P2VA3SQGgZX7Z0BU46WbxGhwQNv5fmq8TGZAF9nO91ODYkA\u002fNV66SeBpQNv5fmq8TGZA2c73U+OdZEA3iUFg5SRjQMP1KFyPZmxAYhBYObQwbEA1XrpJDHZhQBsv3SQG4WVAeekmMQhoZED4U+Olm5BjQH0\u002fNV66xWdA3SQGgZX7Z0DhehSuR1lrQFTjpZvEaGBAppvEILAib0A="},"y":{"dtype":"f8","bdata":"glWyQEEOZEDcmz4zkjRmQHR1LuTi82lAZgwz4Pd4ZUBtyXT857BiQFq6AwnnwGRAEFDX5K8RZkCZfFDRX+5pQJsum+AvI2dAIwwJtc6sY0C7\u002fO79cgBlQDHkTAxtO2NAOerEYSzmZ0C0k4bSEDdnQFo5Vf\u002fnRWhAcBt866z4aUCPaAeSYi1mQJa3kG6bo29A0llCHpvMY0CXlWyhgYNqQKwA0\u002fKHlW1A9i8lsgRZa0AeQLgkGQJiQCJPLi7f82VA7WOwQVXHakApPAmdRd1hQIZrjrVQGWpA8DX4b9DmakAbMmkQVVheQNQ7wKzCq2lA2pAwGy1wZUBrb46hz3doQF6YaAbiLGdAqBB8rnHzYkCGsTenEmhtQLwUXEN6zWRAtJFLJtO4akDrh7Bb6VxtQLSe80sVvGVAZdo2z\u002fXoZUCJ6PrNDvZqQHDdP+mmGWNAEFT+IMdVZUDElh+yGmhiQE0bufs4bmlA6qfpr9bZa0CkdPrvYbtgQFx35eT8GWhAM3BYNLwdY0C5sxw+CPRlQAYL8\u002f35sWZAqrzCn10taEA5L99p1idtQG652Ng0wGBAgEJNivP\u002fbUA="},"type":"scatter"},{"line":{"color":"black","dash":"dash","width":1.2},"mode":"lines","name":"1:1 line","x":[92.98,290.744],"y":[92.98,290.744],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2d"}],"histogram":[{"marker":{"line":{"color":"white","width":0.6}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(237,237,237)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(217,217,217)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"colorscale":{"diverging":[[0.0,"rgb(103,0,31)"],[0.1,"rgb(178,24,43)"],[0.2,"rgb(214,96,77)"],[0.3,"rgb(244,165,130)"],[0.4,"rgb(253,219,199)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(209,229,240)"],[0.7,"rgb(146,197,222)"],[0.8,"rgb(67,147,195)"],[0.9,"rgb(33,102,172)"],[1.0,"rgb(5,48,97)"]],"sequential":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"sequentialminus":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"colorway":["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","radialaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"zaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"}},"shapedefaults":{"fillcolor":"black","line":{"width":0},"opacity":0.3},"ternary":{"aaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"baxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","caxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"}}},"xaxis":{"title":{"text":"Measured sugar content (g\u002fL)"},"range":[92.98,290.744]},"yaxis":{"title":{"text":"Predicted sugar content (g\u002fL)"},"range":[92.98,290.744]},"legend":{"orientation":"h","y":1.08},"title":{"text":"PLS regression \u2014 predicted vs measured\u003cbr\u003e\u003csup\u003en_comp=10 | RMSEP=14.1 g\u002fL | R\u00b2=0.808\u003c\u002fsup\u003e"},"height":480},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('255227ff-ee10-4bac-a29f-ef764aef5bd3');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Predicted vs measured sugar content. Points close to the 1:1 line indicate accurate predictions.
+</figcaption>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="regression-coefficients-β-vector" class="level2">
+<h2 class="anchored" data-anchor-id="regression-coefficients-β-vector">Regression coefficients (β vector)</h2>
+<p>The regression coefficient vector <span class="math inline">\(\boldsymbol{\beta} \in \mathbb{R}^p\)</span> maps each spectral channel to its contribution to the prediction: <span class="math inline">\(\hat{y} = \mathbf{x}^\top \boldsymbol{\beta} + \beta_0\)</span>. Peaks in <span class="math inline">\(|\boldsymbol{\beta}|\)</span> indicate wavelength regions informative for sugar quantification, linkable to CH, OH, and C=O overtone bands.</p>
+<div id="cell-fig-beta" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>beta <span class="op">=</span> pls_final.coef_.ravel()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>beta_pos <span class="op">=</span> beta.copy()<span class="op">;</span> beta_pos[beta <span class="op">&lt;</span> <span class="dv">0</span>] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>beta_neg <span class="op">=</span> beta.copy()<span class="op">;</span> beta_neg[beta <span class="op">&gt;</span> <span class="dv">0</span>] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatter(x<span class="op">=</span>wavelengths, y<span class="op">=</span>beta_pos, mode<span class="op">=</span><span class="st">'lines'</span>, fill<span class="op">=</span><span class="st">'tozeroy'</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                         fillcolor<span class="op">=</span><span class="st">'rgba(42,127,127,0.25)'</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                         line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'rgba(42,127,127,0)'</span>, width<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                         showlegend<span class="op">=</span><span class="va">False</span>, hoverinfo<span class="op">=</span><span class="st">'skip'</span>))</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatter(x<span class="op">=</span>wavelengths, y<span class="op">=</span>beta_neg, mode<span class="op">=</span><span class="st">'lines'</span>, fill<span class="op">=</span><span class="st">'tozeroy'</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                         fillcolor<span class="op">=</span><span class="st">'rgba(27,58,92,0.2)'</span>,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                         line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'rgba(27,58,92,0)'</span>, width<span class="op">=</span><span class="dv">0</span>),</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                         showlegend<span class="op">=</span><span class="va">False</span>, hoverinfo<span class="op">=</span><span class="st">'skip'</span>))</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatter(x<span class="op">=</span>wavelengths, y<span class="op">=</span>beta, mode<span class="op">=</span><span class="st">'lines'</span>,</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>                         line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>NAVY, width<span class="op">=</span><span class="fl">1.5</span>), name<span class="op">=</span><span class="st">'β coefficient'</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>                         hovertemplate<span class="op">=</span><span class="st">'%</span><span class="sc">{x:.1f}</span><span class="st"> nm: β = %</span><span class="sc">{y:.4f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span>))</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>fig.add_hline(y<span class="op">=</span><span class="dv">0</span>, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>GRAY, line_width<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Wavelength (nm)'</span>, yaxis_title<span class="op">=</span><span class="st">'Regression coefficient'</span>,</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="ss">f'PLS regression coefficients (β vector) — </span><span class="sc">{</span>best_n<span class="sc">}</span><span class="ss"> components'</span>,</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'simple_white'</span>, height<span class="op">=</span><span class="dv">380</span>, showlegend<span class="op">=</span><span class="va">False</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fig-beta" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-beta-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="a0709975-1e84-4167-8fbd-8477514e90a1" class="plotly-graph-div" style="height:380px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("a0709975-1e84-4167-8fbd-8477514e90a1")) {                    Plotly.newPlot(                        "a0709975-1e84-4167-8fbd-8477514e90a1",                        [{"fill":"tozeroy","fillcolor":"rgba(42,127,127,0.25)","hoverinfo":"skip","line":{"color":"rgba(42,127,127,0)","width":0},"mode":"lines","showlegend":false,"x":{"dtype":"f8","bdata":"hetRuB7VeEAzMzMzMwN5QD0K16NwMXlA7FG4HoVfeUCamZmZmY15QKRwPQrXu3lArkfhehTqeUC4HoXrURh6QGZmZmZmRnpAcT0K16N0ekDXo3A9CqN6QOF6FK5H0XpA7FG4HoX\u002fekBSuB6F6y17QFyPwvUoXHtAw\u002fUoXI+Ke0ApXI\u002fC9bh7QDMzMzMz53tAmpmZmZkVfEAAAAAAAER8QMP1KFyPcnxAKVyPwvWgfECPwvUoXM98QFK4HoXr\u002fXxAuB6F61EsfUB7FK5H4Vp9QD0K16NwiX1AAAAAAAC4fUDD9Shcj+Z9QIXrUbgeFX5ASOF6FK5DfkAK16NwPXJ+QClcj8L1oH5A7FG4HoXPfkAK16NwPf5+QM3MzMzMLH9A7FG4HoVbf0AK16NwPYp\u002fQClcj8L1uH9ASOF6FK7nf0AzMzMzMwuAQHE9CtejIoBAAAAAAAA6gEA9CtejcFGAQM3MzMzMaIBACtejcD2AgEBI4XoUrpeAQIXrUbger4BAw\u002fUoXI\u002fGgEAAAAAAAN6AQD0K16Nw9YBAKVyPwvUMgUBmZmZmZiSBQFK4HoXrO4FAPQrXo3BTgUB7FK5H4WqBQGZmZmZmgoFAUrgeheuZgUA9CtejcLGBQClcj8L1yIFAw\u002fUoXI\u002fggUCuR+F6FPiBQEjhehSuD4JAMzMzMzMngkDNzMzMzD6CQGZmZmZmVoJAAAAAAABugkCamZmZmYWCQDMzMzMznYJAzczMzMy0gkBmZmZmZsyCQK5H4XoU5IJASOF6FK77gkCPwvUoXBODQNejcD0KK4NAH4XrUbhCg0BmZmZmZlqDQK5H4XoUcoNA9ihcj8KJg0A9CtejcKGDQDMzMzMzuYNAexSuR+HQg0BxPQrXo+iDQLgehetRAIRArkfhehQYhECkcD0K1y+EQJqZmZmZR4RAj8L1KFxfhECF61G4HneEQClcj8L1joRAH4XrUbimhEAUrkfher6EQLgehetR1oRAXI\u002fC9SjuhEAAAAAAAAaFQKRwPQrXHYVASOF6FK41hUDsUbgehU2FQI\u002fC9ShcZYVAMzMzMzN9hUCF61G4HpWFQClcj8L1rIVAexSuR+HEhUDNzMzMzNyFQHE9Ctej9IVAw\u002fUoXI8MhkDD9ShcjySGQBSuR+F6PIZAZmZmZmZUhkC4HoXrUWyGQLgehetRhIZACtejcD2chkAK16NwPbSGQArXo3A9zIZACtejcD3khkAK16NwPfyGQArXo3A9FIdACtejcD0sh0AK16NwPUSHQLgehetRXIdAuB6F61F0h0BmZmZmZoyHQBSuR+F6pIdAFK5H4Xq8h0DD9Shcj9SHQHE9Ctej7IdAzczMzMwEiEB7FK5H4RyIQClcj8L1NIhAhetRuB5NiEAzMzMzM2WIQI\u002fC9ShcfYhAPQrXo3CViECamZmZma2IQPYoXI\u002fCxYhAUrgehevdiEBcj8L1KPaIQLgehetRDolAFK5H4XomiUAfhetRuD6JQHsUrkfhVolAhetRuB5viUCPwvUoXIeJQJqZmZmZn4lApHA9Cte3iUCuR+F6FNCJQLgehetR6IlAw\u002fUoXI8AikB7FK5H4RiKQIXrUbgeMYpAPQrXo3BJikD2KFyPwmGKQAAAAAAAeopAuB6F61GSikBxPQrXo6qKQClcj8L1wopAj8L1KFzbikBI4XoUrvOKQAAAAAAADItAZmZmZmYki0DNzMzMzDyLQIXrUbgeVYtA7FG4HoVti0BSuB6F64WLQLgehetRnotAH4XrUbi2i0AzMzMzM8+LQJqZmZmZ54tArkfhehQAjEAUrkfhehiMQClcj8L1MIxAPQrXo3BJjEBSuB6F62GMQGZmZmZmeoxAexSuR+GSjECPwvUoXKuMQKRwPQrXw4xAZmZmZmbcjEB7FK5H4fSMQD0K16NwDY1AUrgehesljUAUrkfhej6NQNejcD0KV41AmpmZmZlvjUBcj8L1KIiNQM3MzMzMoI1Aj8L1KFy5jUBSuB6F69GNQMP1KFyP6o1AMzMzMzMDjkD2KFyPwhuOQGZmZmZmNI5A16NwPQpNjkBI4XoUrmWOQLgehetRfo5A16NwPQqXjkBI4XoUrq+OQGZmZmZmyI5A16NwPQrhjkD2KFyPwvmOQBSuR+F6Eo9AMzMzMzMrj0AzMzMzM0OPQAAAAAAAXI9A"},"y":{"dtype":"f8","bdata":"xDEU9vJCdkAAAAAAAAAAANTHTgdltl1AAAAAAAAAAADQ+jTETBJ0QBmrA3MDQVRAquKQhyl4a0C8nUrmS2B\u002fQIgpj8agHHJAKNG23vbwc0DggaThI0tvQHjJCB1XanFAXGV6fTuZdEC44+zGvSN0QEojDcszCHBAIBFhB87fcUAKFE3MLTxjQAgNObjcIGJA8I78fOQIPkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiLTjYqdSVAAAAAAAAAAACQs\u002fAR\u002fjlGQG0mNdvaZllAqzpscsYHaEBEA6Eg+7RwQLlkyCYjOHtAr13X14Zqg0BFbPBN9Z6HQNo2Fie5nYlAcZr1P7bLhkBrJfG3h0mBQIWFoGc2Y3hAOcbZEKDwbUBqX9l4uU5ZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmuwtw3c1hApoHrr8xMbUBZ0KMZsl9xQGWkA781dnBAoaNuonePaUColrQdAnZeQDBG8GVVrSlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAGOYr5PNNQMLcAwWjd2NARlInS6lLbUAcc3+HFo1wQEMWfL\u002fwSnJA6BoFAAM5cUAzzowG\u002fEhyQOaKwEq\u002fmHhAVoZCiy1qfUAnHgZto9N9QL6Myz39lXxAd\u002f9wjJ0zeUB5EYfJLWJzQLGD1bYFFmtAwSnmXYtOZEBQ7TgWw19FQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABCtihVsnlBAoFT5zBmYU0BawxTcncFfQJYAz10Wq2NAuNclZ3WcU0C0ehqvS6paQKQnILNbIWlAejSCdmfpaEAv0\u002fPKw6hJQGDro0ySzFtAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACIhnZ8mW5hQAAAAAAAAAAAABUf5zh88D81qCuk3qZCQE19q6wkpGFAWf0dvPIGPkAgvj+9utBkQCcKovaZ11ZAYfP3E6W8W0CJC10ukUExQAAAAAAAAAAAkO1nIdlfYkAAAAAAAAAAAAAAAAAAAAAAc3hgzCXfYUAAAAAAAAAAABBwOaNjIjhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOwVzcLvLjtAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa03L+lR7bEBmy3xbRU19QNNWZDPxZW5AnlCLNO7MbUCWE0OPrxB2QNKcDyU4XFJAAAAAAAAAAABvMtNzr7RyQMjQS8R07V5AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAn7Dq1ul1ZkDYrF449ENqQCZXHjTahWNAU61JALnpcUAAAAAAAAAAAAUFdRz+tmVAGuOXjS0tfkAAAAAAAAAAAAAAAAAAAAAAHKvuY6owVUAAAAAAAAAAAAAAAAAAAAAA3\u002fWwjYVVgkAAAAAAAAAAAP407nZr32FA8AFWEMqGWkBlM+x0b0B0QMbEhss18HtAIGgzYmsRgUAAAAAAAAAAANjHnBAZP4tAwpvkt1NAhUC9+xxKSD1UQMuDQ0ZJEmdAnKfxc5Z0eEAAAAAAAAAAAAAAAAAAAAAA+0coWxKafkAsqaML+GE3QAAAAAAAAAAAaTNQ5sBYbkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},"type":"scatter"},{"fill":"tozeroy","fillcolor":"rgba(27,58,92,0.2)","hoverinfo":"skip","line":{"color":"rgba(27,58,92,0)","width":0},"mode":"lines","showlegend":false,"x":{"dtype":"f8","bdata":"hetRuB7VeEAzMzMzMwN5QD0K16NwMXlA7FG4HoVfeUCamZmZmY15QKRwPQrXu3lArkfhehTqeUC4HoXrURh6QGZmZmZmRnpAcT0K16N0ekDXo3A9CqN6QOF6FK5H0XpA7FG4HoX\u002fekBSuB6F6y17QFyPwvUoXHtAw\u002fUoXI+Ke0ApXI\u002fC9bh7QDMzMzMz53tAmpmZmZkVfEAAAAAAAER8QMP1KFyPcnxAKVyPwvWgfECPwvUoXM98QFK4HoXr\u002fXxAuB6F61EsfUB7FK5H4Vp9QD0K16NwiX1AAAAAAAC4fUDD9Shcj+Z9QIXrUbgeFX5ASOF6FK5DfkAK16NwPXJ+QClcj8L1oH5A7FG4HoXPfkAK16NwPf5+QM3MzMzMLH9A7FG4HoVbf0AK16NwPYp\u002fQClcj8L1uH9ASOF6FK7nf0AzMzMzMwuAQHE9CtejIoBAAAAAAAA6gEA9CtejcFGAQM3MzMzMaIBACtejcD2AgEBI4XoUrpeAQIXrUbger4BAw\u002fUoXI\u002fGgEAAAAAAAN6AQD0K16Nw9YBAKVyPwvUMgUBmZmZmZiSBQFK4HoXrO4FAPQrXo3BTgUB7FK5H4WqBQGZmZmZmgoFAUrgeheuZgUA9CtejcLGBQClcj8L1yIFAw\u002fUoXI\u002fggUCuR+F6FPiBQEjhehSuD4JAMzMzMzMngkDNzMzMzD6CQGZmZmZmVoJAAAAAAABugkCamZmZmYWCQDMzMzMznYJAzczMzMy0gkBmZmZmZsyCQK5H4XoU5IJASOF6FK77gkCPwvUoXBODQNejcD0KK4NAH4XrUbhCg0BmZmZmZlqDQK5H4XoUcoNA9ihcj8KJg0A9CtejcKGDQDMzMzMzuYNAexSuR+HQg0BxPQrXo+iDQLgehetRAIRArkfhehQYhECkcD0K1y+EQJqZmZmZR4RAj8L1KFxfhECF61G4HneEQClcj8L1joRAH4XrUbimhEAUrkfher6EQLgehetR1oRAXI\u002fC9SjuhEAAAAAAAAaFQKRwPQrXHYVASOF6FK41hUDsUbgehU2FQI\u002fC9ShcZYVAMzMzMzN9hUCF61G4HpWFQClcj8L1rIVAexSuR+HEhUDNzMzMzNyFQHE9Ctej9IVAw\u002fUoXI8MhkDD9ShcjySGQBSuR+F6PIZAZmZmZmZUhkC4HoXrUWyGQLgehetRhIZACtejcD2chkAK16NwPbSGQArXo3A9zIZACtejcD3khkAK16NwPfyGQArXo3A9FIdACtejcD0sh0AK16NwPUSHQLgehetRXIdAuB6F61F0h0BmZmZmZoyHQBSuR+F6pIdAFK5H4Xq8h0DD9Shcj9SHQHE9Ctej7IdAzczMzMwEiEB7FK5H4RyIQClcj8L1NIhAhetRuB5NiEAzMzMzM2WIQI\u002fC9ShcfYhAPQrXo3CViECamZmZma2IQPYoXI\u002fCxYhAUrgehevdiEBcj8L1KPaIQLgehetRDolAFK5H4XomiUAfhetRuD6JQHsUrkfhVolAhetRuB5viUCPwvUoXIeJQJqZmZmZn4lApHA9Cte3iUCuR+F6FNCJQLgehetR6IlAw\u002fUoXI8AikB7FK5H4RiKQIXrUbgeMYpAPQrXo3BJikD2KFyPwmGKQAAAAAAAeopAuB6F61GSikBxPQrXo6qKQClcj8L1wopAj8L1KFzbikBI4XoUrvOKQAAAAAAADItAZmZmZmYki0DNzMzMzDyLQIXrUbgeVYtA7FG4HoVti0BSuB6F64WLQLgehetRnotAH4XrUbi2i0AzMzMzM8+LQJqZmZmZ54tArkfhehQAjEAUrkfhehiMQClcj8L1MIxAPQrXo3BJjEBSuB6F62GMQGZmZmZmeoxAexSuR+GSjECPwvUoXKuMQKRwPQrXw4xAZmZmZmbcjEB7FK5H4fSMQD0K16NwDY1AUrgehesljUAUrkfhej6NQNejcD0KV41AmpmZmZlvjUBcj8L1KIiNQM3MzMzMoI1Aj8L1KFy5jUBSuB6F69GNQMP1KFyP6o1AMzMzMzMDjkD2KFyPwhuOQGZmZmZmNI5A16NwPQpNjkBI4XoUrmWOQLgehetRfo5A16NwPQqXjkBI4XoUrq+OQGZmZmZmyI5A16NwPQrhjkD2KFyPwvmOQBSuR+F6Eo9AMzMzMzMrj0AzMzMzM0OPQAAAAAAAXI9A"},"y":{"dtype":"f8","bdata":"AAAAAAAAAACcIcjYMwJOwAAAAAAAAAAAgIKpZFpm5r8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABtdq0Fa7ZawM8Vi8kglVfA2YdE7a6vZ8AD\u002f6HETTJvwPaKnAPsmGnAX0AR5ql9asBcKmHrQ1hywG62k+pyt3HAvD8btjmqeMDbLyrA7TF4wJh+GJ+1RHfA6vhFWKasesBISNsIWcl8wASg\u002fh2HuXzAgoiCai7de8CH0VolAkB7wLBj2oPM7nrAHJM4h0d4ecD4tcBBRk5zwI96qKf4ZWjAFGU0bBNZYsBqOx\u002f\u002fZjNLwAAAAAAAAAAAcKwzhaeUO8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD6Jb6xEciTACBrIiq2YWsCIocf3inZcwK6YBxBLlXDAUAYtxIWsd8C6Q+IN9MOAwBjs6zY+6IPA4sD5g0CghMAO9O79rdCGwCs8gvPHTIXA4lmsbozsg8BsWbxUM5yBwGytdU9WQnnA\u002flUabjxTbMCSPLg5QXNSwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcOrFPGrhR8AYpstManZbwLSwpxlwT1HAALdlGXwDL8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMz3llpseFDAXl8h8YjkZcCLDc+GZ+NowDFjb6q\u002flGzASo4+FbmoYcCCTEopcjJcwAhRsyFUYljAOiZ9W7X7TsDIn5up5SE+wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAqNFhw6\u002fiUcCupRXLA\u002fFmwM\u002fTVEmceGHAm0tbdWlzdMC46F4\u002foa50wOjgnFKEN1DA3TfVVBBTacAAAAAAAAAAADztKRcncD3AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMLszkUyoFbAAAAAAAAAAADMOIKqefxWwFA0n9xv1D3AAAAAAAAAAADErh4CzT9LwAAAAAAAAAAAEIa6gJxuXMCS+KO4SSVewFYS\u002flmZ+HbASnEJjsS\u002faMCF8dkpryRwwHbYYiqU6WnAzWFpS5yedMBmwaFXeEZ4wAAAAAAAAAAAZkFACYJbd8CcDsw+pDl9wDFxARePIH7AnPudBl7PhMD2vc6MYdZywINAyDJBHmDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUk3Q4CgmZMAAAAAAAAAAAAAAAAAAAAAAYtc+z2tIW8CQPhW1a4vwv1xZHxH8Ul3AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABSzjLChw5ywAAAAAAAAAAAAAAAAAAAAABwAHQaUHxywJBGNb7pJHHAAAAAAAAAAADMX\u002fGyckVCwFajIvmxWoDAAAAAAAAAAADzcJ\u002fQAXlQwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC0YKyC9KNdwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACcIGqhFrxiwKBJGipf9IXAAAAAAAAAAAAAAAAAAAAAAC61oWaWbHvAAAAAAAAAAAAGKwc9o212wPMukv26JXHAlb8qzzBAY8DUWeKPVsNSwLCKyktXLJTA"},"type":"scatter"},{"hovertemplate":"%{x:.1f} nm: \u03b2 = %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#1b3a5c","width":1.5},"mode":"lines","name":"\u03b2 coefficient","x":{"dtype":"f8","bdata":"hetRuB7VeEAzMzMzMwN5QD0K16NwMXlA7FG4HoVfeUCamZmZmY15QKRwPQrXu3lArkfhehTqeUC4HoXrURh6QGZmZmZmRnpAcT0K16N0ekDXo3A9CqN6QOF6FK5H0XpA7FG4HoX\u002fekBSuB6F6y17QFyPwvUoXHtAw\u002fUoXI+Ke0ApXI\u002fC9bh7QDMzMzMz53tAmpmZmZkVfEAAAAAAAER8QMP1KFyPcnxAKVyPwvWgfECPwvUoXM98QFK4HoXr\u002fXxAuB6F61EsfUB7FK5H4Vp9QD0K16NwiX1AAAAAAAC4fUDD9Shcj+Z9QIXrUbgeFX5ASOF6FK5DfkAK16NwPXJ+QClcj8L1oH5A7FG4HoXPfkAK16NwPf5+QM3MzMzMLH9A7FG4HoVbf0AK16NwPYp\u002fQClcj8L1uH9ASOF6FK7nf0AzMzMzMwuAQHE9CtejIoBAAAAAAAA6gEA9CtejcFGAQM3MzMzMaIBACtejcD2AgEBI4XoUrpeAQIXrUbger4BAw\u002fUoXI\u002fGgEAAAAAAAN6AQD0K16Nw9YBAKVyPwvUMgUBmZmZmZiSBQFK4HoXrO4FAPQrXo3BTgUB7FK5H4WqBQGZmZmZmgoFAUrgeheuZgUA9CtejcLGBQClcj8L1yIFAw\u002fUoXI\u002fggUCuR+F6FPiBQEjhehSuD4JAMzMzMzMngkDNzMzMzD6CQGZmZmZmVoJAAAAAAABugkCamZmZmYWCQDMzMzMznYJAzczMzMy0gkBmZmZmZsyCQK5H4XoU5IJASOF6FK77gkCPwvUoXBODQNejcD0KK4NAH4XrUbhCg0BmZmZmZlqDQK5H4XoUcoNA9ihcj8KJg0A9CtejcKGDQDMzMzMzuYNAexSuR+HQg0BxPQrXo+iDQLgehetRAIRArkfhehQYhECkcD0K1y+EQJqZmZmZR4RAj8L1KFxfhECF61G4HneEQClcj8L1joRAH4XrUbimhEAUrkfher6EQLgehetR1oRAXI\u002fC9SjuhEAAAAAAAAaFQKRwPQrXHYVASOF6FK41hUDsUbgehU2FQI\u002fC9ShcZYVAMzMzMzN9hUCF61G4HpWFQClcj8L1rIVAexSuR+HEhUDNzMzMzNyFQHE9Ctej9IVAw\u002fUoXI8MhkDD9ShcjySGQBSuR+F6PIZAZmZmZmZUhkC4HoXrUWyGQLgehetRhIZACtejcD2chkAK16NwPbSGQArXo3A9zIZACtejcD3khkAK16NwPfyGQArXo3A9FIdACtejcD0sh0AK16NwPUSHQLgehetRXIdAuB6F61F0h0BmZmZmZoyHQBSuR+F6pIdAFK5H4Xq8h0DD9Shcj9SHQHE9Ctej7IdAzczMzMwEiEB7FK5H4RyIQClcj8L1NIhAhetRuB5NiEAzMzMzM2WIQI\u002fC9ShcfYhAPQrXo3CViECamZmZma2IQPYoXI\u002fCxYhAUrgehevdiEBcj8L1KPaIQLgehetRDolAFK5H4XomiUAfhetRuD6JQHsUrkfhVolAhetRuB5viUCPwvUoXIeJQJqZmZmZn4lApHA9Cte3iUCuR+F6FNCJQLgehetR6IlAw\u002fUoXI8AikB7FK5H4RiKQIXrUbgeMYpAPQrXo3BJikD2KFyPwmGKQAAAAAAAeopAuB6F61GSikBxPQrXo6qKQClcj8L1wopAj8L1KFzbikBI4XoUrvOKQAAAAAAADItAZmZmZmYki0DNzMzMzDyLQIXrUbgeVYtA7FG4HoVti0BSuB6F64WLQLgehetRnotAH4XrUbi2i0AzMzMzM8+LQJqZmZmZ54tArkfhehQAjEAUrkfhehiMQClcj8L1MIxAPQrXo3BJjEBSuB6F62GMQGZmZmZmeoxAexSuR+GSjECPwvUoXKuMQKRwPQrXw4xAZmZmZmbcjEB7FK5H4fSMQD0K16NwDY1AUrgehesljUAUrkfhej6NQNejcD0KV41AmpmZmZlvjUBcj8L1KIiNQM3MzMzMoI1Aj8L1KFy5jUBSuB6F69GNQMP1KFyP6o1AMzMzMzMDjkD2KFyPwhuOQGZmZmZmNI5A16NwPQpNjkBI4XoUrmWOQLgehetRfo5A16NwPQqXjkBI4XoUrq+OQGZmZmZmyI5A16NwPQrhjkD2KFyPwvmOQBSuR+F6Eo9AMzMzMzMrj0AzMzMzM0OPQAAAAAAAXI9A"},"y":{"dtype":"f8","bdata":"xDEU9vJCdkCcIcjYMwJOwNTHTgdltl1AgIKpZFpm5r\u002fQ+jTETBJ0QBmrA3MDQVRAquKQhyl4a0C8nUrmS2B\u002fQIgpj8agHHJAKNG23vbwc0DggaThI0tvQHjJCB1XanFAXGV6fTuZdEC44+zGvSN0QEojDcszCHBAIBFhB87fcUAKFE3MLTxjQAgNObjcIGJA8I78fOQIPkBtdq0Fa7ZawM8Vi8kglVfA2YdE7a6vZ8AD\u002f6HETTJvwPaKnAPsmGnAX0AR5ql9asBcKmHrQ1hywG62k+pyt3HAvD8btjmqeMDbLyrA7TF4wJh+GJ+1RHfA6vhFWKasesBISNsIWcl8wASg\u002fh2HuXzAgoiCai7de8CH0VolAkB7wLBj2oPM7nrAHJM4h0d4ecD4tcBBRk5zwI96qKf4ZWjAFGU0bBNZYsBqOx\u002f\u002fZjNLwAiLTjYqdSVAcKwzhaeUO8CQs\u002fAR\u002fjlGQG0mNdvaZllAqzpscsYHaEBEA6Eg+7RwQLlkyCYjOHtAr13X14Zqg0BFbPBN9Z6HQNo2Fie5nYlAcZr1P7bLhkBrJfG3h0mBQIWFoGc2Y3hAOcbZEKDwbUBqX9l4uU5ZQD6Jb6xEciTACBrIiq2YWsCIocf3inZcwK6YBxBLlXDAUAYtxIWsd8C6Q+IN9MOAwBjs6zY+6IPA4sD5g0CghMAO9O79rdCGwCs8gvPHTIXA4lmsbozsg8BsWbxUM5yBwGytdU9WQnnA\u002flUabjxTbMCSPLg5QXNSwAmuwtw3c1hApoHrr8xMbUBZ0KMZsl9xQGWkA781dnBAoaNuonePaUColrQdAnZeQDBG8GVVrSlAcOrFPGrhR8AYpstManZbwLSwpxlwT1HAALdlGXwDL8BAGOYr5PNNQMLcAwWjd2NARlInS6lLbUAcc3+HFo1wQEMWfL\u002fwSnJA6BoFAAM5cUAzzowG\u002fEhyQOaKwEq\u002fmHhAVoZCiy1qfUAnHgZto9N9QL6Myz39lXxAd\u002f9wjJ0zeUB5EYfJLWJzQLGD1bYFFmtAwSnmXYtOZEBQ7TgWw19FQMz3llpseFDAXl8h8YjkZcCLDc+GZ+NowDFjb6q\u002flGzASo4+FbmoYcCCTEopcjJcwAhRsyFUYljAOiZ9W7X7TsDIn5up5SE+wBCtihVsnlBAoFT5zBmYU0BawxTcncFfQJYAz10Wq2NAuNclZ3WcU0C0ehqvS6paQKQnILNbIWlAejSCdmfpaEAv0\u002fPKw6hJQGDro0ySzFtAqNFhw6\u002fiUcCupRXLA\u002fFmwM\u002fTVEmceGHAm0tbdWlzdMC46F4\u002foa50wOjgnFKEN1DA3TfVVBBTacCIhnZ8mW5hQDztKRcncD3AABUf5zh88D81qCuk3qZCQE19q6wkpGFAWf0dvPIGPkAgvj+9utBkQCcKovaZ11ZAYfP3E6W8W0CJC10ukUExQMLszkUyoFbAkO1nIdlfYkDMOIKqefxWwFA0n9xv1D3Ac3hgzCXfYUDErh4CzT9LwBBwOaNjIjhAEIa6gJxuXMCS+KO4SSVewFYS\u002flmZ+HbASnEJjsS\u002faMCF8dkpryRwwHbYYiqU6WnAzWFpS5yedMBmwaFXeEZ4wOwVzcLvLjtAZkFACYJbd8CcDsw+pDl9wDFxARePIH7AnPudBl7PhMD2vc6MYdZywINAyDJBHmDAa03L+lR7bEBmy3xbRU19QNNWZDPxZW5AnlCLNO7MbUCWE0OPrxB2QNKcDyU4XFJAUk3Q4CgmZMBvMtNzr7RyQMjQS8R07V5AYtc+z2tIW8CQPhW1a4vwv1xZHxH8Ul3An7Dq1ul1ZkDYrF449ENqQCZXHjTahWNAU61JALnpcUBSzjLChw5ywAUFdRz+tmVAGuOXjS0tfkBwAHQaUHxywJBGNb7pJHHAHKvuY6owVUDMX\u002fGyckVCwFajIvmxWoDA3\u002fWwjYVVgkDzcJ\u002fQAXlQwP407nZr32FA8AFWEMqGWkBlM+x0b0B0QMbEhss18HtAIGgzYmsRgUC0YKyC9KNdwNjHnBAZP4tAwpvkt1NAhUC9+xxKSD1UQMuDQ0ZJEmdAnKfxc5Z0eECcIGqhFrxiwKBJGipf9IXA+0coWxKafkAsqaML+GE3QC61oWaWbHvAaTNQ5sBYbkAGKwc9o212wPMukv26JXHAlb8qzzBAY8DUWeKPVsNSwLCKyktXLJTA"},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2d"}],"histogram":[{"marker":{"line":{"color":"white","width":0.6}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(237,237,237)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(217,217,217)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"colorscale":{"diverging":[[0.0,"rgb(103,0,31)"],[0.1,"rgb(178,24,43)"],[0.2,"rgb(214,96,77)"],[0.3,"rgb(244,165,130)"],[0.4,"rgb(253,219,199)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(209,229,240)"],[0.7,"rgb(146,197,222)"],[0.8,"rgb(67,147,195)"],[0.9,"rgb(33,102,172)"],[1.0,"rgb(5,48,97)"]],"sequential":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"sequentialminus":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"colorway":["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","radialaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"zaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"}},"shapedefaults":{"fillcolor":"black","line":{"width":0},"opacity":0.3},"ternary":{"aaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"baxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","caxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"}}},"shapes":[{"line":{"color":"#868e96","dash":"dash","width":0.7},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"}],"xaxis":{"title":{"text":"Wavelength (nm)"}},"yaxis":{"title":{"text":"Regression coefficient"}},"title":{"text":"PLS regression coefficients (\u03b2 vector) \u2014 10 components"},"height":380,"showlegend":false},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('a0709975-1e84-4167-8fbd-8477514e90a1');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-beta-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: PLS regression coefficient vector. Positive (teal fill): wavelengths positively correlated with sugar. Negative (navy fill): negatively correlated.
+</figcaption>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="residual-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="residual-analysis">Residual analysis</h2>
+<div id="cell-fig-residuals" class="cell" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>residuals_test <span class="op">=</span> y_test <span class="op">-</span> y_pred_test</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> make_subplots(rows<span class="op">=</span><span class="dv">1</span>, cols<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                    subplot_titles<span class="op">=</span>[<span class="st">'Residuals vs measured'</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                                    <span class="ss">f'Residual distribution  (bias = </span><span class="sc">{</span>residuals_test<span class="sc">.</span>mean()<span class="sc">:.2f}</span><span class="ss"> g/L)'</span>])</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    go.Scatter(x<span class="op">=</span>y_test, y<span class="op">=</span>residuals_test, mode<span class="op">=</span><span class="st">'markers'</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>               marker<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>NAVY, size<span class="op">=</span><span class="dv">7</span>, opacity<span class="op">=</span><span class="fl">0.8</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>                           line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'white'</span>, width<span class="op">=</span><span class="fl">0.4</span>)),</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>               showlegend<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>               hovertemplate<span class="op">=</span><span class="st">'Measured: %</span><span class="sc">{x:.1f}</span><span class="st"> g/L&lt;br&gt;Residual: %</span><span class="sc">{y:.1f}</span><span class="st"> g/L&lt;extra&gt;&lt;/extra&gt;'</span>),</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    row<span class="op">=</span><span class="dv">1</span>, col<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>fig.add_hline(y<span class="op">=</span><span class="dv">0</span>, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>TEAL, line_width<span class="op">=</span><span class="fl">1.5</span>, row<span class="op">=</span><span class="dv">1</span>, col<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    go.Histogram(x<span class="op">=</span>residuals_test, nbinsx<span class="op">=</span><span class="dv">15</span>, marker_color<span class="op">=</span>NAVY,</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>                 opacity<span class="op">=</span><span class="fl">0.75</span>, showlegend<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    row<span class="op">=</span><span class="dv">1</span>, col<span class="op">=</span><span class="dv">2</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>fig.add_vline(x<span class="op">=</span><span class="dv">0</span>, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>TEAL, line_width<span class="op">=</span><span class="fl">1.5</span>, row<span class="op">=</span><span class="dv">1</span>, col<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>fig.update_xaxes(title_text<span class="op">=</span><span class="st">'Measured sugar content (g/L)'</span>, row<span class="op">=</span><span class="dv">1</span>, col<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>fig.update_xaxes(title_text<span class="op">=</span><span class="st">'Residual (g/L)'</span>, row<span class="op">=</span><span class="dv">1</span>, col<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>fig.update_yaxes(title_text<span class="op">=</span><span class="st">'Residual (g/L)'</span>, row<span class="op">=</span><span class="dv">1</span>, col<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>fig.update_yaxes(title_text<span class="op">=</span><span class="st">'Count'</span>, row<span class="op">=</span><span class="dv">1</span>, col<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>fig.update_layout(title<span class="op">=</span><span class="st">'PLS prediction residuals — test set'</span>,</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>                  template<span class="op">=</span><span class="st">'simple_white'</span>, height<span class="op">=</span><span class="dv">380</span>)</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fig-residuals" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-residuals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="b55377da-231c-4451-b9da-375a5c8c3950" class="plotly-graph-div" style="height:380px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("b55377da-231c-4451-b9da-375a5c8c3950")) {                    Plotly.newPlot(                        "b55377da-231c-4451-b9da-375a5c8c3950",                        [{"hovertemplate":"Measured: %{x:.1f} g\u002fL\u003cbr\u003eResidual: %{y:.1f} g\u002fL\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":"#1b3a5c","line":{"color":"white","width":0.4},"opacity":0.8,"size":7},"mode":"markers","showlegend":false,"x":{"dtype":"f8","bdata":"WmQ73091ZUDZzvdT451kQB+F61G4PmlAGQRWDi0yZEAZBFYOLTJkQFpkO99PdWVAObTIdr7TZED+1HjpJp1oQN0kBoGV+2dAPQrXo3AxaEAZBFYOLTJkQDm0yHa+02RAvp8aL90IaUC8dJMYBFpnQDvfT42XgmZAnu+nxktnaECamZmZmQllQMUgsHJo73BAeekmMQhoZECBlUOLbCNrQIXrUbgegW5AAiuHFtn6a0A3iUFg5SRjQLx0kxgEWmdAwcqhRba3akA3iUFg5SRjQAIrhxbZ+mtAokW28\u002f3Ea0BU46WbxGhgQMP1KFyPZmxAfT81XrrFZ0CDwMqhRdJsQH0\u002fNV66xWdAd76fGi+5YkDhehSuR1lrQPp+arx0P2VA3SQGgZX7Z0BU46WbxGhwQNv5fmq8TGZAF9nO91ODYkA\u002fNV66SeBpQNv5fmq8TGZA2c73U+OdZEA3iUFg5SRjQMP1KFyPZmxAYhBYObQwbEA1XrpJDHZhQBsv3SQG4WVAeekmMQhoZED4U+Olm5BjQH0\u002fNV66xWdA3SQGgZX7Z0DhehSuR1lrQFTjpZvEaGBAppvEILAib0A="},"y":{"dtype":"f8","bdata":"gO2Q6OlwJkAw0Gz07WopwKAKXkhSpRbA0ITQHa1sJMDAqhMeURQoQABA9cYajRZAcL3p4BbfI8CweXp9jhMlwEDIXg20DBtAaPg3u4cSQkBAFB\u002fzvcgZwIAAvacWhSlAUFhb1QwrIkAAhHAGo3nxP\u002fChVSAHNSzAIL1CTRIWKcBQ79yGjzwiwKBPfLar2TFA4PSRXKJtE0BA\u002fd86Xf0TQCBb3a\u002fYch1AgGE\u002fjIw6FECQkZS4wywiQKBZUqZOYiZAAFgyHfg937\u002fg0IQz\u002fHkkQMD3iw+GGC5AQPbBd7DFG0BopBQ3ockjQHjPRXtl1jVAGHUlGGqsMkBgRPEA2GlBQODjlPkKGxNAgBgp7kkh\u002fb8otRnJV3YwwICPmkOefgxAuGYrKu3pNcDo9dnc\u002fqQ7QOBka9HjFBJAcApAuw4tO8CgNMs5UVwhwFjj+AmsmDlA4KbQoHn8FsBgTj7EVZkXQLDTfgOzwjdAAB6aW2K3BUAgMv03S1UXQAhCQgC2xzHAYJTnzL+kJEAI\u002fsrBZBszwHBHIwQGPCFAgOZLXg\u002fk+L+ARau86+gswICGtUwP3AXAYJJ1Z8krIkA="},"type":"scatter","xaxis":"x","yaxis":"y"},{"marker":{"color":"#1b3a5c"},"nbinsx":15,"opacity":0.75,"showlegend":false,"x":{"dtype":"f8","bdata":"gO2Q6OlwJkAw0Gz07WopwKAKXkhSpRbA0ITQHa1sJMDAqhMeURQoQABA9cYajRZAcL3p4BbfI8CweXp9jhMlwEDIXg20DBtAaPg3u4cSQkBAFB\u002fzvcgZwIAAvacWhSlAUFhb1QwrIkAAhHAGo3nxP\u002fChVSAHNSzAIL1CTRIWKcBQ79yGjzwiwKBPfLar2TFA4PSRXKJtE0BA\u002fd86Xf0TQCBb3a\u002fYch1AgGE\u002fjIw6FECQkZS4wywiQKBZUqZOYiZAAFgyHfg937\u002fg0IQz\u002fHkkQMD3iw+GGC5AQPbBd7DFG0BopBQ3ockjQHjPRXtl1jVAGHUlGGqsMkBgRPEA2GlBQODjlPkKGxNAgBgp7kkh\u002fb8otRnJV3YwwICPmkOefgxAuGYrKu3pNcDo9dnc\u002fqQ7QOBka9HjFBJAcApAuw4tO8CgNMs5UVwhwFjj+AmsmDlA4KbQoHn8FsBgTj7EVZkXQLDTfgOzwjdAAB6aW2K3BUAgMv03S1UXQAhCQgC2xzHAYJTnzL+kJEAI\u002fsrBZBszwHBHIwQGPCFAgOZLXg\u002fk+L+ARau86+gswICGtUwP3AXAYJJ1Z8krIkA="},"type":"histogram","xaxis":"x2","yaxis":"y2"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2d"}],"histogram":[{"marker":{"line":{"color":"white","width":0.6}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(237,237,237)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(217,217,217)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"colorscale":{"diverging":[[0.0,"rgb(103,0,31)"],[0.1,"rgb(178,24,43)"],[0.2,"rgb(214,96,77)"],[0.3,"rgb(244,165,130)"],[0.4,"rgb(253,219,199)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(209,229,240)"],[0.7,"rgb(146,197,222)"],[0.8,"rgb(67,147,195)"],[0.9,"rgb(33,102,172)"],[1.0,"rgb(5,48,97)"]],"sequential":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"sequentialminus":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"colorway":["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","radialaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"zaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"}},"shapedefaults":{"fillcolor":"black","line":{"width":0},"opacity":0.3},"ternary":{"aaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"baxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","caxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"}}},"xaxis":{"anchor":"y","domain":[0.0,0.45],"title":{"text":"Measured sugar content (g\u002fL)"}},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Residual (g\u002fL)"}},"xaxis2":{"anchor":"y2","domain":[0.55,1.0],"title":{"text":"Residual (g\u002fL)"}},"yaxis2":{"anchor":"x2","domain":[0.0,1.0],"title":{"text":"Count"}},"annotations":[{"font":{"size":16},"showarrow":false,"text":"Residuals vs measured","x":0.225,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"Residual distribution  (bias = 3.20 g\u002fL)","x":0.775,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"}],"shapes":[{"line":{"color":"#2a7f7f","dash":"dash","width":1.5},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"},{"line":{"color":"#2a7f7f","dash":"dash","width":1.5},"type":"line","x0":0,"x1":0,"xref":"x2","y0":0,"y1":1,"yref":"y2 domain"}],"title":{"text":"PLS prediction residuals \u2014 test set"},"height":380},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('b55377da-231c-4451-b9da-375a5c8c3950');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-residuals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Residuals vs measured values (left) and residual histogram (right) for the test set.
+</figcaption>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Metric</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RMSECV</td>
+<td>CV error on training set — used for model selection</td>
+</tr>
+<tr class="even">
+<td>RMSEC</td>
+<td>Training error — indicates fit quality</td>
+</tr>
+<tr class="odd">
+<td>RMSEP</td>
+<td>Test error — measures generalisation</td>
+</tr>
+<tr class="even">
+<td>R² (test)</td>
+<td>Proportion of variance explained on new samples</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interpretation guide:</strong></p>
+<ul>
+<li>RMSEP ≈ RMSECV → no overfitting; model generalises to new samples</li>
+<li>RMSEP ≪ RMSEC → suspicious (possible data leakage)</li>
+<li>RMSEP ≫ RMSECV → overfitting or distribution shift in test set</li>
+</ul>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Wold, S., Sjöström, M., &amp; Eriksson, L. (2001). PLS-regression: a basic tool of chemometrics. <em>Chemometrics and Intelligent Laboratory Systems</em>, 58(2), 109–130. <a href="https://doi.org/10.1016/S0169-7439(01)00155-1" class="uri">https://doi.org/10.1016/S0169-7439(01)00155-1</a></p>
+<p>Geladi, P., &amp; Kowalski, B. R. (1986). Partial least-squares regression: a tutorial. <em>Analytica Chimica Acta</em>, 185, 1–17. <a href="https://doi.org/10.1016/0003-2670(86)80028-9" class="uri">https://doi.org/10.1016/0003-2670(86)80028-9</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>CC BY-SA 4.0 — Maxime Ryckewaert</p>
+</div>   
+    <div class="nav-footer-center">
+<p><a href="https://www.cirad.fr/en">CIRAD</a> / <a href="https://umr-agap.cirad.fr/en">UMR AGAP</a></p>
+</div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.26">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Chemometrics Part 3 — Principal Component Analysis – Maxime Ryckewaert</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../img/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-73541bc22a58d4f352630c27eceb7769.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-BNTDSZCX3X'"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-BNTDSZCX3X'', { 'anonymize_ip': true});
+</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+<script>
+
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+
+</script>
+
+<script type="module">import "https://cdn.plot.ly/plotly-3.5.0.min"</script>
+
+
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../img/logo.png" alt="" class="navbar-logo light-content">
+    <img src="../img/logo.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Maxime Ryckewaert</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../research.html"> 
+<span class="menu-text">Research</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../publications.html"> 
+<span class="menu-text">Publications</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-courses" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Courses</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-courses">    
+        <li>
+    <a class="dropdown-item" href="../courses/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/dimensionality-reduction.html">
+ <span class="dropdown-text">Dimensionality Reduction</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/neural-networks.html">
+ <span class="dropdown-text">Neural Networks</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/deepmaxent.html">
+ <span class="dropdown-text">Species Distribution Modelling</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../courses/01_exploration.html">
+ <span class="dropdown-text">Chemometrics — Part 1: Exploration</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/02_preprocessing.html">
+ <span class="dropdown-text">Chemometrics — Part 2: Preprocessing</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/03_pca.html">
+ <span class="dropdown-text">Chemometrics — Part 3: PCA</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../courses/04_pls.html">
+ <span class="dropdown-text">Chemometrics — Part 4: PLS Regression</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li>
+    <a class="dropdown-item" href="../projects/index.html">
+ <span class="dropdown-text">Overview</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../projects/project-1.html">
+ <span class="dropdown-text">Species Distribution Modelling</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../cv.html"> 
+<span class="menu-text">CV</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../hobbies.html"> 
+<span class="menu-text">Hobbies</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../contact.html"> 
+<span class="menu-text">Contact</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/RYCKEWAERT"> <i class="bi bi-github" role="img" aria-label="GitHub">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/in/maxime-ryckewaert-3627095a/"> <i class="bi bi-linkedin" role="img" aria-label="LinkedIn">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="mailto:maxime.ryckewaert@cirad.fr"> <i class="bi bi-envelope" role="img" aria-label="Email">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#preprocessing-centring-without-unit-variance-scaling" id="toc-preprocessing-centring-without-unit-variance-scaling" class="nav-link" data-scroll-target="#preprocessing-centring-without-unit-variance-scaling">Preprocessing: centring without unit-variance scaling</a></li>
+  <li><a href="#scree-plot" id="toc-scree-plot" class="nav-link" data-scroll-target="#scree-plot">Scree plot</a></li>
+  <li><a href="#score-scatter-plot-pc1-vs-pc2" id="toc-score-scatter-plot-pc1-vs-pc2" class="nav-link" data-scroll-target="#score-scatter-plot-pc1-vs-pc2">Score scatter plot: PC1 vs PC2</a></li>
+  <li><a href="#loadings" id="toc-loadings" class="nav-link" data-scroll-target="#loadings">Loadings</a></li>
+  <li><a href="#correlation-of-pc-scores-with-sugar-content" id="toc-correlation-of-pc-scores-with-sugar-content" class="nav-link" data-scroll-target="#correlation-of-pc-scores-with-sugar-content">Correlation of PC scores with sugar content</a></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference">Reference</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Chemometrics Part 3 — Principal Component Analysis</h1>
+<p class="subtitle lead">Latent structure, score plots, and loadings of grape berry spectra</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="learning-objectives">
+<p><strong>Learning objectives</strong></p>
+<p>After completing this module you should be able to:</p>
+<ol type="1">
+<li>Justify the choice of centring without unit-variance scaling for NIR spectra.</li>
+<li>Interpret a scree plot and choose an appropriate number of PCs.</li>
+<li>Read a score scatter plot and link cluster structure to chemical variation.</li>
+<li>Interpret loading vectors as spectral fingerprints of latent components.</li>
+<li>Quantify the predictive relevance of each PC via correlation with the response.</li>
+</ol>
+</div>
+<blockquote class="blockquote">
+<p><strong>Dataset citation:</strong> Ryckewaert, M. <em>et al.</em> (2023). Dataset containing spectral data from hyperspectral imaging and sugar content measurements of grape berries in various maturity stages. <em>Data in Brief</em>. <a href="https://doi.org/10.1016/j.dib.2022.108822" class="uri">https://doi.org/10.1016/j.dib.2022.108822</a></p>
+</blockquote>
+<hr>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Principal Component Analysis (PCA) is the foundational dimensionality-reduction method in chemometrics. A spectral matrix <span class="math inline">\(\mathbf{X} \in \mathbb{R}^{n \times p}\)</span> (274 samples, 204 wavelengths) lives in a 204-dimensional space, but the true chemical variation is far lower-dimensional. PCA finds orthogonal directions of maximum variance:</p>
+<p><span class="math display">\[\mathbf{X} = \mathbf{T}\mathbf{P}^\top + \mathbf{E}\]</span></p>
+<ul>
+<li><span class="math inline">\(\mathbf{T} \in \mathbb{R}^{n \times k}\)</span> — <strong>scores</strong>: sample coordinates in the PC subspace</li>
+<li><span class="math inline">\(\mathbf{P} \in \mathbb{R}^{p \times k}\)</span> — <strong>loadings</strong>: spectral directions (unit vectors)</li>
+<li><span class="math inline">\(\mathbf{E}\)</span> — residual matrix (unexplained variation)</li>
+</ul>
+<div id="4c231c9f" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.decomposition <span class="im">import</span> PCA</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotly.subplots <span class="im">import</span> make_subplots</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>NAVY  <span class="op">=</span> <span class="st">'#1b3a5c'</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>TEAL  <span class="op">=</span> <span class="st">'#2a7f7f'</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>GREEN <span class="op">=</span> <span class="st">'#78BE20'</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>GRAY  <span class="op">=</span> <span class="st">'#868e96'</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>COLORS_VAR  <span class="op">=</span> {<span class="st">'SYRAH'</span>: NAVY, <span class="st">'MAUZAC'</span>: TEAL, <span class="st">'FER'</span>: GREEN}</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>MARKERS_VAR <span class="op">=</span> {<span class="st">'SYRAH'</span>: <span class="st">'triangle-up'</span>, <span class="st">'MAUZAC'</span>: <span class="st">'square'</span>, <span class="st">'FER'</span>: <span class="st">'circle'</span>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="73ecec84" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'data/chemometrics/DATASET.csv'</span>, sep<span class="op">=</span><span class="st">';'</span>, index_col<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>variety <span class="op">=</span> df[<span class="st">'Variety'</span>]</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">'Sugar content (g/l)'</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>spectral_cols <span class="op">=</span> [c <span class="cf">for</span> c <span class="kw">in</span> df.columns <span class="cf">if</span> c.startswith(<span class="st">'x.'</span>)]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df[spectral_cols].values</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>wavelengths <span class="op">=</span> np.array([<span class="bu">float</span>(c.replace(<span class="st">'x.'</span>, <span class="st">''</span>, <span class="dv">1</span>)) <span class="cf">for</span> c <span class="kw">in</span> spectral_cols])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="preprocessing-centring-without-unit-variance-scaling" class="level2">
+<h2 class="anchored" data-anchor-id="preprocessing-centring-without-unit-variance-scaling">Preprocessing: centring without unit-variance scaling</h2>
+<p>Before PCA, we <strong>centre</strong> the data (subtract the column mean):</p>
+<p><span class="math display">\[\tilde{x}_{ik} = x_{ik} - \bar{x}_k, \quad \bar{x}_k = \frac{1}{n}\sum_{i=1}^n x_{ik}\]</span></p>
+<p>We <strong>omit unit-variance scaling</strong> deliberately. In NIR spectroscopy, spectral channels do not contribute equally to variance — regions near water absorption bands (~970 nm) or the VIS–NIR transition (~700 nm) naturally show higher variability reflecting real chemical signal. Scaling to unit variance would up-weight noise-dominated channels and destroy the physically meaningful variance structure.</p>
+<div id="76dc7c86" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>X_centred <span class="op">=</span> X <span class="op">-</span> X.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>n_components <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>pca <span class="op">=</span> PCA(n_components<span class="op">=</span>n_components)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>T   <span class="op">=</span> pca.fit_transform(X_centred)   <span class="co"># scores:   (274, 20)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>P   <span class="op">=</span> pca.components_                <span class="co"># loadings:  (20, 204)</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>evr <span class="op">=</span> pca.explained_variance_ratio_</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Cumulative explained variance:"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">10</span>]:</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  First </span><span class="sc">{</span>k<span class="sc">:2d}</span><span class="ss"> PCs: </span><span class="sc">{</span>evr[:k]<span class="sc">.</span><span class="bu">sum</span>()<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Cumulative explained variance:
+  First  1 PCs: 79.5%
+  First  2 PCs: 96.2%
+  First  3 PCs: 99.0%
+  First  5 PCs: 99.8%
+  First 10 PCs: 100.0%</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="scree-plot" class="level2">
+<h2 class="anchored" data-anchor-id="scree-plot">Scree plot</h2>
+<p>The scree plot shows variance per PC (bars) and the cumulative sum (line). An <em>elbow</em> in the curve suggests the intrinsic dimensionality of the dataset. The 95% threshold indicates the minimum number of PCs to retain most spectral variance.</p>
+<div id="cell-fig-scree" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> make_subplots(specs<span class="op">=</span>[[{<span class="st">'secondary_y'</span>: <span class="va">True</span>}]])</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    go.Bar(x<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1</span>, n_components <span class="op">+</span> <span class="dv">1</span>)), y<span class="op">=</span>evr <span class="op">*</span> <span class="dv">100</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>           name<span class="op">=</span><span class="st">'Individual PC'</span>, marker_color<span class="op">=</span>NAVY, opacity<span class="op">=</span><span class="fl">0.75</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    secondary_y<span class="op">=</span><span class="va">False</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>fig.add_trace(</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    go.Scatter(x<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1</span>, n_components <span class="op">+</span> <span class="dv">1</span>)), y<span class="op">=</span>evr.cumsum() <span class="op">*</span> <span class="dv">100</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>               mode<span class="op">=</span><span class="st">'lines+markers'</span>, name<span class="op">=</span><span class="st">'Cumulative'</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>               line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>TEAL, width<span class="op">=</span><span class="dv">2</span>), marker<span class="op">=</span><span class="bu">dict</span>(size<span class="op">=</span><span class="dv">5</span>, color<span class="op">=</span>TEAL)),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    secondary_y<span class="op">=</span><span class="va">True</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>fig.add_hline(y<span class="op">=</span><span class="dv">95</span>, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>GREEN,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>              annotation_text<span class="op">=</span><span class="st">'95%'</span>, annotation_position<span class="op">=</span><span class="st">'right'</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>              secondary_y<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>fig.update_xaxes(title_text<span class="op">=</span><span class="st">'Principal Component'</span>, dtick<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>fig.update_yaxes(title_text<span class="op">=</span><span class="st">'Explained variance (%)'</span>, secondary_y<span class="op">=</span><span class="va">False</span>, color<span class="op">=</span>NAVY)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>fig.update_yaxes(title_text<span class="op">=</span><span class="st">'Cumulative explained variance (%)'</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>                 secondary_y<span class="op">=</span><span class="va">True</span>, color<span class="op">=</span>TEAL, <span class="bu">range</span><span class="op">=</span>[<span class="dv">0</span>, <span class="dv">102</span>])</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>fig.update_layout(title<span class="op">=</span><span class="st">'PCA scree plot — centred grape berry spectra'</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>                  template<span class="op">=</span><span class="st">'simple_white'</span>, height<span class="op">=</span><span class="dv">400</span>,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>                  legend<span class="op">=</span><span class="bu">dict</span>(orientation<span class="op">=</span><span class="st">'h'</span>, y<span class="op">=</span><span class="fl">1.1</span>))</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fig-scree" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="9b153ffd-722f-4869-9fb4-1fdb055bfca8" class="plotly-graph-div" style="height:400px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("9b153ffd-722f-4869-9fb4-1fdb055bfca8")) {                    Plotly.newPlot(                        "9b153ffd-722f-4869-9fb4-1fdb055bfca8",                        [{"marker":{"color":"#1b3a5c"},"name":"Individual PC","opacity":0.75,"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],"y":{"dtype":"f8","bdata":"Xajvb1PhU0CAkHMZmaUwQHgsAlTF\u002fgZADLei43Tb4D\u002fC4g3mWQDJP8BteSDbz78\u002fH45sitTDoD+X\u002fZDSsaCcP0Kd1Cm4voQ\u002f4hDK8ilagD967mzckqt8P9QlCAD8WnE\u002fEsopZ+5fXz+k79pS9x5eP7E\u002fV\u002f+4gVY\u002fiGzvWmJ+VD+7oBx+QWFSPyoUkneDfk0\u002fFKk6SXUWTD+wql3XvyxKPw=="},"type":"bar","xaxis":"x","yaxis":"y"},{"line":{"color":"#2a7f7f","width":2},"marker":{"color":"#2a7f7f","size":5},"mode":"lines+markers","name":"Cumulative","x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],"y":{"dtype":"f8","bdata":"Xajvb1PhU0B9jEy2uQpYQOGd7OCvwlhAT+OzymbkWEBB6qb35vBYQJwIb+7a+FhALlYAafP6WEA+fx10vfxYQOPN3mlj\u002fVhAM2QuO+b9WEDn1XnpWP5YQAjWaVWe\u002flhAMT1Ytb3+WEAMkE\u002fU2\u002f5YQGSPCFby\u002flhAU+pq1Ab\u002fWEBwaKw1Gf9YQDkk7vQn\u002f1hA1sgoADb\u002fWECFtIgWQ\u002f9YQA=="},"type":"scatter","xaxis":"x","yaxis":"y2"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2d"}],"histogram":[{"marker":{"line":{"color":"white","width":0.6}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(237,237,237)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(217,217,217)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"colorscale":{"diverging":[[0.0,"rgb(103,0,31)"],[0.1,"rgb(178,24,43)"],[0.2,"rgb(214,96,77)"],[0.3,"rgb(244,165,130)"],[0.4,"rgb(253,219,199)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(209,229,240)"],[0.7,"rgb(146,197,222)"],[0.8,"rgb(67,147,195)"],[0.9,"rgb(33,102,172)"],[1.0,"rgb(5,48,97)"]],"sequential":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"sequentialminus":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"colorway":["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","radialaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"zaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"}},"shapedefaults":{"fillcolor":"black","line":{"width":0},"opacity":0.3},"ternary":{"aaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"baxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","caxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"}}},"xaxis":{"anchor":"y","domain":[0.0,0.94],"title":{"text":"Principal Component"},"dtick":1},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Explained variance (%)"},"color":"#1b3a5c"},"yaxis2":{"anchor":"x","overlaying":"y","side":"right","title":{"text":"Cumulative explained variance (%)"},"color":"#2a7f7f","range":[0,102]},"shapes":[{"line":{"color":"#78BE20","dash":"dash"},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":95,"y1":95,"yref":"y2"}],"annotations":[{"showarrow":false,"text":"95%","x":1,"xanchor":"left","xref":"x domain","y":95,"yanchor":"middle","yref":"y"}],"legend":{"orientation":"h","y":1.1},"title":{"text":"PCA scree plot \u2014 centred grape berry spectra"},"height":400},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('9b153ffd-722f-4869-9fb4-1fdb055bfca8');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Scree plot: individual (bars, left axis) and cumulative (line, right axis) explained variance.
+</figcaption>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="score-scatter-plot-pc1-vs-pc2" class="level2">
+<h2 class="anchored" data-anchor-id="score-scatter-plot-pc1-vs-pc2">Score scatter plot: PC1 vs PC2</h2>
+<p>The score plot projects each sample onto the first two PCs. Colour encodes sugar content; marker shape encodes variety — revealing whether the PCs align with the sugar gradient and whether varieties cluster separately.</p>
+<div id="cell-fig-scores-12" class="cell" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> var <span class="kw">in</span> variety.unique():</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> (variety <span class="op">==</span> var).values</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    fig.add_trace(go.Scatter(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>T[mask, <span class="dv">0</span>], y<span class="op">=</span>T[mask, <span class="dv">1</span>], mode<span class="op">=</span><span class="st">'markers'</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        marker<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>            symbol<span class="op">=</span>MARKERS_VAR[var], size<span class="op">=</span><span class="dv">8</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span>y.values[mask], colorscale<span class="op">=</span><span class="st">'RdYlBu_r'</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>            cmin<span class="op">=</span><span class="bu">float</span>(y.<span class="bu">min</span>()), cmax<span class="op">=</span><span class="bu">float</span>(y.<span class="bu">max</span>()),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            colorbar<span class="op">=</span><span class="bu">dict</span>(title<span class="op">=</span><span class="st">'Sugar content (g/L)'</span>, thickness<span class="op">=</span><span class="dv">15</span>, <span class="bu">len</span><span class="op">=</span><span class="fl">0.9</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> var <span class="op">==</span> <span class="bu">list</span>(variety.unique())[<span class="dv">0</span>] <span class="cf">else</span> <span class="bu">dict</span>(),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>            showscale<span class="op">=</span>(var <span class="op">==</span> <span class="bu">list</span>(variety.unique())[<span class="dv">0</span>]),</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>            line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'white'</span>, width<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>var,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        hovertemplate<span class="op">=</span><span class="st">'%</span><span class="sc">{text}</span><span class="st">&lt;extra&gt;'</span> <span class="op">+</span> var <span class="op">+</span> <span class="st">'&lt;/extra&gt;'</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        text<span class="op">=</span>[<span class="ss">f'Sugar: </span><span class="sc">{</span>s<span class="sc">:.1f}</span><span class="ss"> g/L'</span> <span class="cf">for</span> s <span class="kw">in</span> y.values[mask]]</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>fig.add_hline(y<span class="op">=</span><span class="dv">0</span>, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>GRAY, line_width<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>fig.add_vline(x<span class="op">=</span><span class="dv">0</span>, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>GRAY, line_width<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="ss">f'PC1  (</span><span class="sc">{</span>evr[<span class="dv">0</span>]<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% var. expl.)'</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="ss">f'PC2  (</span><span class="sc">{</span>evr[<span class="dv">1</span>]<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% var. expl.)'</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'PCA score plot — coloured by sugar content'</span>,</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'simple_white'</span>, height<span class="op">=</span><span class="dv">480</span>,</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    legend<span class="op">=</span><span class="bu">dict</span>(title<span class="op">=</span><span class="st">'Variety'</span>)</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fig-scores-12" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scores-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="e8ccaeb0-33e9-45c4-9b2d-812e5a4d90bf" class="plotly-graph-div" style="height:480px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("e8ccaeb0-33e9-45c4-9b2d-812e5a4d90bf")) {                    Plotly.newPlot(                        "e8ccaeb0-33e9-45c4-9b2d-812e5a4d90bf",                        [{"hovertemplate":"%{text}\u003cextra\u003eSYRAH\u003c\u002fextra\u003e","marker":{"cmax":282.744,"cmin":100.98,"color":{"dtype":"f8","bdata":"Vg4tsp0XYkB56SYxCGhkQNv5fmq8TGZAPQrXo3AxaED4U+Olm5BjQBkEVg4tMmRAObTIdr7TZED6fmq8dD9lQHsUrkfhFmZA\u002fKnx0k3uZkAZBFYOLTJkQNnO91PjnWRAmpmZmZkJZUAbL90kBuFlQJqZmZmZCWVAWDm0yHbGY0C4HoXrUfxjQNnO91PjnWRAuB6F61H8Y0D6fmq8dD9lQBsv3SQG4WVAexSuR+EWZkAZBFYOLTJkQPhT46WbkGNAuB6F61H8Y0A3iUFg5SRjQLbz\u002fdR4TWJA+FPjpZuQY0Dl0CLb+bZeQFTjpZvEaGBAuB6F61H8Y0BaZDvfT3VlQN0kBoGV+2dAYOXQItuBakB3vp8aL7liQHe+nxovuWJA+n5qvHQ\u002fZUD6fmq8dD9lQLx0kxgEWmdAvHSTGARaZ0AZBFYOLTJkQBkEVg4tMmRA2c73U+OdZEDZzvdT451kQHsUrkfhFmZAexSuR+EWZkD6fmq8dD9lQPp+arx0P2VAN4lBYOUkY0A3iUFg5SRjQHnpJjEIaGRAeekmMQhoZEDb+X5qvExmQNv5fmq8TGZAexSuR+EWZkB7FK5H4RZmQLpJDAIrq2VAukkMAiurZUD8qfHSTe5mQPyp8dJN7mZAnu+nxktnaECe76fGS2doQPyp8dJN7mZA\u002fKnx0k3uZkBU46WbxGhgQB+F61G4PmlAH4XrUbg+aUAfhetRuD5pQIGVQ4tsI2tAgZVDi2wja0CBlUOLbCNrQIGVQ4tsI2tA30+Nl26qaUDfT42XbqppQN0kBoGV+2dA3SQGgZX7Z0CamZmZmQllQJqZmZmZCWVAAAAAAABMakAAAAAAAExqQB+F61G4PmlAH4XrUbg+aUDdJAaBlftnQN0kBoGV+2dA\u002ftR46SadaED+1HjpJp1oQLx0kxgEWmdAvHSTGARaZ0A730+Nl4JmQDvfT42XgmZA2\u002fl+arxMZkCgGi\u002fdJBZqQKAaL90kFmpAfT81XrrFZ0B9PzVeusVnQAIrhxbZ+mtAAiuHFtn6a0A9CtejcDFoQD0K16NwMWhAN4lBYOUkY0A3iUFg5SRjQKRwPQrXc21ApHA9CtdzbUAnMQisHPpvQIXrUbgegW5AhetRuB6BbkAEVg4tsoNwQARWDi2yg3BAlkOLbOercUCWQ4ts56txQCcxCKwc+m9AJzEIrBz6b0BU46WbxGhwQFTjpZvEaHBA1XjpJjFAcUDVeOkmMUBxQARWDi2yg3BABFYOLbKDcECmm8QgsCJvQMUgsHJo73BAxSCwcmjvcEAEVg4tsoNwQARWDi2yg3BA30+Nl26qaUBiEFg5tDBsQGIQWDm0MGxA"},"colorbar":{"len":0.9,"thickness":15,"title":{"text":"Sugar content (g\u002fL)"}},"colorscale":[[0.0,"rgb(49,54,149)"],[0.1,"rgb(69,117,180)"],[0.2,"rgb(116,173,209)"],[0.3,"rgb(171,217,233)"],[0.4,"rgb(224,243,248)"],[0.5,"rgb(255,255,191)"],[0.6,"rgb(254,224,144)"],[0.7,"rgb(253,174,97)"],[0.8,"rgb(244,109,67)"],[0.9,"rgb(215,48,39)"],[1.0,"rgb(165,0,38)"]],"line":{"color":"white","width":0.5},"showscale":true,"size":8,"symbol":"triangle-up"},"mode":"markers","name":"SYRAH","text":["Sugar: 144.7 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 178.4 g\u002fL","Sugar: 193.5 g\u002fL","Sugar: 156.5 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 166.6 g\u002fL","Sugar: 170.0 g\u002fL","Sugar: 176.7 g\u002fL","Sugar: 183.4 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 164.9 g\u002fL","Sugar: 168.3 g\u002fL","Sugar: 175.0 g\u002fL","Sugar: 168.3 g\u002fL","Sugar: 158.2 g\u002fL","Sugar: 159.9 g\u002fL","Sugar: 164.9 g\u002fL","Sugar: 159.9 g\u002fL","Sugar: 170.0 g\u002fL","Sugar: 175.0 g\u002fL","Sugar: 176.7 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 156.5 g\u002fL","Sugar: 159.9 g\u002fL","Sugar: 153.2 g\u002fL","Sugar: 146.4 g\u002fL","Sugar: 156.5 g\u002fL","Sugar: 122.9 g\u002fL","Sugar: 131.3 g\u002fL","Sugar: 159.9 g\u002fL","Sugar: 171.7 g\u002fL","Sugar: 191.9 g\u002fL","Sugar: 212.1 g\u002fL","Sugar: 149.8 g\u002fL","Sugar: 149.8 g\u002fL","Sugar: 170.0 g\u002fL","Sugar: 170.0 g\u002fL","Sugar: 186.8 g\u002fL","Sugar: 186.8 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 164.9 g\u002fL","Sugar: 164.9 g\u002fL","Sugar: 176.7 g\u002fL","Sugar: 176.7 g\u002fL","Sugar: 170.0 g\u002fL","Sugar: 170.0 g\u002fL","Sugar: 153.2 g\u002fL","Sugar: 153.2 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 178.4 g\u002fL","Sugar: 178.4 g\u002fL","Sugar: 176.7 g\u002fL","Sugar: 176.7 g\u002fL","Sugar: 173.3 g\u002fL","Sugar: 173.3 g\u002fL","Sugar: 183.4 g\u002fL","Sugar: 183.4 g\u002fL","Sugar: 195.2 g\u002fL","Sugar: 195.2 g\u002fL","Sugar: 183.4 g\u002fL","Sugar: 183.4 g\u002fL","Sugar: 131.3 g\u002fL","Sugar: 202.0 g\u002fL","Sugar: 202.0 g\u002fL","Sugar: 202.0 g\u002fL","Sugar: 217.1 g\u002fL","Sugar: 217.1 g\u002fL","Sugar: 217.1 g\u002fL","Sugar: 217.1 g\u002fL","Sugar: 205.3 g\u002fL","Sugar: 205.3 g\u002fL","Sugar: 191.9 g\u002fL","Sugar: 191.9 g\u002fL","Sugar: 168.3 g\u002fL","Sugar: 168.3 g\u002fL","Sugar: 210.4 g\u002fL","Sugar: 210.4 g\u002fL","Sugar: 202.0 g\u002fL","Sugar: 202.0 g\u002fL","Sugar: 191.9 g\u002fL","Sugar: 191.9 g\u002fL","Sugar: 196.9 g\u002fL","Sugar: 196.9 g\u002fL","Sugar: 186.8 g\u002fL","Sugar: 186.8 g\u002fL","Sugar: 180.1 g\u002fL","Sugar: 180.1 g\u002fL","Sugar: 178.4 g\u002fL","Sugar: 208.7 g\u002fL","Sugar: 208.7 g\u002fL","Sugar: 190.2 g\u002fL","Sugar: 190.2 g\u002fL","Sugar: 223.8 g\u002fL","Sugar: 223.8 g\u002fL","Sugar: 193.5 g\u002fL","Sugar: 193.5 g\u002fL","Sugar: 153.2 g\u002fL","Sugar: 153.2 g\u002fL","Sugar: 235.6 g\u002fL","Sugar: 235.6 g\u002fL","Sugar: 255.8 g\u002fL","Sugar: 244.0 g\u002fL","Sugar: 244.0 g\u002fL","Sugar: 264.2 g\u002fL","Sugar: 264.2 g\u002fL","Sugar: 282.7 g\u002fL","Sugar: 282.7 g\u002fL","Sugar: 255.8 g\u002fL","Sugar: 255.8 g\u002fL","Sugar: 262.5 g\u002fL","Sugar: 262.5 g\u002fL","Sugar: 276.0 g\u002fL","Sugar: 276.0 g\u002fL","Sugar: 264.2 g\u002fL","Sugar: 264.2 g\u002fL","Sugar: 249.1 g\u002fL","Sugar: 271.0 g\u002fL","Sugar: 271.0 g\u002fL","Sugar: 264.2 g\u002fL","Sugar: 264.2 g\u002fL","Sugar: 205.3 g\u002fL","Sugar: 225.5 g\u002fL","Sugar: 225.5 g\u002fL"],"x":{"dtype":"f8","bdata":"6HBy+nZoyb\u002f0xl+3\u002fGnVvwI0Xsw\u002fTtS\u002fAu+mqCuK178cE+ePNMjHv6N4A2BO3ry\u002fJoG9iQFv1L8URD+TIQvKv9eVhle0iNe\u002fy\u002fqKfh6J0r8rZZtLeGbRvw7uRJZXnrq\u002fdpg\u002fr1pj0b+CWlXvEWbOv98xv8bxVNS\u002fqxBtIvwbwr9I5cyBrAvOv+9lkSYWy8K\u002fD4vHc1Wc0b90ytN6CtHJv5eiarsu+9i\u002fasBhFQ3tzb8ytzuIex7Ev7Ai6iCsK6w\u002f3hm2bwabx7+GnSz6vKasv7xUT2LSwMO\u002fYSuDpCZKvb++fuU3jNCnP45tMPpnI8Y\u002fQyTBW17w0L8S85d0f+zUv7sXOcmYA96\u002fa6jwKNuyy7\u002f74RwycsSbvwwz+djtOr2\u002fCKQQCUjzyL\u002fhWn6baAPNv\u002f3ImSpuTs+\u002fzpCWz6+Q0r\u002fDSdrBkvzBv8Us+J26XM6\u002fdXUDZRw7yL9uGh16SFfRvyXETeYql9G\u002fR5RHipcV1L83ho4c6SXSvxV57VHgmdC\u002f9chgujexwL\u002f\u002fHW6lYoLOv15gxwDrvsW\u002fLvSNz0x2zb9792PXrT\u002fMv2AMigjaVdW\u002fHRBc3sTC0r\u002f5DNUdVGvRv0c9NRKihtK\u002faMejWEbZ179G54n6VXnRvzEIC75vKdi\u002fgGsw\u002f97q17\u002f3vhEuPqvavxoqtW86Mc+\u002fB1QbIaJ\u002f2L+i3TKhktG4P7xcxr3X4bW\u002fQGsS8ZQY079zpJyUyYfcvzkl2pFsdsq\u002frYD6hynh2L8ch+XkeDPbv\u002fGrBQUTEta\u002fuUT16ELm2L9a3NlJM3jav\u002fEGmhzrVdO\u002fNG1QhuEF07\u002fOPV+BrpLQvyjgIhVo3s6\u002fJ3W+4fho3L97li4sHXPZv8hmDdsKYNy\u002fwoC4xaRN27+H7flJXRLZv9wuIlu7pNi\u002ffj9PQWQk2b+tcWoosYTYv9Nd\u002fpVtddu\u002f5daqwvNE179H72DOJsLWvwmIddKn7da\u002fRe6nnGQZ178a1g3FWrbdvw9LdSo7jdu\u002fg0OES5oV3b+p1RvNAUjav7PfSWRbeeC\u002fIygq\u002fI7w2r80DNj+UPrcv77++LVpb9m\u002f2CTNq7tpy79le5FgFM3Gv1XGbxXpQty\u002fSskmDNms279TNcopg+rVv9\u002fktPPL4dO\u002fVlNq1yEq0L+DGYdfAeLWvwfPybVy1tK\u002fSY\u002ftBMTJ1b8vBqv4+qfUvzHqmQt8ote\u002f6ht5z3nJzr+zeR2BWenTv8JCJJhOt9a\u002fpkvmsk+82L+rLCKlytnWv8ekAJpbute\u002fpDrKAiZ91r\u002fnthWeKRTWv7ANPQQAHdK\u002fvTVeyncM178FGWfGnRDSvzunJIcbk9a\u002fiimJIZV3vL\u002frS6nQSsLQv1bxrHGVcse\u002f"},"y":{"dtype":"f8","bdata":"2J0O0jx51L9aRoWQF9XQv0tkDL5Iz5Y\u002fi6HkbelUwr9OcZnTnFDBvwh2bq3SV9M\u002f6nnEplFE1L85hLX8uZHVP8BcVbRTsc+\u002fB0vdVbxKzz\u002fQ18ja6BnNv4hMksAoKNc\u002fEb7wV5fBxL8n6ZASH43SP1GO430ptNC\u002fbvi1uE330T9SLUoJwHDKv5lcdMlXktE\u002fubIxTi6eyr\u002fIbtZjArnVP8O8SMxF8NG\u002fIbQqzrm20T\u002fJSaEwCO64vxd63EOKl90\u002fY01EQ+\u002f\u002fzb9t5qsZzRHYP+CScVtSTse\u002fqHvMHi5D0z+TkvtuPceSvzTybgKEzOE\u002fEcQwEzotxr9O7z+DxIvDP2W9IPN2ydO\u002fDJQbyy0i1z9y9\u002fOY007cP6j3x4M\u002fcrU\u002f\u002fQBR2prZ1z9OX3w\u002fC5S7P2BDPFRLO9Y\u002f1Y9ba4NtuT8KtKxVAJTYPxWUkgIlM7Y\u002f4f3bfL3v0z+QrP4MMXRLP4WJnBPIxNY\u002fLVcGzAHhoD9EzEdxzLvQP6UmK6cN06K\u002fozIgEp4P1z9mjuYhzT+Qv9wtfErQONo\u002fGuGuIn1kiD8P0r7IV\u002fvTP8k5PEmro3a\u002frlty0qZ01D8p6Uyx57CoP+hyandmjM8\u002fflokhnEXur9f7Xc\u002f7hXXPyIKOpZZnaW\u002fi4\u002fu4Gp\u002fzj9dYBiciQGXv+YFC12zA9o\u002fIzonR3aHsL\u002fRmFl42jnYP+cuHrW17MS\u002fWx7Fuzg50D8KIsy21DPPvzs0Tw+bido\u002fM0g2Lq11qb\u002f5URzjuTLAv9JZvWJZfsc\u002fxH6l4uhMhr\u002f2y068w4KOvwBr\u002fWRJkKs\u002fx10L8QvWxD964FtVTiZXP\u002fc4njGZbMg\u002fmDnkMIpozb8pevVNsxqbP9rY4IDqSse\u002fzFM8ytAOtb88luZMNLPNv7hlESyRQIm\u002flgeMFW9gxL\u002f4Sbc5cMe1PwDSHoY8ac+\u002ft21O5COYt78fMuK7xjDQv+XpFypaIG8\u002fAAEYBh3wx7\u002f6z7tpehrOv3928cpZub2\u002fa0Otibxk2b9qfMD2\u002fzxkPyyOwu8jqti\u002fOTsh0Lk5q7978wod0u7Wv+YaSjoDYpq\u002fGQ0KXtPWxb95xKFq8\u002fexP8RK\u002ftF1dMy\u002fhkSM9Pxnp7+ja41oznN3vyQoD1PUY6E\u002f2hb7c4eKyz8Jk6Pzts6zv7os2bks2aM\u002fpM2EKr2iq7\u002f9NS4H5AmyPzcm4meKm72\u002fuXwG0DJwvT8jndHn6F1wP9QP\u002fGuowqC\u002flfpCaXEzvr8AW6cIJNWAv9Fef7Sh+7i\u002f0ShkuYOLrb\u002fhfPcV+d6Gv5JzWpu9vMM\u002fD8nYiYykJT+apsoMf7G5PxTtb7B5S7i\u002f8FnTp0a+0D\u002fy8YGOsQ+nP54uPjjmlL0\u002f"},"type":"scatter"},{"hovertemplate":"%{text}\u003cextra\u003eMAUZAC\u003c\u002fextra\u003e","marker":{"cmax":282.744,"cmin":100.98,"color":{"dtype":"f8","bdata":"f2q8dJN0aUBcj8L1KCRnQPp+arx0P2VAF9nO91ODYkAdWmQ7349nQPyp8dJN7mZAWmQ73091ZUA730+Nl4JmQFg5tMh2xmNAObTIdr7TZEA5tMh2vtNkQBsv3SQG4WVAmpmZmZkJZUAbL90kBuFlQLx0kxgEWmdAnMQgsHK4ZkDb+X5qvExmQPyp8dJN7mZA\u002fKnx0k3uZkAZBFYOLTJkQBsv3SQG4WVAuB6F61H8Y0BaZDvfT3VlQPhT46WbkGNAd76fGi+5YkDZzvdT451kQDeJQWDlJGNA9P3UeOkyYEBiEFg5tDBcQDVeukkMdmFANV66SQx2YUB56SYxCGhkQHnpJjEIaGRAexSuR+EWZkB7FK5H4RZmQJhuEoPAWmNAmG4Sg8BaY0B56SYxCGhkQHnpJjEIaGRAeekmMQhoZEBaZDvfT3VlQBkEVg4tMmRAGQRWDi0yZEC28\u002f3UeE1iQLbz\u002fdR4TWJA+FPjpZuQY0D4U+Olm5BjQLgehetR\u002fGNAuB6F61H8Y0BaZDvfT3VlQFpkO99PdWVAvHSTGARaZ0C8dJMYBFpnQD0K16NwMWhAPQrXo3AxaEAfhetRuD5ZQB+F61G4PllAPzVeukngaUA\u002fNV66SeBpQKJFtvP9xGtAokW28\u002f3Ea0DjpZvEIAhtQOOlm8QgCG1AwcqhRba3akDByqFFtrdqQEJg5dAij2tAQmDl0CKPa0CDwMqhRdJsQIPAyqFF0mxAAiuHFtn6a0ACK4cW2fprQKAaL90kFmpAoBov3SQWakDhehSuR1lrQOF6FK5HWWtAwcqhRba3akDByqFFtrdqQCPb+X5qnGxAI9v5fmqcbECgGi\u002fdJBZaQKAaL90kFlpAfT81XrrFZ0B9PzVeusVnQAaBlUOLWG9ABoGVQ4tYb0A="},"colorscale":[[0.0,"rgb(49,54,149)"],[0.1,"rgb(69,117,180)"],[0.2,"rgb(116,173,209)"],[0.3,"rgb(171,217,233)"],[0.4,"rgb(224,243,248)"],[0.5,"rgb(255,255,191)"],[0.6,"rgb(254,224,144)"],[0.7,"rgb(253,174,97)"],[0.8,"rgb(244,109,67)"],[0.9,"rgb(215,48,39)"],[1.0,"rgb(165,0,38)"]],"line":{"color":"white","width":0.5},"showscale":false,"size":8,"symbol":"square"},"mode":"markers","name":"MAUZAC","text":["Sugar: 203.6 g\u002fL","Sugar: 185.1 g\u002fL","Sugar: 170.0 g\u002fL","Sugar: 148.1 g\u002fL","Sugar: 188.5 g\u002fL","Sugar: 183.4 g\u002fL","Sugar: 171.7 g\u002fL","Sugar: 180.1 g\u002fL","Sugar: 158.2 g\u002fL","Sugar: 166.6 g\u002fL","Sugar: 166.6 g\u002fL","Sugar: 175.0 g\u002fL","Sugar: 168.3 g\u002fL","Sugar: 175.0 g\u002fL","Sugar: 186.8 g\u002fL","Sugar: 181.8 g\u002fL","Sugar: 178.4 g\u002fL","Sugar: 183.4 g\u002fL","Sugar: 183.4 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 175.0 g\u002fL","Sugar: 159.9 g\u002fL","Sugar: 171.7 g\u002fL","Sugar: 156.5 g\u002fL","Sugar: 149.8 g\u002fL","Sugar: 164.9 g\u002fL","Sugar: 153.2 g\u002fL","Sugar: 129.6 g\u002fL","Sugar: 112.8 g\u002fL","Sugar: 139.7 g\u002fL","Sugar: 139.7 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 176.7 g\u002fL","Sugar: 176.7 g\u002fL","Sugar: 154.8 g\u002fL","Sugar: 154.8 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 171.7 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 146.4 g\u002fL","Sugar: 146.4 g\u002fL","Sugar: 156.5 g\u002fL","Sugar: 156.5 g\u002fL","Sugar: 159.9 g\u002fL","Sugar: 159.9 g\u002fL","Sugar: 171.7 g\u002fL","Sugar: 171.7 g\u002fL","Sugar: 186.8 g\u002fL","Sugar: 186.8 g\u002fL","Sugar: 193.5 g\u002fL","Sugar: 193.5 g\u002fL","Sugar: 101.0 g\u002fL","Sugar: 101.0 g\u002fL","Sugar: 207.0 g\u002fL","Sugar: 207.0 g\u002fL","Sugar: 222.2 g\u002fL","Sugar: 222.2 g\u002fL","Sugar: 232.3 g\u002fL","Sugar: 232.3 g\u002fL","Sugar: 213.7 g\u002fL","Sugar: 213.7 g\u002fL","Sugar: 220.5 g\u002fL","Sugar: 220.5 g\u002fL","Sugar: 230.6 g\u002fL","Sugar: 230.6 g\u002fL","Sugar: 223.8 g\u002fL","Sugar: 223.8 g\u002fL","Sugar: 208.7 g\u002fL","Sugar: 208.7 g\u002fL","Sugar: 218.8 g\u002fL","Sugar: 218.8 g\u002fL","Sugar: 213.7 g\u002fL","Sugar: 213.7 g\u002fL","Sugar: 228.9 g\u002fL","Sugar: 228.9 g\u002fL","Sugar: 104.3 g\u002fL","Sugar: 104.3 g\u002fL","Sugar: 190.2 g\u002fL","Sugar: 190.2 g\u002fL","Sugar: 250.8 g\u002fL","Sugar: 250.8 g\u002fL"],"x":{"dtype":"f8","bdata":"Kq\u002fvAZiH5T++akO0jPbhP\u002f2mQQST\u002fuM\u002fih1EXojT4j\u002fzAg0zAF3mP2uY9UIHk+I\u002fDKxNSsO64z\u002fcS8z7BN7lP15icDBel+Y\u002fC03+fYKB4z9HdZnSv3XlPxwgyktI6+Q\u002fQ6yp\u002fWf25D9uD2oyua3iP7fKgpObm+M\u002f9MUzwkyq4D9kVidlApHiP1HsjAAcweA\u002fsNXDfcIM4D+ujvjhyivkP26agP5OweI\u002fNQ+Ys8Dx5T+W1UypourhP6VhKjMJ3+Y\u002f+YCxUMGS4T\u002fdPZVXci7nP9Oao9j4DeI\u002fjnabxGrT4z\u002fuKVjIW7HgP4C9Vsu2aN4\u002foBwgYTAQ5D+IbY7zpOfiP2pwSDGjSOU\u002f2k8q9Skj4z+fKOwIi7jlP2iGLiIdh+A\u002fQRuY7C4r5D\u002fj14DvohjhP4\u002fvI1anG+I\u002f1m82Tk7u4j8MnG2Yq4njP8j3YktZPeE\u002fTQahaF\u002f45T+6QQRaP3PjP2oUYD+saeQ\u002fbKFP9EGb5D8F3TAdOMTmP9IH\u002fueUn+M\u002f1O8H5o0z5z+QeBy8vjriP3MSLZRXt+Q\u002fHtKAYfTM4j\u002fxAgamSgHmP\u002fpNFxLrWOM\u002fDGktDbk75T+VVs2t78bjP+2ImdghguY\u002fCSCbof7h4z\u002fddYDvbPXmP+oxsxP7XuY\u002fEi4hyIP55j\u002fuaz9eO\u002fzoP5agDQ18nes\u002fYnrYlmmK5D+Zt0fIgunmP1Wi5Gyg3ec\u002f2\u002fXqXCWu6D94cYG7Q8noPxaZ8z6YF+s\u002fT3eVoMxT6T+zEfgDlNzrP\u002fZx1sj0JuU\u002fz1iwAdcM5z8FNlqfL6HoP4mNXDldPew\u002fyON1Ihuq5T9spjKPesXpPyxfDGX5xug\u002fkpk+lgRT7D\u002foSCXLbtTrPzXkXaRiAu0\u002f7UppQ7gS6j9XGWbiUd7yP\u002fKrgufF4ek\u002fGlRrbMwA7T8="},"y":{"dtype":"f8","bdata":"NA4UzEEWrb8BJto7oIrZv7p1buSXsbq\u002fmU25OKb1oL96bzVtnVWKv6yjT25K89S\u002fWg6X3iRctL+xDYOIE4XLvy+In9taUb4\u002fPIMt9vxWz7\u002frKEU5jOmmP18I9\u002fjuatC\u002f0y3WG35qhz9eKAT\u002fTbfWv4BiIpUJWsW\u002fnTvMzjg13r9ENygGkTrEv72Um+RUUN2\u002fnliqvcn23r81sNvxyFSov9CYs+gMEda\u002fDORVsBAAsD8KJcw6hX\u002fYv8VjjiT7vb8\u002fY2PXqbWd079mLuoeMn\u002fEP\u002fvzUr9IPdW\u002f7TyEsK0cqz8mVzCgU+fav0exDVangM6\u002fGxLjRv5gxz+7N43BV3LBvy83qefRFMw\u002fIqiJxCdhu78ayZmzJybKP634m9eLw8i\u002fQxtIgZElyD\u002fZaPf9pg3Hvyy7x\u002fjihbE\u002fDTAe7XBJwL\u002fU8FLN5PyyPyBTCiH2H8S\u002fQYp\u002fXZgdzj\u002f7o+gAx0fAv4yRjXWUDMI\u002fnjcMb+GOtb+llwvJ\u002fGLKP+VPAif+rba\u002fKgJyXcx9zz+AYRGwPrLFv7dCXTK8b7k\u002fIlFFTYMIu79yDtBPZmfHPz8bcc+rWbu\u002fujUSd4SVzT\u002f18+Yfxma4v8Zc5B9vWM8\u002fCUIQZjJx0r\u002fTVngf1xG5v0mivjEA0su\u002fh0svpu7ewL\u002ftbzOiKM\u002fHv+Q8X2L2DJE\u002fHTv7BoZE0L\u002f1slBppae1v6Q+riEOH8G\u002fnXNORTxSpL+cC4xOLru+v\u002fcxcJnv+Iw\u002fSqF4k\u002flAtb\u002ffV2tTx6e3P014SfDkWsq\u002fNJD\u002fAAoSs79rE0ILzIm6v7Jfcp+aEMY\u002fAPQWmOVuxL9r67m+SiWEP9riLM27V76\u002fImWuUcwOwj9UgtkuurGhPzgajTwJ8MI\u002f5q1MTAw8xT\u002fiRbNMfQ3wPz0UBr\u002flZaY\u002fpU\u002fcu0wf0D8="},"type":"scatter"},{"hovertemplate":"%{text}\u003cextra\u003eFER\u003c\u002fextra\u003e","marker":{"cmax":282.744,"cmin":100.98,"color":{"dtype":"f8","bdata":"VOOlm8RoYEBU46WbxGhgQHnpJjEIaGRAeekmMQhoZEA730+Nl4JmQDvfT42XgmZA3SQGgZX7Z0DdJAaBlftnQDeJQWDlJGNAN4lBYOUkY0C4HoXrUfxjQLgehetR\u002fGNAObTIdr7TZEA5tMh2vtNkQPp+arx0P2VA+n5qvHQ\u002fZUDb+X5qvExmQNv5fmq8TGZAXI\u002fC9SgkZ0Bcj8L1KCRnQBkEVg4tMmRAGQRWDi0yZEB56SYxCGhkQHnpJjEIaGRAWmQ73091ZUBaZDvfT3VlQDvfT42XgmZAO99PjZeCZkDZzvdT451kQNnO91PjnWRA+FPjpZuQY0D4U+Olm5BjQH0\u002fNV66xWdAfT81XrrFZ0DfT42XbqppQN9PjZduqmlAQmDl0CKPa0BCYOXQIo9rQARWDi2yqW1ABFYOLbKpbUDHSzeJQcRvQMdLN4lBxG9Avp8aL90IaUC+nxov3QhpQJ7vp8ZLZ2hAnu+nxktnaEDD9Shcj2ZsQMP1KFyPZmxAw\u002fUoXI9mbEDD9Shcj2ZsQMP1KFyPZmxAw\u002fUoXI9mbECkcD0K13NtQKRwPQrXc21ARrbz\u002fdTsbkBGtvP91OxuQNnO91PjnWRA2c73U+OdZEDhehSuR1lrQOF6FK5HWWtAvp8aL90IaUCDwMqhRdJsQIPAyqFF0mxA"},"colorscale":[[0.0,"rgb(49,54,149)"],[0.1,"rgb(69,117,180)"],[0.2,"rgb(116,173,209)"],[0.3,"rgb(171,217,233)"],[0.4,"rgb(224,243,248)"],[0.5,"rgb(255,255,191)"],[0.6,"rgb(254,224,144)"],[0.7,"rgb(253,174,97)"],[0.8,"rgb(244,109,67)"],[0.9,"rgb(215,48,39)"],[1.0,"rgb(165,0,38)"]],"line":{"color":"white","width":0.5},"showscale":false,"size":8,"symbol":"circle"},"mode":"markers","name":"FER","text":["Sugar: 131.3 g\u002fL","Sugar: 131.3 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 180.1 g\u002fL","Sugar: 180.1 g\u002fL","Sugar: 191.9 g\u002fL","Sugar: 191.9 g\u002fL","Sugar: 153.2 g\u002fL","Sugar: 153.2 g\u002fL","Sugar: 159.9 g\u002fL","Sugar: 159.9 g\u002fL","Sugar: 166.6 g\u002fL","Sugar: 166.6 g\u002fL","Sugar: 170.0 g\u002fL","Sugar: 170.0 g\u002fL","Sugar: 178.4 g\u002fL","Sugar: 178.4 g\u002fL","Sugar: 185.1 g\u002fL","Sugar: 185.1 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 161.6 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 163.3 g\u002fL","Sugar: 171.7 g\u002fL","Sugar: 171.7 g\u002fL","Sugar: 180.1 g\u002fL","Sugar: 180.1 g\u002fL","Sugar: 164.9 g\u002fL","Sugar: 164.9 g\u002fL","Sugar: 156.5 g\u002fL","Sugar: 156.5 g\u002fL","Sugar: 190.2 g\u002fL","Sugar: 190.2 g\u002fL","Sugar: 205.3 g\u002fL","Sugar: 205.3 g\u002fL","Sugar: 220.5 g\u002fL","Sugar: 220.5 g\u002fL","Sugar: 237.3 g\u002fL","Sugar: 237.3 g\u002fL","Sugar: 254.1 g\u002fL","Sugar: 254.1 g\u002fL","Sugar: 200.3 g\u002fL","Sugar: 200.3 g\u002fL","Sugar: 195.2 g\u002fL","Sugar: 195.2 g\u002fL","Sugar: 227.2 g\u002fL","Sugar: 227.2 g\u002fL","Sugar: 227.2 g\u002fL","Sugar: 227.2 g\u002fL","Sugar: 227.2 g\u002fL","Sugar: 227.2 g\u002fL","Sugar: 235.6 g\u002fL","Sugar: 235.6 g\u002fL","Sugar: 247.4 g\u002fL","Sugar: 247.4 g\u002fL","Sugar: 164.9 g\u002fL","Sugar: 164.9 g\u002fL","Sugar: 218.8 g\u002fL","Sugar: 218.8 g\u002fL","Sugar: 200.3 g\u002fL","Sugar: 230.6 g\u002fL","Sugar: 230.6 g\u002fL"],"x":{"dtype":"f8","bdata":"w+D5YAaiuL+wY4mwkaCmv5\u002f3es1ThNK\u002fFYF9XBLJ0r811hWPYI7Yv6eOXOOsudK\u002fVgCjS19T179e+Dy60s3Rv\u002fxgsHeL9c6\u002fs2LgxHLtu7\u002fquiT9GonQv+cRQUaH5si\u002fri8vNi\u002fF0r\u002fi5gDKfy\u002fFv7w5ONjFPda\u002fY09hlhQ607+OOodBEHzWv1cXe6w5wNG\u002fxD6uwFzh17+zcX5RxtjVv6A8cewOVNW\u002fGAUmTvxbzr\u002f6bXd8\u002fNTWv+AJ4LHWk8+\u002f4DZSmv30179THjIA66TNv63F9UIiMda\u002fWaSnVZYZ0b+cjiEI0tfTv5TX69Te+tG\u002fp60UnQ0qzr+8uxjExgPIv2bJDWZVaNm\u002fcwdzEyKq17\u002fMAuKs\u002f5jcv8oNW1cNU9y\u002faN8QMo6d3L93c+v0pUrevy7h0LXeRti\u002fYthHEvVN2L+apPqNDijWvyyTJKP5v9a\u002fEnjDvMmM3L82PEp8Qfrbv4R1jfEV49i\u002fxsRFf1NQ2L+KR25iIhPev2DN4Me8ud6\u002f4t16KbRg3L9EhegVhtfev1pduyyDj92\u002fRyBkdX5x3L83D4c2yK3bv3eADt5dZNm\u002fYz\u002fPKdew3b+PywOajyLav+sea+keCd2\u002fhHbZDSJf2r\u002fgbCouNBLdv8TuKvD6Mt6\u002fe8MNNYbSxL9IsCwIkfLRv2XRL483lNG\u002f"},"y":{"dtype":"f8","bdata":"\u002fTFUHzT5xD+nHHyD2xLYP94yzOeTBas\u002fvO\u002fDrZuqyj+ZnAWTq7Wrv0qSWwdDE9g\u002fd0\u002fC3Ky8vT+RnSBx75fWP2YX6kenO7Q\u002fgJUsLKQp3D+6S1EXCUa2P9pRqpl7u80\u002f5mEQJJn6gz+bw7nq8x\u002fUP3E46exrFaG\u002fcgG17eevwj+6IZQoHuemPyEyJ8JN3ss\u002f5ABwscXCdj\u002fOmKo0EIPFP0DAM0XlM6W\u002fwx+y3niovz8oNpH+nj+7v5IsHjrt5LA\u002fV\u002fvCOzxfrr8Dml5STLDAP1rsdUjGcZW\u002fksvzAFo1yT9tpK+eXneKP5T4sJ+JfI8\u002fxN6lYARofz\u002fhtUB2AMSVP3W6Mjp4Msq\u002fwLoTdTBZtb8k4TZA82nFv\u002fSDPVuue6G\u002fhsaX3eonur9qdkBHQ2K7v46JDizTeqq\u002fjiFcHNO\u002foL81W\u002fhpxSWZP13icGJ+Zb4\u002fULymtk\u002fqzr\u002fIvdpBuO3Hv+hX72bhVK+\u002faBrF1Z\u002fXwb9+Q39ySX3Kv2UZ9VKepMu\u002f92HAl5KAxb\u002fsYS97afzOv13cGssoj8u\u002fWtavhZNayL9DXirYT1HGv\u002fwxYL8FhLG\u002f3rAkQyu\u002fyb+x3zgwtdm0vzWBSrHdjsS\u002fn3fCuwsisr8rLEA1dybIv0RDjuI8kMG\u002fSinUE08J1z\u002fyRJkDY4S6v\u002fvjt2kKab2\u002f"},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2d"}],"histogram":[{"marker":{"line":{"color":"white","width":0.6}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(237,237,237)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(217,217,217)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"colorscale":{"diverging":[[0.0,"rgb(103,0,31)"],[0.1,"rgb(178,24,43)"],[0.2,"rgb(214,96,77)"],[0.3,"rgb(244,165,130)"],[0.4,"rgb(253,219,199)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(209,229,240)"],[0.7,"rgb(146,197,222)"],[0.8,"rgb(67,147,195)"],[0.9,"rgb(33,102,172)"],[1.0,"rgb(5,48,97)"]],"sequential":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"sequentialminus":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"colorway":["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","radialaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"zaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"}},"shapedefaults":{"fillcolor":"black","line":{"width":0},"opacity":0.3},"ternary":{"aaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"baxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","caxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"}}},"shapes":[{"line":{"color":"#868e96","dash":"dash","width":0.6},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"},{"line":{"color":"#868e96","dash":"dash","width":0.6},"type":"line","x0":0,"x1":0,"xref":"x","y0":0,"y1":1,"yref":"y domain"}],"xaxis":{"title":{"text":"PC1  (79.5% var. expl.)"}},"yaxis":{"title":{"text":"PC2  (16.6% var. expl.)"}},"title":{"text":"PCA score plot \u2014 coloured by sugar content"},"height":480,"legend":{"title":{"text":"Variety"}}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('e8ccaeb0-33e9-45c4-9b2d-812e5a4d90bf');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scores-12-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: PCA score plot PC1 vs PC2. Colour = sugar content (g/L); marker shape = variety.
+</figcaption>
+</figure>
+</div>
+</div>
+<div id="cell-fig-scores-13" class="cell" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> var <span class="kw">in</span> variety.unique():</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> (variety <span class="op">==</span> var).values</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    fig.add_trace(go.Scatter(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        x<span class="op">=</span>T[mask, <span class="dv">0</span>], y<span class="op">=</span>T[mask, <span class="dv">2</span>], mode<span class="op">=</span><span class="st">'markers'</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        marker<span class="op">=</span><span class="bu">dict</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            symbol<span class="op">=</span>MARKERS_VAR[var], size<span class="op">=</span><span class="dv">8</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>            color<span class="op">=</span>y.values[mask], colorscale<span class="op">=</span><span class="st">'RdYlBu_r'</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>            cmin<span class="op">=</span><span class="bu">float</span>(y.<span class="bu">min</span>()), cmax<span class="op">=</span><span class="bu">float</span>(y.<span class="bu">max</span>()),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>            colorbar<span class="op">=</span><span class="bu">dict</span>(title<span class="op">=</span><span class="st">'Sugar content (g/L)'</span>, thickness<span class="op">=</span><span class="dv">15</span>, <span class="bu">len</span><span class="op">=</span><span class="fl">0.9</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> var <span class="op">==</span> <span class="bu">list</span>(variety.unique())[<span class="dv">0</span>] <span class="cf">else</span> <span class="bu">dict</span>(),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>            showscale<span class="op">=</span>(var <span class="op">==</span> <span class="bu">list</span>(variety.unique())[<span class="dv">0</span>]),</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>            line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span><span class="st">'white'</span>, width<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        name<span class="op">=</span>var</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>fig.add_hline(y<span class="op">=</span><span class="dv">0</span>, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>GRAY, line_width<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>fig.add_vline(x<span class="op">=</span><span class="dv">0</span>, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>GRAY, line_width<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="ss">f'PC1  (</span><span class="sc">{</span>evr[<span class="dv">0</span>]<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% var. expl.)'</span>,</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="ss">f'PC3  (</span><span class="sc">{</span>evr[<span class="dv">2</span>]<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% var. expl.)'</span>,</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'PCA score plot: PC1 vs PC3'</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'simple_white'</span>, height<span class="op">=</span><span class="dv">450</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    legend<span class="op">=</span><span class="bu">dict</span>(title<span class="op">=</span><span class="st">'Variety'</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fig-scores-13" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-scores-13-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="acea2a76-c687-4646-9d1e-74c96b7682b8" class="plotly-graph-div" style="height:450px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("acea2a76-c687-4646-9d1e-74c96b7682b8")) {                    Plotly.newPlot(                        "acea2a76-c687-4646-9d1e-74c96b7682b8",                        [{"marker":{"cmax":282.744,"cmin":100.98,"color":{"dtype":"f8","bdata":"Vg4tsp0XYkB56SYxCGhkQNv5fmq8TGZAPQrXo3AxaED4U+Olm5BjQBkEVg4tMmRAObTIdr7TZED6fmq8dD9lQHsUrkfhFmZA\u002fKnx0k3uZkAZBFYOLTJkQNnO91PjnWRAmpmZmZkJZUAbL90kBuFlQJqZmZmZCWVAWDm0yHbGY0C4HoXrUfxjQNnO91PjnWRAuB6F61H8Y0D6fmq8dD9lQBsv3SQG4WVAexSuR+EWZkAZBFYOLTJkQPhT46WbkGNAuB6F61H8Y0A3iUFg5SRjQLbz\u002fdR4TWJA+FPjpZuQY0Dl0CLb+bZeQFTjpZvEaGBAuB6F61H8Y0BaZDvfT3VlQN0kBoGV+2dAYOXQItuBakB3vp8aL7liQHe+nxovuWJA+n5qvHQ\u002fZUD6fmq8dD9lQLx0kxgEWmdAvHSTGARaZ0AZBFYOLTJkQBkEVg4tMmRA2c73U+OdZEDZzvdT451kQHsUrkfhFmZAexSuR+EWZkD6fmq8dD9lQPp+arx0P2VAN4lBYOUkY0A3iUFg5SRjQHnpJjEIaGRAeekmMQhoZEDb+X5qvExmQNv5fmq8TGZAexSuR+EWZkB7FK5H4RZmQLpJDAIrq2VAukkMAiurZUD8qfHSTe5mQPyp8dJN7mZAnu+nxktnaECe76fGS2doQPyp8dJN7mZA\u002fKnx0k3uZkBU46WbxGhgQB+F61G4PmlAH4XrUbg+aUAfhetRuD5pQIGVQ4tsI2tAgZVDi2wja0CBlUOLbCNrQIGVQ4tsI2tA30+Nl26qaUDfT42XbqppQN0kBoGV+2dA3SQGgZX7Z0CamZmZmQllQJqZmZmZCWVAAAAAAABMakAAAAAAAExqQB+F61G4PmlAH4XrUbg+aUDdJAaBlftnQN0kBoGV+2dA\u002ftR46SadaED+1HjpJp1oQLx0kxgEWmdAvHSTGARaZ0A730+Nl4JmQDvfT42XgmZA2\u002fl+arxMZkCgGi\u002fdJBZqQKAaL90kFmpAfT81XrrFZ0B9PzVeusVnQAIrhxbZ+mtAAiuHFtn6a0A9CtejcDFoQD0K16NwMWhAN4lBYOUkY0A3iUFg5SRjQKRwPQrXc21ApHA9CtdzbUAnMQisHPpvQIXrUbgegW5AhetRuB6BbkAEVg4tsoNwQARWDi2yg3BAlkOLbOercUCWQ4ts56txQCcxCKwc+m9AJzEIrBz6b0BU46WbxGhwQFTjpZvEaHBA1XjpJjFAcUDVeOkmMUBxQARWDi2yg3BABFYOLbKDcECmm8QgsCJvQMUgsHJo73BAxSCwcmjvcEAEVg4tsoNwQARWDi2yg3BA30+Nl26qaUBiEFg5tDBsQGIQWDm0MGxA"},"colorbar":{"len":0.9,"thickness":15,"title":{"text":"Sugar content (g\u002fL)"}},"colorscale":[[0.0,"rgb(49,54,149)"],[0.1,"rgb(69,117,180)"],[0.2,"rgb(116,173,209)"],[0.3,"rgb(171,217,233)"],[0.4,"rgb(224,243,248)"],[0.5,"rgb(255,255,191)"],[0.6,"rgb(254,224,144)"],[0.7,"rgb(253,174,97)"],[0.8,"rgb(244,109,67)"],[0.9,"rgb(215,48,39)"],[1.0,"rgb(165,0,38)"]],"line":{"color":"white","width":0.5},"showscale":true,"size":8,"symbol":"triangle-up"},"mode":"markers","name":"SYRAH","x":{"dtype":"f8","bdata":"6HBy+nZoyb\u002f0xl+3\u002fGnVvwI0Xsw\u002fTtS\u002fAu+mqCuK178cE+ePNMjHv6N4A2BO3ry\u002fJoG9iQFv1L8URD+TIQvKv9eVhle0iNe\u002fy\u002fqKfh6J0r8rZZtLeGbRvw7uRJZXnrq\u002fdpg\u002fr1pj0b+CWlXvEWbOv98xv8bxVNS\u002fqxBtIvwbwr9I5cyBrAvOv+9lkSYWy8K\u002fD4vHc1Wc0b90ytN6CtHJv5eiarsu+9i\u002fasBhFQ3tzb8ytzuIex7Ev7Ai6iCsK6w\u002f3hm2bwabx7+GnSz6vKasv7xUT2LSwMO\u002fYSuDpCZKvb++fuU3jNCnP45tMPpnI8Y\u002fQyTBW17w0L8S85d0f+zUv7sXOcmYA96\u002fa6jwKNuyy7\u002f74RwycsSbvwwz+djtOr2\u002fCKQQCUjzyL\u002fhWn6baAPNv\u002f3ImSpuTs+\u002fzpCWz6+Q0r\u002fDSdrBkvzBv8Us+J26XM6\u002fdXUDZRw7yL9uGh16SFfRvyXETeYql9G\u002fR5RHipcV1L83ho4c6SXSvxV57VHgmdC\u002f9chgujexwL\u002f\u002fHW6lYoLOv15gxwDrvsW\u002fLvSNz0x2zb9792PXrT\u002fMv2AMigjaVdW\u002fHRBc3sTC0r\u002f5DNUdVGvRv0c9NRKihtK\u002faMejWEbZ179G54n6VXnRvzEIC75vKdi\u002fgGsw\u002f97q17\u002f3vhEuPqvavxoqtW86Mc+\u002fB1QbIaJ\u002f2L+i3TKhktG4P7xcxr3X4bW\u002fQGsS8ZQY079zpJyUyYfcvzkl2pFsdsq\u002frYD6hynh2L8ch+XkeDPbv\u002fGrBQUTEta\u002fuUT16ELm2L9a3NlJM3jav\u002fEGmhzrVdO\u002fNG1QhuEF07\u002fOPV+BrpLQvyjgIhVo3s6\u002fJ3W+4fho3L97li4sHXPZv8hmDdsKYNy\u002fwoC4xaRN27+H7flJXRLZv9wuIlu7pNi\u002ffj9PQWQk2b+tcWoosYTYv9Nd\u002fpVtddu\u002f5daqwvNE179H72DOJsLWvwmIddKn7da\u002fRe6nnGQZ178a1g3FWrbdvw9LdSo7jdu\u002fg0OES5oV3b+p1RvNAUjav7PfSWRbeeC\u002fIygq\u002fI7w2r80DNj+UPrcv77++LVpb9m\u002f2CTNq7tpy79le5FgFM3Gv1XGbxXpQty\u002fSskmDNms279TNcopg+rVv9\u002fktPPL4dO\u002fVlNq1yEq0L+DGYdfAeLWvwfPybVy1tK\u002fSY\u002ftBMTJ1b8vBqv4+qfUvzHqmQt8ote\u002f6ht5z3nJzr+zeR2BWenTv8JCJJhOt9a\u002fpkvmsk+82L+rLCKlytnWv8ekAJpbute\u002fpDrKAiZ91r\u002fnthWeKRTWv7ANPQQAHdK\u002fvTVeyncM178FGWfGnRDSvzunJIcbk9a\u002fiimJIZV3vL\u002frS6nQSsLQv1bxrHGVcse\u002f"},"y":{"dtype":"f8","bdata":"GAp8UwMpx78W6knXSS28v9ma7q5fK46\u002fPJpCwyilmT\u002f18zh0DlfDv5VH6MKw\u002fby\u002fOsx3zENrwb8zTtupfjitv8vxRYB0GbG\u002fOMynA1Cuh78n7L0L5kjBv9c\u002fFqKCML2\u002fFQQPK+jQu78UH1dTZDCwv6lbEtNVkL+\u002f4cn2fKVbwr8gP+REkCjEv3aKzgyPBLu\u002fQ2FDH0yDwL\u002f5v3L7BUO2vwYMmYkfO7K\u002fcSMAiipmob8UnzDJoYbEv06pHXpbCsa\u002fl+T\u002fmr2vxr8YTd9W9ULGvxGAUVGki8q\u002fKIlBg472wb8T3qRryV3Tv9YvrbzAYtK\u002fItz15kI+wL9Ah973bZenvywkSj3cAme\u002fnP38pzFgsj96uOVBmeW9v1f9Tvr8B72\u002foSyB2Hptkr\u002f3kpY7VaCTvzWTn2L6x60\u002fW+9yZ6pDrD9t+56bWJa5vwc43HT\u002fJ7m\u002f57wnMyGYsb9OHdt1I0O0v8KbeaIZ0nW\u002fmkvsgqpFrb\u002f3nbGMCxeTv4XTUFwosLm\u002f+zrD7F90wb+wuCE8gF7DvwF+yi4Aw6S\u002fzFzkbSmjuL\u002fDlROybHapv3sHstTl\u002fZE\u002fPusrDEAAiD\u002fZx9hsevq3v04N\u002f3tsL6O\u002fpMszpCpRr7+I5++hD+aAv2TU9Jbmz0u\u002fLoYLBq6WoD9s4BgLDymHP7o2G6Dbb5O\u002fry1906TEkb9lQ1NN2eTNv6e2KmN\u002f5Mm\u002fd9vzjWTmtj\u002fE1ilYIhawPza\u002f1n4qacY\u002fvdJL9XK\u002fuT\u002f2BLKzPIqoPxdOKyZUuKw\u002fZcjAjKJjnT\u002fygElyNxeIPzGDnLFi7IM\u002fbdXSOX8QhD\u002fTbfSCtb68v+8L5FyjWbe\u002fmHVe8qwLlj9k\u002fQQdvVSqP0PcO8TV9kq\u002fUimCpJ+0o78SYeFCIgm4v+VeWcW8U5W\u002frHZNTAOym792mGt+WzyEv8nuRKef76q\u002f++pFKHBZub9GVsKz+y7Av+ufRdDlcLW\u002fDn4NY3gOtr8bIbcwhGWAP8rdSUD7o5q\u002fAANwBWYiur+ZmB+LypOgv6wYlSKEWIk\u002f5F99QN7Vqj8y5\u002fwgokC5v3Rfj9MJMqq\u002faOgF96Ycyb+53qENClzHv7vmkbSuxLM\u002fqJXtf8RZtD+g0opuU06+P1q+8ozy6cE\u002fEK5uukKowz+M+7P+PGDCP34HfGegtcI\u002fka+Qv1fMwz+t\u002f\u002fMz+QDDP6P0vju+7bs\u002f9Yde8TpSyD\u002f3jF1JWdTBPyrbCxGn078\u002fKsnDJgzNvz\u002fQ6HbBgxjCP7kZkgN8u7s\u002f7MadIYdSwT+RQEzcyyi9P4+bHkQavMk\u002fAq5pvJSpxD+EGRGU\u002fozHP\u002fm\u002ft8Vb4MM\u002fnnbFp6zPwz\u002fop3CGzoPBP0KhZBEq8sg\u002f"},"type":"scatter"},{"marker":{"cmax":282.744,"cmin":100.98,"color":{"dtype":"f8","bdata":"f2q8dJN0aUBcj8L1KCRnQPp+arx0P2VAF9nO91ODYkAdWmQ7349nQPyp8dJN7mZAWmQ73091ZUA730+Nl4JmQFg5tMh2xmNAObTIdr7TZEA5tMh2vtNkQBsv3SQG4WVAmpmZmZkJZUAbL90kBuFlQLx0kxgEWmdAnMQgsHK4ZkDb+X5qvExmQPyp8dJN7mZA\u002fKnx0k3uZkAZBFYOLTJkQBsv3SQG4WVAuB6F61H8Y0BaZDvfT3VlQPhT46WbkGNAd76fGi+5YkDZzvdT451kQDeJQWDlJGNA9P3UeOkyYEBiEFg5tDBcQDVeukkMdmFANV66SQx2YUB56SYxCGhkQHnpJjEIaGRAexSuR+EWZkB7FK5H4RZmQJhuEoPAWmNAmG4Sg8BaY0B56SYxCGhkQHnpJjEIaGRAeekmMQhoZEBaZDvfT3VlQBkEVg4tMmRAGQRWDi0yZEC28\u002f3UeE1iQLbz\u002fdR4TWJA+FPjpZuQY0D4U+Olm5BjQLgehetR\u002fGNAuB6F61H8Y0BaZDvfT3VlQFpkO99PdWVAvHSTGARaZ0C8dJMYBFpnQD0K16NwMWhAPQrXo3AxaEAfhetRuD5ZQB+F61G4PllAPzVeukngaUA\u002fNV66SeBpQKJFtvP9xGtAokW28\u002f3Ea0DjpZvEIAhtQOOlm8QgCG1AwcqhRba3akDByqFFtrdqQEJg5dAij2tAQmDl0CKPa0CDwMqhRdJsQIPAyqFF0mxAAiuHFtn6a0ACK4cW2fprQKAaL90kFmpAoBov3SQWakDhehSuR1lrQOF6FK5HWWtAwcqhRba3akDByqFFtrdqQCPb+X5qnGxAI9v5fmqcbECgGi\u002fdJBZaQKAaL90kFlpAfT81XrrFZ0B9PzVeusVnQAaBlUOLWG9ABoGVQ4tYb0A="},"colorscale":[[0.0,"rgb(49,54,149)"],[0.1,"rgb(69,117,180)"],[0.2,"rgb(116,173,209)"],[0.3,"rgb(171,217,233)"],[0.4,"rgb(224,243,248)"],[0.5,"rgb(255,255,191)"],[0.6,"rgb(254,224,144)"],[0.7,"rgb(253,174,97)"],[0.8,"rgb(244,109,67)"],[0.9,"rgb(215,48,39)"],[1.0,"rgb(165,0,38)"]],"line":{"color":"white","width":0.5},"showscale":false,"size":8,"symbol":"square"},"mode":"markers","name":"MAUZAC","x":{"dtype":"f8","bdata":"Kq\u002fvAZiH5T++akO0jPbhP\u002f2mQQST\u002fuM\u002fih1EXojT4j\u002fzAg0zAF3mP2uY9UIHk+I\u002fDKxNSsO64z\u002fcS8z7BN7lP15icDBel+Y\u002fC03+fYKB4z9HdZnSv3XlPxwgyktI6+Q\u002fQ6yp\u002fWf25D9uD2oyua3iP7fKgpObm+M\u002f9MUzwkyq4D9kVidlApHiP1HsjAAcweA\u002fsNXDfcIM4D+ujvjhyivkP26agP5OweI\u002fNQ+Ys8Dx5T+W1UypourhP6VhKjMJ3+Y\u002f+YCxUMGS4T\u002fdPZVXci7nP9Oao9j4DeI\u002fjnabxGrT4z\u002fuKVjIW7HgP4C9Vsu2aN4\u002foBwgYTAQ5D+IbY7zpOfiP2pwSDGjSOU\u002f2k8q9Skj4z+fKOwIi7jlP2iGLiIdh+A\u002fQRuY7C4r5D\u002fj14DvohjhP4\u002fvI1anG+I\u002f1m82Tk7u4j8MnG2Yq4njP8j3YktZPeE\u002fTQahaF\u002f45T+6QQRaP3PjP2oUYD+saeQ\u002fbKFP9EGb5D8F3TAdOMTmP9IH\u002fueUn+M\u002f1O8H5o0z5z+QeBy8vjriP3MSLZRXt+Q\u002fHtKAYfTM4j\u002fxAgamSgHmP\u002fpNFxLrWOM\u002fDGktDbk75T+VVs2t78bjP+2ImdghguY\u002fCSCbof7h4z\u002fddYDvbPXmP+oxsxP7XuY\u002fEi4hyIP55j\u002fuaz9eO\u002fzoP5agDQ18nes\u002fYnrYlmmK5D+Zt0fIgunmP1Wi5Gyg3ec\u002f2\u002fXqXCWu6D94cYG7Q8noPxaZ8z6YF+s\u002fT3eVoMxT6T+zEfgDlNzrP\u002fZx1sj0JuU\u002fz1iwAdcM5z8FNlqfL6HoP4mNXDldPew\u002fyON1Ihuq5T9spjKPesXpPyxfDGX5xug\u002fkpk+lgRT7D\u002foSCXLbtTrPzXkXaRiAu0\u002f7UppQ7gS6j9XGWbiUd7yP\u002fKrgufF4ek\u002fGlRrbMwA7T8="},"y":{"dtype":"f8","bdata":"73iEMuNBsT\u002fsoGFVUKycP+asXbvCI6o\u002fuyQtjC6qgr+Ndn0J4zSjP3+Ie4kEPIc\u002fJfeG+ufwhb\u002f1A3rqanRIP5ZNkaq4To2\u002f0BAzWwHgp79sdToYVc4uv6lkLFF5cJK\u002fVkGxi3mGgz+JBPgWCZCHP6Jm61Y0Kak\u002fOb2riUXfoz+x4tC7bhqUP2HZzkN2JJg\u002f60Acg+sKnj+ks6hethhxv5UMTPnyZWy\u002f7kLJ9vLimr\u002f0ppZye8h7v6keB16CBaO\u002f7\u002fQiavFmp7+JBsIP0FmCvxxCndzrT5q\u002fnvVuc+UAsb+ag2bfmE2mv4n64nI0WLC\u002fnRYkkoJto7\u002f7YU0N8+Klv7L5RG62\u002fJe\u002ft+oRM1Mfpb+aCyPGsUtsPzmO4Qi1QKm\u002f8S0Yon9JpL8y9+puyOKqv\u002fIkZ9JDsZO\u002fofuKktrXpr+vny5NH5mBvyv8tncciaa\u002fXpbBWq4ZmL9w7GsMrHuvvwjw\u002fDD2uKW\u002fe+yZBSi6pr9qSYKQ15yKv+V21hDJCbC\u002fH86XIJU8oL\u002fFu8\u002fxc6yuv5hJFqCb2pC\u002ffJMpi22kob\u002froM4RtfKev4QAhWbFUae\u002f3D9N9Sj9mL+5psARmSOYvxI+UeqKjYu\u002f9Rl94OKrqj\u002ftyROLkkWtP5xJDCMLkLE\u002foWiMmEhwtD9wkleDoWO8P1FoByU0C78\u002fBtYq+Q+ApD9i5U8b2ROnP2IKYP4k+ak\u002f9EfpbyTWsT8UMQDQ+CquP0cAfEQUGbo\u002f7eIuP0jgqj+jj4Xsa+OwP99xu\u002f36rYA\u002fw6JdZhKNrT\u002fzBEltrialP4HGNNVat48\u002fuozHFHtCkj9bls4RddqzP80eRC+DFLM\u002f0qY8\u002f5FbsD+LPpi34tavPwQ9IirspKw\u002fFkZYap69vD+GLJLKdjPDP0yg1vXcmZs\u002f+fdsaUXRrD8="},"type":"scatter"},{"marker":{"cmax":282.744,"cmin":100.98,"color":{"dtype":"f8","bdata":"VOOlm8RoYEBU46WbxGhgQHnpJjEIaGRAeekmMQhoZEA730+Nl4JmQDvfT42XgmZA3SQGgZX7Z0DdJAaBlftnQDeJQWDlJGNAN4lBYOUkY0C4HoXrUfxjQLgehetR\u002fGNAObTIdr7TZEA5tMh2vtNkQPp+arx0P2VA+n5qvHQ\u002fZUDb+X5qvExmQNv5fmq8TGZAXI\u002fC9SgkZ0Bcj8L1KCRnQBkEVg4tMmRAGQRWDi0yZEB56SYxCGhkQHnpJjEIaGRAWmQ73091ZUBaZDvfT3VlQDvfT42XgmZAO99PjZeCZkDZzvdT451kQNnO91PjnWRA+FPjpZuQY0D4U+Olm5BjQH0\u002fNV66xWdAfT81XrrFZ0DfT42XbqppQN9PjZduqmlAQmDl0CKPa0BCYOXQIo9rQARWDi2yqW1ABFYOLbKpbUDHSzeJQcRvQMdLN4lBxG9Avp8aL90IaUC+nxov3QhpQJ7vp8ZLZ2hAnu+nxktnaEDD9Shcj2ZsQMP1KFyPZmxAw\u002fUoXI9mbEDD9Shcj2ZsQMP1KFyPZmxAw\u002fUoXI9mbECkcD0K13NtQKRwPQrXc21ARrbz\u002fdTsbkBGtvP91OxuQNnO91PjnWRA2c73U+OdZEDhehSuR1lrQOF6FK5HWWtAvp8aL90IaUCDwMqhRdJsQIPAyqFF0mxA"},"colorscale":[[0.0,"rgb(49,54,149)"],[0.1,"rgb(69,117,180)"],[0.2,"rgb(116,173,209)"],[0.3,"rgb(171,217,233)"],[0.4,"rgb(224,243,248)"],[0.5,"rgb(255,255,191)"],[0.6,"rgb(254,224,144)"],[0.7,"rgb(253,174,97)"],[0.8,"rgb(244,109,67)"],[0.9,"rgb(215,48,39)"],[1.0,"rgb(165,0,38)"]],"line":{"color":"white","width":0.5},"showscale":false,"size":8,"symbol":"circle"},"mode":"markers","name":"FER","x":{"dtype":"f8","bdata":"w+D5YAaiuL+wY4mwkaCmv5\u002f3es1ThNK\u002fFYF9XBLJ0r811hWPYI7Yv6eOXOOsudK\u002fVgCjS19T179e+Dy60s3Rv\u002fxgsHeL9c6\u002fs2LgxHLtu7\u002fquiT9GonQv+cRQUaH5si\u002fri8vNi\u002fF0r\u002fi5gDKfy\u002fFv7w5ONjFPda\u002fY09hlhQ607+OOodBEHzWv1cXe6w5wNG\u002fxD6uwFzh17+zcX5RxtjVv6A8cewOVNW\u002fGAUmTvxbzr\u002f6bXd8\u002fNTWv+AJ4LHWk8+\u002f4DZSmv30179THjIA66TNv63F9UIiMda\u002fWaSnVZYZ0b+cjiEI0tfTv5TX69Te+tG\u002fp60UnQ0qzr+8uxjExgPIv2bJDWZVaNm\u002fcwdzEyKq17\u002fMAuKs\u002f5jcv8oNW1cNU9y\u002faN8QMo6d3L93c+v0pUrevy7h0LXeRti\u002fYthHEvVN2L+apPqNDijWvyyTJKP5v9a\u002fEnjDvMmM3L82PEp8Qfrbv4R1jfEV49i\u002fxsRFf1NQ2L+KR25iIhPev2DN4Me8ud6\u002f4t16KbRg3L9EhegVhtfev1pduyyDj92\u002fRyBkdX5x3L83D4c2yK3bv3eADt5dZNm\u002fYz\u002fPKdew3b+PywOajyLav+sea+keCd2\u002fhHbZDSJf2r\u002fgbCouNBLdv8TuKvD6Mt6\u002fe8MNNYbSxL9IsCwIkfLRv2XRL483lNG\u002f"},"y":{"dtype":"f8","bdata":"WEsWZG5nwr9l2gPaJFyuvxVG6lkQJ4i\u002fCaiSTCifkD+9I2YvkPCtPwMMRKXE57I\u002ff7KHbXNBsz+ul\u002fUIdsi2P7tREwpe+6a\u002fi2e1ySHdpL9iitreNBCNP6FLR\u002fgsKKW\u002faamvnf90Z7+iIxh56pKmvyydN+thT54\u002fFhCbL6LDij+Rb+EeEi6oP4KG2NoXDpE\u002fxc1\u002fGdOGsT+NF4mQKoKyP6S7w7oYwIC\u002fzSmTIqP5mL+2vUiDFr5JP0sKQ+L4DqW\u002fg9hFz08Rnz8t4f8Zf4miv8pSit25I6s\u002fACJl+CvmqD\u002fNN5IuI9qVPzEvRam7Zam\u002frsyZ1Sj9Yr8xQzAUVpi0v38u9V2u6py\u002f4VUdFsZKkb+vfBWy9wxtP3NChLFpcH+\u002fqpVU37ousT+JabhyyruoP2xUeXmFncA\u002fmJJ1oxJdvD+Ji5UhmbvCP\u002fm4KWjcVMM\u002fwrwtwgakcL8i1W810i5FP+HJVGeMPKc\u002fdNcyAOaGlz8NYl8wHGqRP75kIhHzWIQ\u002f12BfUwYKoj8i0BAfF2Q1v4wj2asysrA\u002fibbdEx8\u002frT+qcQMgsXa4P8HiDL\u002fp4bs\u002fiO0Sd+QatD\u002feOVE4g0W7PybPgOd1GLM\u002f8y61ZWsjuD94TuuwZsq2PyzPmRcL1rQ\u002flH8jkkC0zT\u002fFjKZlMPacPxSYhTMs77I\u002f"},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2d"}],"histogram":[{"marker":{"line":{"color":"white","width":0.6}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(237,237,237)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(217,217,217)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"colorscale":{"diverging":[[0.0,"rgb(103,0,31)"],[0.1,"rgb(178,24,43)"],[0.2,"rgb(214,96,77)"],[0.3,"rgb(244,165,130)"],[0.4,"rgb(253,219,199)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(209,229,240)"],[0.7,"rgb(146,197,222)"],[0.8,"rgb(67,147,195)"],[0.9,"rgb(33,102,172)"],[1.0,"rgb(5,48,97)"]],"sequential":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"sequentialminus":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"colorway":["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","radialaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"zaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"}},"shapedefaults":{"fillcolor":"black","line":{"width":0},"opacity":0.3},"ternary":{"aaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"baxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","caxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"}}},"shapes":[{"line":{"color":"#868e96","dash":"dash","width":0.6},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"},{"line":{"color":"#868e96","dash":"dash","width":0.6},"type":"line","x0":0,"x1":0,"xref":"x","y0":0,"y1":1,"yref":"y domain"}],"xaxis":{"title":{"text":"PC1  (79.5% var. expl.)"}},"yaxis":{"title":{"text":"PC3  (2.9% var. expl.)"}},"title":{"text":"PCA score plot: PC1 vs PC3"},"height":450,"legend":{"title":{"text":"Variety"}}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('acea2a76-c687-4646-9d1e-74c96b7682b8');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-scores-13-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: PCA score plot PC1 vs PC3.
+</figcaption>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="loadings" class="level2">
+<h2 class="anchored" data-anchor-id="loadings">Loadings</h2>
+<p>Loading vectors <span class="math inline">\(\mathbf{p}_k\)</span> indicate the contribution of each wavelength to PC <span class="math inline">\(k\)</span>. Peaks mark spectral regions driving that component, linkable to known molecular absorption bands (~680 nm chlorophyll red edge, ~970 nm water O–H overtone).</p>
+<div id="cell-fig-loadings" class="cell" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>colors_pc <span class="op">=</span> [NAVY, TEAL, GREEN]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> make_subplots(rows<span class="op">=</span><span class="dv">3</span>, cols<span class="op">=</span><span class="dv">1</span>, shared_xaxes<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                    subplot_titles<span class="op">=</span>[<span class="ss">f'PC</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss"> (</span><span class="sc">{</span>evr[i]<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% explained)'</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>)],</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                    vertical_spacing<span class="op">=</span><span class="fl">0.08</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, color <span class="kw">in</span> <span class="bu">enumerate</span>(colors_pc):</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    loading <span class="op">=</span> P[i]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    r, g, b <span class="op">=</span> <span class="bu">int</span>(color[<span class="dv">1</span>:<span class="dv">3</span>], <span class="dv">16</span>), <span class="bu">int</span>(color[<span class="dv">3</span>:<span class="dv">5</span>], <span class="dv">16</span>), <span class="bu">int</span>(color[<span class="dv">5</span>:<span class="dv">7</span>], <span class="dv">16</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    fig.add_trace(</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        go.Scatter(x<span class="op">=</span>wavelengths, y<span class="op">=</span>loading, mode<span class="op">=</span><span class="st">'lines'</span>, fill<span class="op">=</span><span class="st">'tozeroy'</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>                   fillcolor<span class="op">=</span><span class="ss">f'rgba(</span><span class="sc">{</span>r<span class="sc">}</span><span class="ss">,</span><span class="sc">{</span>g<span class="sc">}</span><span class="ss">,</span><span class="sc">{</span>b<span class="sc">}</span><span class="ss">,0.15)'</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                   line<span class="op">=</span><span class="bu">dict</span>(color<span class="op">=</span>color, width<span class="op">=</span><span class="fl">1.3</span>), showlegend<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        row<span class="op">=</span>i <span class="op">+</span> <span class="dv">1</span>, col<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    fig.add_hline(y<span class="op">=</span><span class="dv">0</span>, line_dash<span class="op">=</span><span class="st">'dash'</span>, line_color<span class="op">=</span>GRAY, line_width<span class="op">=</span><span class="fl">0.6</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                  row<span class="op">=</span>i <span class="op">+</span> <span class="dv">1</span>, col<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    fig.update_yaxes(title_text<span class="op">=</span><span class="ss">f'PC</span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss"> loading'</span>, row<span class="op">=</span>i <span class="op">+</span> <span class="dv">1</span>, col<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>fig.update_xaxes(title_text<span class="op">=</span><span class="st">'Wavelength (nm)'</span>, row<span class="op">=</span><span class="dv">3</span>, col<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>fig.update_layout(title<span class="op">=</span><span class="st">'First three PCA loading vectors'</span>,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>                  template<span class="op">=</span><span class="st">'simple_white'</span>, height<span class="op">=</span><span class="dv">540</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fig-loadings" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-loadings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="20c53be1-c143-41f5-ae12-b34e41486665" class="plotly-graph-div" style="height:540px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("20c53be1-c143-41f5-ae12-b34e41486665")) {                    Plotly.newPlot(                        "20c53be1-c143-41f5-ae12-b34e41486665",                        [{"fill":"tozeroy","fillcolor":"rgba(27,58,92,0.15)","line":{"color":"#1b3a5c","width":1.3},"mode":"lines","showlegend":false,"x":{"dtype":"f8","bdata":"hetRuB7VeEAzMzMzMwN5QD0K16NwMXlA7FG4HoVfeUCamZmZmY15QKRwPQrXu3lArkfhehTqeUC4HoXrURh6QGZmZmZmRnpAcT0K16N0ekDXo3A9CqN6QOF6FK5H0XpA7FG4HoX\u002fekBSuB6F6y17QFyPwvUoXHtAw\u002fUoXI+Ke0ApXI\u002fC9bh7QDMzMzMz53tAmpmZmZkVfEAAAAAAAER8QMP1KFyPcnxAKVyPwvWgfECPwvUoXM98QFK4HoXr\u002fXxAuB6F61EsfUB7FK5H4Vp9QD0K16NwiX1AAAAAAAC4fUDD9Shcj+Z9QIXrUbgeFX5ASOF6FK5DfkAK16NwPXJ+QClcj8L1oH5A7FG4HoXPfkAK16NwPf5+QM3MzMzMLH9A7FG4HoVbf0AK16NwPYp\u002fQClcj8L1uH9ASOF6FK7nf0AzMzMzMwuAQHE9CtejIoBAAAAAAAA6gEA9CtejcFGAQM3MzMzMaIBACtejcD2AgEBI4XoUrpeAQIXrUbger4BAw\u002fUoXI\u002fGgEAAAAAAAN6AQD0K16Nw9YBAKVyPwvUMgUBmZmZmZiSBQFK4HoXrO4FAPQrXo3BTgUB7FK5H4WqBQGZmZmZmgoFAUrgeheuZgUA9CtejcLGBQClcj8L1yIFAw\u002fUoXI\u002fggUCuR+F6FPiBQEjhehSuD4JAMzMzMzMngkDNzMzMzD6CQGZmZmZmVoJAAAAAAABugkCamZmZmYWCQDMzMzMznYJAzczMzMy0gkBmZmZmZsyCQK5H4XoU5IJASOF6FK77gkCPwvUoXBODQNejcD0KK4NAH4XrUbhCg0BmZmZmZlqDQK5H4XoUcoNA9ihcj8KJg0A9CtejcKGDQDMzMzMzuYNAexSuR+HQg0BxPQrXo+iDQLgehetRAIRArkfhehQYhECkcD0K1y+EQJqZmZmZR4RAj8L1KFxfhECF61G4HneEQClcj8L1joRAH4XrUbimhEAUrkfher6EQLgehetR1oRAXI\u002fC9SjuhEAAAAAAAAaFQKRwPQrXHYVASOF6FK41hUDsUbgehU2FQI\u002fC9ShcZYVAMzMzMzN9hUCF61G4HpWFQClcj8L1rIVAexSuR+HEhUDNzMzMzNyFQHE9Ctej9IVAw\u002fUoXI8MhkDD9ShcjySGQBSuR+F6PIZAZmZmZmZUhkC4HoXrUWyGQLgehetRhIZACtejcD2chkAK16NwPbSGQArXo3A9zIZACtejcD3khkAK16NwPfyGQArXo3A9FIdACtejcD0sh0AK16NwPUSHQLgehetRXIdAuB6F61F0h0BmZmZmZoyHQBSuR+F6pIdAFK5H4Xq8h0DD9Shcj9SHQHE9Ctej7IdAzczMzMwEiEB7FK5H4RyIQClcj8L1NIhAhetRuB5NiEAzMzMzM2WIQI\u002fC9ShcfYhAPQrXo3CViECamZmZma2IQPYoXI\u002fCxYhAUrgehevdiEBcj8L1KPaIQLgehetRDolAFK5H4XomiUAfhetRuD6JQHsUrkfhVolAhetRuB5viUCPwvUoXIeJQJqZmZmZn4lApHA9Cte3iUCuR+F6FNCJQLgehetR6IlAw\u002fUoXI8AikB7FK5H4RiKQIXrUbgeMYpAPQrXo3BJikD2KFyPwmGKQAAAAAAAeopAuB6F61GSikBxPQrXo6qKQClcj8L1wopAj8L1KFzbikBI4XoUrvOKQAAAAAAADItAZmZmZmYki0DNzMzMzDyLQIXrUbgeVYtA7FG4HoVti0BSuB6F64WLQLgehetRnotAH4XrUbi2i0AzMzMzM8+LQJqZmZmZ54tArkfhehQAjEAUrkfhehiMQClcj8L1MIxAPQrXo3BJjEBSuB6F62GMQGZmZmZmeoxAexSuR+GSjECPwvUoXKuMQKRwPQrXw4xAZmZmZmbcjEB7FK5H4fSMQD0K16NwDY1AUrgehesljUAUrkfhej6NQNejcD0KV41AmpmZmZlvjUBcj8L1KIiNQM3MzMzMoI1Aj8L1KFy5jUBSuB6F69GNQMP1KFyP6o1AMzMzMzMDjkD2KFyPwhuOQGZmZmZmNI5A16NwPQpNjkBI4XoUrmWOQLgehetRfo5A16NwPQqXjkBI4XoUrq+OQGZmZmZmyI5A16NwPQrhjkD2KFyPwvmOQBSuR+F6Eo9AMzMzMzMrj0AzMzMzM0OPQAAAAAAAXI9A"},"y":{"dtype":"f8","bdata":"PHBub5rugT8A6+x7CWV7PwC86TzKpHY\u002f2F9KrP0hcz99joueZ7FxPzP+Z6Vh5HA\u002fhb9uW6m3cD+9S63ggW9wPzJrs6YsbnA\u002fCVSvxRkRcD8IpL\u002f7fNNuP0PiT2mU3G0\u002fkB5+0Cz3bT8LoQoN1oVuP8MkecziEnA\u002fKbOMYeRIcj8FAuvGxml1P8SA4z4z3nk\u002f1\u002fd0vb3Wfj9bw8Y8K7yBPyK3VEQziIM\u002fX8DfnEWrhD9Nj3C+3omFP1ZeFGrz9IU\u002f4xnZyr0zhj91Qt5x9ESGP2vbxvtMs4Y\u002fr\u002fFEc7NMhz+K6s7ayfOHPyKYgDVSk4g\u002f+Mr0yP6BiT9a3o5ErQyLP7SCYAnJ2Y0\u002ftFPknr\u002fukD98zaUZiaqTPwdIAiC1M5c\u002fA2lTvq+omz9BsPPdqoWgP9\u002fEFCUcsaM\u002fgsLvPDVFpz9cmzRDjzOrP2NyBKlvUq8\u002fn9nMzMLFsT8Uh1gvd8qzP0CSb6uKmbU\u002fV5vJNwYbtz8RjFa1Ul24P5hCossIT7k\u002fPjppRr8Yuj+0wmt62ba6PzQ2+kOXWbs\u002fJSmID6\u002fUuz8cNVWyWjm8P22wmOB\u002fe7w\u002fEVKb0XWsvD8OXMVavZ28P8lhhuqxfrw\u002fY1Znh8YvvD+CA6Yr5NK7P10mTthDOLs\u002fkbyOYq6Wuj\u002fgk79Yuem5P+3LyIEFXrk\u002fdDSDM\u002frduD+JPH5UPXm4Py4JQ96qGLg\u002fM9tyvXbRtz+0N\u002fUhTam3P3P3jyQ9l7c\u002fcwFNJ8CBtz979gYP9We3P764AhSpM7c\u002fuAs+6Onhtj81aadaymy2P9ZA2Urx5rU\u002fb2ww7q1TtT8k6houc\u002fC0P\u002ffIqUL5qLQ\u002fW7+GxuWjtD825IWK9Ki0P5fRsUatqLQ\u002fsRHx2\u002ftBtD+y3yyiIF2zP2F\u002f1iRy67E\u002fQ2+quDs7sD9533mNGxetP9ITbIMfk6o\u002fR6hFSSHcqD+Hf+1u2GanP7KJ7wGoUqU\u002fplY+6CJpoj919bHuTrWePzH0qp\u002fO5Jk\u002fLFdmgtMAlz9QijY3wQiWPyGCpqMBsJY\u002fiDNJWS5nmT8ea+LSZh6fP9nSxJsesaQ\u002fsoiTcpFurD\u002fYK7pKziezPwUSQdYffrg\u002fcq3nGmCCvT\u002f52Wtg28DAP0fzq8HvTMI\u002fkNpjB7Fewz9wNqbYpxXEP9GfOsxjfsQ\u002fiBSDdkrExD+VGxPUQtnEPybot43338Q\u002f7F4XY9GzxD+8tS621XfEPzLKGzn8D8Q\u002fZHsd7niewz+JhAHG1RjDP5xFPxh4jsI\u002fcjuaEI34wT8XBDl2c1rBP\u002fS3c3y+tMA\u002fH3BvNdvuvz9kkHzgQ5i+PwSpt54ceb0\u002f0Ccdvmn9uz\u002fngkcMv5e6P8tq2PmdQbk\u002f\u002fYqTOdgVuD9dj0Z2jNG2P8lIiHKenbU\u002fGGxeaQymtD9rB9jIj6OzPwfPMeS2irI\u002fVjXh5RWWsT8nyNQzMZywP5ZnA9ZNdq8\u002fnz+UH\u002fHErT8nRqrsIzOsP6eIgLPXn6o\u002fy8s35HoyqT+AhC7pw7unP+NoCQ3BL6Y\u002ffikKo13DpD8MEN+19ESjP6h5y0te+aE\u002fuO8krwyIoD8QEwJNLnOePxeNmZvsyZs\u002fUJ2m6ccNmT\u002fsPl5Ut6eWPxZdbNcbZZQ\u002fl0Xrjxkukj\u002fEeHorYhWQP54E9jAkM4w\u002fmwh7QkluiD8BzQoenxKHPwab1T8jpoQ\u002fO7C8PQA7gj\u002fjcf5ecbN+P9gyMr9DMXk\u002fYVam\u002f0mAcj\u002fMm9Qj2GdrP5o8lUDDhGA\u002fsylnCDuWSz9PRJlh8\u002fIvv0tVj97JuVi\u002fhTUq8x57Zb8ADZ1KqhNqv2YE+BrU1nG\u002fqfyMHjlEdb98xhvrXPR3vy+sUclZkny\u002fOKUny9gVf7\u002fP6VTJg86Bv6xLWxXULIS\u002f6wv\u002fsnvfhb8D5BFG0ziIv39f040G+Ym\u002fMfINSbTsi7\u002f0Ne9dv02Ov49yby1ybJC\u002f1Sd6sUIZkb\u002fsOWC2p5SSvwfGqsmCV5O\u002fjiuaM97kk7+8JH8FfXuUv38+ogFbe5W\u002f8V7ymKoqlr8x3jnBjFCWv4YS7XNfUZa\u002fAaBpc9lPlr9U6hTT3E2Wvytg7Doi25W\u002ftBCX4Vvglb8+HYMUOoGVv3F3ZJdQWpW\u002fTuIrbmYQlb8rw12zWPuUv\u002f8bx\u002fTWuJS\u002fUnolmTT7lL8BavQeG3CUvwmsIdKlC5W\u002ffyWPfvyrlL9rnnVFKlCVvy+1VC2wZom\u002f"},"type":"scatter","xaxis":"x","yaxis":"y"},{"fill":"tozeroy","fillcolor":"rgba(42,127,127,0.15)","line":{"color":"#2a7f7f","width":1.3},"mode":"lines","showlegend":false,"x":{"dtype":"f8","bdata":"hetRuB7VeEAzMzMzMwN5QD0K16NwMXlA7FG4HoVfeUCamZmZmY15QKRwPQrXu3lArkfhehTqeUC4HoXrURh6QGZmZmZmRnpAcT0K16N0ekDXo3A9CqN6QOF6FK5H0XpA7FG4HoX\u002fekBSuB6F6y17QFyPwvUoXHtAw\u002fUoXI+Ke0ApXI\u002fC9bh7QDMzMzMz53tAmpmZmZkVfEAAAAAAAER8QMP1KFyPcnxAKVyPwvWgfECPwvUoXM98QFK4HoXr\u002fXxAuB6F61EsfUB7FK5H4Vp9QD0K16NwiX1AAAAAAAC4fUDD9Shcj+Z9QIXrUbgeFX5ASOF6FK5DfkAK16NwPXJ+QClcj8L1oH5A7FG4HoXPfkAK16NwPf5+QM3MzMzMLH9A7FG4HoVbf0AK16NwPYp\u002fQClcj8L1uH9ASOF6FK7nf0AzMzMzMwuAQHE9CtejIoBAAAAAAAA6gEA9CtejcFGAQM3MzMzMaIBACtejcD2AgEBI4XoUrpeAQIXrUbger4BAw\u002fUoXI\u002fGgEAAAAAAAN6AQD0K16Nw9YBAKVyPwvUMgUBmZmZmZiSBQFK4HoXrO4FAPQrXo3BTgUB7FK5H4WqBQGZmZmZmgoFAUrgeheuZgUA9CtejcLGBQClcj8L1yIFAw\u002fUoXI\u002fggUCuR+F6FPiBQEjhehSuD4JAMzMzMzMngkDNzMzMzD6CQGZmZmZmVoJAAAAAAABugkCamZmZmYWCQDMzMzMznYJAzczMzMy0gkBmZmZmZsyCQK5H4XoU5IJASOF6FK77gkCPwvUoXBODQNejcD0KK4NAH4XrUbhCg0BmZmZmZlqDQK5H4XoUcoNA9ihcj8KJg0A9CtejcKGDQDMzMzMzuYNAexSuR+HQg0BxPQrXo+iDQLgehetRAIRArkfhehQYhECkcD0K1y+EQJqZmZmZR4RAj8L1KFxfhECF61G4HneEQClcj8L1joRAH4XrUbimhEAUrkfher6EQLgehetR1oRAXI\u002fC9SjuhEAAAAAAAAaFQKRwPQrXHYVASOF6FK41hUDsUbgehU2FQI\u002fC9ShcZYVAMzMzMzN9hUCF61G4HpWFQClcj8L1rIVAexSuR+HEhUDNzMzMzNyFQHE9Ctej9IVAw\u002fUoXI8MhkDD9ShcjySGQBSuR+F6PIZAZmZmZmZUhkC4HoXrUWyGQLgehetRhIZACtejcD2chkAK16NwPbSGQArXo3A9zIZACtejcD3khkAK16NwPfyGQArXo3A9FIdACtejcD0sh0AK16NwPUSHQLgehetRXIdAuB6F61F0h0BmZmZmZoyHQBSuR+F6pIdAFK5H4Xq8h0DD9Shcj9SHQHE9Ctej7IdAzczMzMwEiEB7FK5H4RyIQClcj8L1NIhAhetRuB5NiEAzMzMzM2WIQI\u002fC9ShcfYhAPQrXo3CViECamZmZma2IQPYoXI\u002fCxYhAUrgehevdiEBcj8L1KPaIQLgehetRDolAFK5H4XomiUAfhetRuD6JQHsUrkfhVolAhetRuB5viUCPwvUoXIeJQJqZmZmZn4lApHA9Cte3iUCuR+F6FNCJQLgehetR6IlAw\u002fUoXI8AikB7FK5H4RiKQIXrUbgeMYpAPQrXo3BJikD2KFyPwmGKQAAAAAAAeopAuB6F61GSikBxPQrXo6qKQClcj8L1wopAj8L1KFzbikBI4XoUrvOKQAAAAAAADItAZmZmZmYki0DNzMzMzDyLQIXrUbgeVYtA7FG4HoVti0BSuB6F64WLQLgehetRnotAH4XrUbi2i0AzMzMzM8+LQJqZmZmZ54tArkfhehQAjEAUrkfhehiMQClcj8L1MIxAPQrXo3BJjEBSuB6F62GMQGZmZmZmeoxAexSuR+GSjECPwvUoXKuMQKRwPQrXw4xAZmZmZmbcjEB7FK5H4fSMQD0K16NwDY1AUrgehesljUAUrkfhej6NQNejcD0KV41AmpmZmZlvjUBcj8L1KIiNQM3MzMzMoI1Aj8L1KFy5jUBSuB6F69GNQMP1KFyP6o1AMzMzMzMDjkD2KFyPwhuOQGZmZmZmNI5A16NwPQpNjkBI4XoUrmWOQLgehetRfo5A16NwPQqXjkBI4XoUrq+OQGZmZmZmyI5A16NwPQrhjkD2KFyPwvmOQBSuR+F6Eo9AMzMzMzMrj0AzMzMzM0OPQAAAAAAAXI9A"},"y":{"dtype":"f8","bdata":"01InQJlMnD9ggmzbwpaZPyD00BdWjJc\u002fLOPJvmAplj90+ZGTOT6UP6MMD8so1JI\u002fhBOBAm+1kT+CD4noA5eQP6xaGHaOlI8\u002fl74T1APijT+VSvmR6bKMP7MT3fS7MYs\u002f08QfJSdJij8SDydSAJWJP4ZJuLHMkog\u002f131qBn+Ghz\u002fkAyT6LNOGP8Hy9kMa4YU\u002fyu\u002fGfEnxhD8N09BhlBCEP3MmaOJNQIM\u002f+42h\u002fUx+gj+6Xt7v+duBP6d4YvC+SYE\u002fokHarcyrgD\u002fq5MF+eSOAP4Nz5aJP+X4\u002fnnteP3XofT+6hoJyEK58Pxia9Ansf3s\u002fddGXnd5eej9m0gu\u002f0Xl4P4ZwsFr8s3U\u002f9GjzgxJFcj8A1+zFo4NrP\u002fNhAq4\u002fGmA\u002fUG2u9GQvNj8\u002fbmheRfhavwD0YgRU0m+\u002fxBoTQGYPer81o5mpAouCv0sDqwWhR4i\u002f+MD\u002fdKgtjr8kCVQjdOeRvyBkvY3qepS\u002fnTc52viZlr+01d2Y+FyYv298QcW9wZm\u002fL\u002fmzJtbZmr\u002fu5o9ljtqbv\u002f15WYjq\u002fZy\u002fVDHhnnTdnb86T0Nj\u002faCevylm92qEK5+\u002fromcjEuTn78lN9VjqaGfvz0Sdyu+m5+\u002fB3S1FXhgn7+0SrsAABafv2ROUX+ZeZ6\u002fCMSVALrLnb+YDQeH1gSdv5Gv0\u002fJVW5y\u002fouoKa8u+m7\u002fg2MHgLzabv3F04GYdp5q\u002f5ksEw64imr+tkvbj2b+Zvw0frVZEa5m\u002f28j+sOoPmb9lhZy9UZiYv0N4UKTd95e\u002fS93mtI4xl7\u002fOi00yy1OWvwxBE0EXZ5W\u002famv7aGRglL\u002fd8XvafaKTv+GdnX0CGJO\u002fIupDDiTdkr8FsRCPfreSvzYYCPFReZK\u002fyN3vHZSokb+phhkCyiCQvxLsMqjCtYu\u002farmCzoxbhr8GSgEGRheBv76oT05M0Xm\u002fOW31b8jCc7\u002fw6RwP78lsvy2Wg6gLE16\u002fmkx31KjcNj9QxYqCj5BlP76QLvXtwHI\u002fX02DaRaXdz9T8BMqRft5PyKMXJ6zjno\u002fi2qb+j9+eD+FRs0FeIxyP9t1FaP5QmA\u002fjgZQa6JeWb+qa5eASwV2v3vNru4MqIG\u002fhLpe3+2hhr+MykUMZKGIv4QGPEuAXYi\u002fv9YbcScihr+XR1f+mE+Cvz4N9awhwXq\u002fGmjsmrWob7\u002fRpgNOuVdHv\u002f69A18nrGM\u002fVY+RtXxUeD8\u002fy6AgrJeDPzcvbt\u002focYs\u002fyhAkDpfXkT\u002fr0Q4eg9WVP9+Ns5wtx5k\u002f+Vm+ZabSnT\u002fmcR1Kt++gPxBzxdHx5aI\u002fG+Hz6TXopD9JXwY9rs2mP5KmLXzWlKg\u002foQf5WyJAqj\u002foMfoLqrOrP\u002fYodXnXea0\u002f0HO3FGsPrz9maVyvCkawP95\u002fEGNAB7E\u002f9khORbe\u002fsT+il\u002fmjcmWyPxPdPCJYEbM\u002fgPrBiOmqsz8mN2VSqUa0PyOhLKUe57Q\u002fK6naWquFtT9p8oe8ciK2P5IazZXCtrY\u002fIBe3wQhPtz+AIiRBKdC3Pwr2QJ3ZULg\u002fi2U7MEzKuD\u002fR4u1yOl25P9\u002fZ7JpEvLk\u002fqd4a6kMkuj8CyAaCL4m6P34VAGws1ro\u002fi0HtkKQtuz+l2K6xQom7P4REY2MY6rs\u002fCt+JMUVLvD+MXeJnRrS8P4i07FciNb0\u002fhk4gFjO+vT+KmVY4ICq+Px2OpTwXgb4\u002fPPhObefFvj+x3Q6sPfq+P6mABVaAPr8\u002fci4uZQyEvz8LaY3Fj7W\u002fP6k62Ttc+b8\u002fGl\u002fJ8S0cwD+9Ur\u002fWtjfAPxLjy4g7VcA\u002f0O\u002fn\u002f0diwD\u002fN5NUQkHrAP9zAmtFPkcA\u002f1e\u002f7L5KkwD+IkPQ3pLXAP0IPZqRY2sA\u002fEGIMU83lwD\u002fgnQKvWgPBP0eKsmC9C8E\u002fEF1RGM4YwT8h7oEHNiTBP8TlNC2HIME\u002f0yp6aGv\u002fwD8DmHMkxO7AP\u002fhVojrfssA\u002fvBhBdPhmwD\u002fBUtcPSCPAP7rt6A2qjb8\u002fSJc0Tw\u002f3vj+H3BqmRg6+P8kBh6PVI70\u002foFOUJU8evD8GlmQ5be66P7k3zqfW9bk\u002foFaKiklIuT\u002fPqZ+0AzG5P4ej\u002fmEYALk\u002ffvoP5NkPuT+v6E7GNBS5P4hR3RNxYLk\u002fpYxPLCyLuT9LSvBC5uy5P6yj0OxRLro\u002fSLO+sNCtuj8JlIcI3iK7PxRaPu7kr7s\u002f+QiB2q5XvD8NyylOOZC8PyKf+pK+Obg\u002f"},"type":"scatter","xaxis":"x2","yaxis":"y2"},{"fill":"tozeroy","fillcolor":"rgba(120,190,32,0.15)","line":{"color":"#78BE20","width":1.3},"mode":"lines","showlegend":false,"x":{"dtype":"f8","bdata":"hetRuB7VeEAzMzMzMwN5QD0K16NwMXlA7FG4HoVfeUCamZmZmY15QKRwPQrXu3lArkfhehTqeUC4HoXrURh6QGZmZmZmRnpAcT0K16N0ekDXo3A9CqN6QOF6FK5H0XpA7FG4HoX\u002fekBSuB6F6y17QFyPwvUoXHtAw\u002fUoXI+Ke0ApXI\u002fC9bh7QDMzMzMz53tAmpmZmZkVfEAAAAAAAER8QMP1KFyPcnxAKVyPwvWgfECPwvUoXM98QFK4HoXr\u002fXxAuB6F61EsfUB7FK5H4Vp9QD0K16NwiX1AAAAAAAC4fUDD9Shcj+Z9QIXrUbgeFX5ASOF6FK5DfkAK16NwPXJ+QClcj8L1oH5A7FG4HoXPfkAK16NwPf5+QM3MzMzMLH9A7FG4HoVbf0AK16NwPYp\u002fQClcj8L1uH9ASOF6FK7nf0AzMzMzMwuAQHE9CtejIoBAAAAAAAA6gEA9CtejcFGAQM3MzMzMaIBACtejcD2AgEBI4XoUrpeAQIXrUbger4BAw\u002fUoXI\u002fGgEAAAAAAAN6AQD0K16Nw9YBAKVyPwvUMgUBmZmZmZiSBQFK4HoXrO4FAPQrXo3BTgUB7FK5H4WqBQGZmZmZmgoFAUrgeheuZgUA9CtejcLGBQClcj8L1yIFAw\u002fUoXI\u002fggUCuR+F6FPiBQEjhehSuD4JAMzMzMzMngkDNzMzMzD6CQGZmZmZmVoJAAAAAAABugkCamZmZmYWCQDMzMzMznYJAzczMzMy0gkBmZmZmZsyCQK5H4XoU5IJASOF6FK77gkCPwvUoXBODQNejcD0KK4NAH4XrUbhCg0BmZmZmZlqDQK5H4XoUcoNA9ihcj8KJg0A9CtejcKGDQDMzMzMzuYNAexSuR+HQg0BxPQrXo+iDQLgehetRAIRArkfhehQYhECkcD0K1y+EQJqZmZmZR4RAj8L1KFxfhECF61G4HneEQClcj8L1joRAH4XrUbimhEAUrkfher6EQLgehetR1oRAXI\u002fC9SjuhEAAAAAAAAaFQKRwPQrXHYVASOF6FK41hUDsUbgehU2FQI\u002fC9ShcZYVAMzMzMzN9hUCF61G4HpWFQClcj8L1rIVAexSuR+HEhUDNzMzMzNyFQHE9Ctej9IVAw\u002fUoXI8MhkDD9ShcjySGQBSuR+F6PIZAZmZmZmZUhkC4HoXrUWyGQLgehetRhIZACtejcD2chkAK16NwPbSGQArXo3A9zIZACtejcD3khkAK16NwPfyGQArXo3A9FIdACtejcD0sh0AK16NwPUSHQLgehetRXIdAuB6F61F0h0BmZmZmZoyHQBSuR+F6pIdAFK5H4Xq8h0DD9Shcj9SHQHE9Ctej7IdAzczMzMwEiEB7FK5H4RyIQClcj8L1NIhAhetRuB5NiEAzMzMzM2WIQI\u002fC9ShcfYhAPQrXo3CViECamZmZma2IQPYoXI\u002fCxYhAUrgehevdiEBcj8L1KPaIQLgehetRDolAFK5H4XomiUAfhetRuD6JQHsUrkfhVolAhetRuB5viUCPwvUoXIeJQJqZmZmZn4lApHA9Cte3iUCuR+F6FNCJQLgehetR6IlAw\u002fUoXI8AikB7FK5H4RiKQIXrUbgeMYpAPQrXo3BJikD2KFyPwmGKQAAAAAAAeopAuB6F61GSikBxPQrXo6qKQClcj8L1wopAj8L1KFzbikBI4XoUrvOKQAAAAAAADItAZmZmZmYki0DNzMzMzDyLQIXrUbgeVYtA7FG4HoVti0BSuB6F64WLQLgehetRnotAH4XrUbi2i0AzMzMzM8+LQJqZmZmZ54tArkfhehQAjEAUrkfhehiMQClcj8L1MIxAPQrXo3BJjEBSuB6F62GMQGZmZmZmeoxAexSuR+GSjECPwvUoXKuMQKRwPQrXw4xAZmZmZmbcjEB7FK5H4fSMQD0K16NwDY1AUrgehesljUAUrkfhej6NQNejcD0KV41AmpmZmZlvjUBcj8L1KIiNQM3MzMzMoI1Aj8L1KFy5jUBSuB6F69GNQMP1KFyP6o1AMzMzMzMDjkD2KFyPwhuOQGZmZmZmNI5A16NwPQpNjkBI4XoUrmWOQLgehetRfo5A16NwPQqXjkBI4XoUrq+OQGZmZmZmyI5A16NwPQrhjkD2KFyPwvmOQBSuR+F6Eo9AMzMzMzMrj0AzMzMzM0OPQAAAAAAAXI9A"},"y":{"dtype":"f8","bdata":"93VCKUtIYz\u002ffZwvfbTeSP0n+rJdks5s\u002fiA4Uq9tEoT8gQWnGlrSjPyg2i462ZqU\u002fY1MvAk6kpj\u002fiWTdPwYqnP\u002fcvOEu1WKg\u002f5P5keJPFqD8sQ0IKBk+pPyFIYAf9t6k\u002fp8ftUeCMqj8Oq6fK2rmrPw7vsVqWZ6w\u002f7u6AHhXQrD\u002fubbedZcKtP28r7D0ro64\u002f9LcvnZpXrz\u002fM6O8omtqvP7Eo9B7jD7A\u002fexJ3+aA1sD9Ar8XDe0WwP3hcK+6eR7A\u002f7obsMolGsD+6MSIBD0ewPyq8yv5dO7A\u002fsjWsJBghsD9EsmRxJhawP4HD4LmYALA\u002fzJXldLX6rz\u002f9lhWYvwOwP\u002f8ERsF0HrA\u002fdLrtTOVIsD\u002fB9wW8ua+wP1fVhPdhLbE\u002fJwcJV2bssT+whXQGDMiyP5V0\u002fQJH1bM\u002f2K4uS+DrtD\u002fcJmOOVQi2PwnrCWPiIbc\u002fQhV4ztgtuD8T48aUyBy5P0ofiOad9Lk\u002fatg5ACSfuj8nydumKSq7P\u002flsOaECoLs\u002fFLdY44L+uz803Oc2m028PzIwCZtJqbw\u002f3zj3lDTDvD8BMAui4aW8PxfPNz55e7w\u002fYiQbvQpUvD\u002f9txOfRxS8P8bhbOql0Ls\u002fEDHAlFGEuz\u002f3exYFSzO7P9lm0xFLxbo\u002fgXznyyZGuj97rHyB+MG5P\u002fDohzUUTLk\u002fuGQR70vXuD9wFytR+Hy4P8INq3btKrg\u002flkjNmInitz8n5i4HI7K3P9mb2w0shbc\u002fPI5f5E9Stz9fNSqknRi3Pyn74plHvbY\u002ftowc3SBDtj90Ngwczb61PwQ9DOw7AbU\u002fk+1JC64ttD++JbbvbWWzP39Ixlf3srI\u002fXt45LX4Psj9UmBivtnqxP7Sy9BI\u002f57A\u002fUNQmagxCsD\u002fKwt6sLviuP8lAz4ZoDK0\u002fVgx\u002ffV0Cqz+TyvbFmQCpP59amqj2J6c\u002fPTDL9TKhpT8w4VJy8hKkP+2xZLeqX6I\u002fkLlG7M\u002fToD9KOUioseieP5mdmKJzVJ0\u002f8FEK+FXamz\u002fU9Wyk3KCaPyvJcxYAapk\u002fKJ0Slruklz8uSBTDFWmVP1P7407lFJE\u002fymkC0hL\u002fgj8W00heCdBcv0EQ54UkFI2\u002fEWdS1RwvnL98tysCbEKkv6BodsS1JKq\u002fzXzxXx9tr7+Eb0SEOAayv8Go7D30DLS\u002fPBhusW7Otb+JYFF7HF63v\u002fmSmbrd0Li\u002f4lWq0c3Jub91m6d\u002fXbW6v46H6MELSbu\u002fr802fe+nu787cDHJfPO7v55CPUDIELy\u002fYFM34FokvL\u002fu5D4SLSi8v4D\u002fBR+bELy\u002f7YAVQ3Fgu7+0epWLjAO7v+ONk0inH7u\u002f6OSmlsRNur\u002fhYenu9RW6v3yXBgcNNLm\u002f1fqW1P\u002fQuL+MUQIvFO63vzoXw2N8GLe\u002fn51P7EC8tr+z8akczSC2v5+F7jK\u002fPrW\u002frQituqpxtL\u002fsaiFENkyzv7cntGzmdrK\u002fUoOmMketsb\u002fHvcxMjvawv8y+jBH8HLC\u002fe23sU7vfrr\u002feXc+wi4Ctv63gbUk8a6u\u002f2JUmKP+Sqb+9jptzdVOnv7I\u002fs1qYPKW\u002fFgPxpYeyor8FO2HFZpagv3Iw0glJVp2\u002fKfanwefil784s7KQyteTv6mkwZJMTZG\u002fdp13Yi0bir\u002fimyX6rLmBv\u002fRSR2AjtXO\u002fGyhy7AiCUL\u002fdjysTOyJlv5TUcryrI1i\u002fSk630J48Ub8lX16D0EJJPwGWMOxCcms\u002fqN18YrF+ez8gFjqhHiWAP7A2fjC6TYU\u002feiCy0vTdiT9IGV9WXrGMP8kDHGl+a5E\u002fiOEkJjBLkj+B4gQoLJKSP8\u002ftNk4GApQ\u002fEMePPE84lT81ejYJIyGVP2etSevnRZc\u002fbVlRH2L8lz+DglWd7ACcP0rGl0+uQJ8\u002ff\u002f1ADOsboT8l\u002ftPkpb2jP2S5u5hnTaY\u002fO1rvuyf6qD8QgPB5QBqsPyHtlSkRIa8\u002fLjhlHEE3sT\u002fPbDhCdEqzP3epyQFu2bM\u002fHYRoG4wStT\u002fdjqpcV0C2PyJNnejP37Y\u002fp5z0ASNPuD9irgm0aXC4PyGp4yEn+Lc\u002foMx2bfjYtj+nNLv3Ni+2P3gKqbJ3HbQ\u002f7u8r05R+sz+e\u002frr1tguyPxskY5yJhLA\u002fQUWWtIfBrj8oc+DxwnGsP9GzNRpLLqs\u002fh6HGgXL3qD9B3SIpDXSnP8egOz6XBKg\u002f5YhLxGXWpz\u002fCBhB6H62lP3fDIKiDg5g\u002f"},"type":"scatter","xaxis":"x3","yaxis":"y3"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2d"}],"histogram":[{"marker":{"line":{"color":"white","width":0.6}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(237,237,237)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(217,217,217)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"colorscale":{"diverging":[[0.0,"rgb(103,0,31)"],[0.1,"rgb(178,24,43)"],[0.2,"rgb(214,96,77)"],[0.3,"rgb(244,165,130)"],[0.4,"rgb(253,219,199)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(209,229,240)"],[0.7,"rgb(146,197,222)"],[0.8,"rgb(67,147,195)"],[0.9,"rgb(33,102,172)"],[1.0,"rgb(5,48,97)"]],"sequential":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"sequentialminus":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"colorway":["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","radialaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"zaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"}},"shapedefaults":{"fillcolor":"black","line":{"width":0},"opacity":0.3},"ternary":{"aaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"baxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","caxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"}}},"xaxis":{"anchor":"y","domain":[0.0,1.0],"matches":"x3","showticklabels":false},"yaxis":{"anchor":"x","domain":[0.72,1.0],"title":{"text":"PC1 loading"}},"xaxis2":{"anchor":"y2","domain":[0.0,1.0],"matches":"x3","showticklabels":false},"yaxis2":{"anchor":"x2","domain":[0.36,0.6399999999999999],"title":{"text":"PC2 loading"}},"xaxis3":{"anchor":"y3","domain":[0.0,1.0],"title":{"text":"Wavelength (nm)"}},"yaxis3":{"anchor":"x3","domain":[0.0,0.27999999999999997],"title":{"text":"PC3 loading"}},"annotations":[{"font":{"size":16},"showarrow":false,"text":"PC1 (79.5% explained)","x":0.5,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"PC2 (16.6% explained)","x":0.5,"xanchor":"center","xref":"paper","y":0.6399999999999999,"yanchor":"bottom","yref":"paper"},{"font":{"size":16},"showarrow":false,"text":"PC3 (2.9% explained)","x":0.5,"xanchor":"center","xref":"paper","y":0.27999999999999997,"yanchor":"bottom","yref":"paper"}],"shapes":[{"line":{"color":"#868e96","dash":"dash","width":0.6},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"},{"line":{"color":"#868e96","dash":"dash","width":0.6},"type":"line","x0":0,"x1":1,"xref":"x2 domain","y0":0,"y1":0,"yref":"y2"},{"line":{"color":"#868e96","dash":"dash","width":0.6},"type":"line","x0":0,"x1":1,"xref":"x3 domain","y0":0,"y1":0,"yref":"y3"}],"title":{"text":"First three PCA loading vectors"},"height":540},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('20c53be1-c143-41f5-ae12-b34e41486665');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-loadings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: First three PCA loading vectors. Peaks indicate wavelengths most influential for each PC.
+</figcaption>
+</figure>
+</div>
+</div>
+<hr>
+</section>
+<section id="correlation-of-pc-scores-with-sugar-content" class="level2">
+<h2 class="anchored" data-anchor-id="correlation-of-pc-scores-with-sugar-content">Correlation of PC scores with sugar content</h2>
+<div id="cell-fig-correlations" class="cell" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>correlations <span class="op">=</span> np.array([</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    np.corrcoef(T[:, k], y.values)[<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(n_components)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>bar_colors <span class="op">=</span> [TEAL <span class="cf">if</span> c <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> NAVY <span class="cf">for</span> c <span class="kw">in</span> correlations]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure(go.Bar(</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1</span>, n_components <span class="op">+</span> <span class="dv">1</span>)), y<span class="op">=</span>correlations,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    marker_color<span class="op">=</span>bar_colors, opacity<span class="op">=</span><span class="fl">0.8</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    hovertemplate<span class="op">=</span><span class="st">'PC%</span><span class="sc">{x}</span><span class="st">: r = %</span><span class="sc">{y:.3f}</span><span class="st">&lt;extra&gt;&lt;/extra&gt;'</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>fig.add_hline(y<span class="op">=</span><span class="dv">0</span>, line_color<span class="op">=</span><span class="st">'black'</span>, line_width<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    xaxis_title<span class="op">=</span><span class="st">'Principal Component'</span>, xaxis<span class="op">=</span><span class="bu">dict</span>(dtick<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    yaxis_title<span class="op">=</span><span class="st">'Pearson r with sugar content'</span>,</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'Correlation of PC scores with sugar content (g/L)'</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    template<span class="op">=</span><span class="st">'simple_white'</span>, height<span class="op">=</span><span class="dv">350</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>fig.show()</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>top3 <span class="op">=</span> np.argsort(np.<span class="bu">abs</span>(correlations))[::<span class="op">-</span><span class="dv">1</span>][:<span class="dv">3</span>]</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Top 3 PCs most correlated with sugar content:"</span>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> top3:</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  PC</span><span class="sc">{</span>k<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">: r = </span><span class="sc">{</span>correlations[k]<span class="sc">:.3f}</span><span class="ss">  (</span><span class="sc">{</span>evr[k]<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% var. expl.)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="fig-correlations" class="cell-output cell-output-display quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-correlations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="5cfd0a86-f27c-4e7c-9550-39e3c7790b9d" class="plotly-graph-div" style="height:350px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("5cfd0a86-f27c-4e7c-9550-39e3c7790b9d")) {                    Plotly.newPlot(                        "5cfd0a86-f27c-4e7c-9550-39e3c7790b9d",                        [{"hovertemplate":"PC%{x}: r = %{y:.3f}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":["#1b3a5c","#1b3a5c","#2a7f7f","#2a7f7f","#2a7f7f","#2a7f7f","#1b3a5c","#1b3a5c","#2a7f7f","#2a7f7f","#2a7f7f","#1b3a5c","#1b3a5c","#2a7f7f","#2a7f7f","#2a7f7f","#2a7f7f","#1b3a5c","#1b3a5c","#1b3a5c"]},"opacity":0.8,"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],"y":{"dtype":"f8","bdata":"1kKHx3lbzb\u002f9fub7flzEvw2RvRGoQec\u002fgI0qljI4sT9cewes9wuxP5dDztp4Ars\u002fhGDnQyh8wL8tY6odWZO6v04dakZP+78\u002fDJ4H++hBvj9xshiqzf6\u002fP\u002fauamo\u002f0MS\u002fXIk50hXWob+wa3cCXNSlP4q45gfaW7M\u002fJJktXIyPrT\u002fS0S5hm+6vP1u4QOPgwqq\u002f5aE5hzZSsr9BqtvlHWK7vw=="},"type":"bar"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"rgb(36,36,36)"},"error_y":{"color":"rgb(36,36,36)"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"baxis":{"endlinecolor":"rgb(36,36,36)","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"rgb(36,36,36)"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"histogram2d"}],"histogram":[{"marker":{"line":{"color":"white","width":0.6}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"rgb(237,237,237)"},"line":{"color":"white"}},"header":{"fill":{"color":"rgb(217,217,217)"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":1,"tickcolor":"rgb(36,36,36)","ticks":"outside"}},"colorscale":{"diverging":[[0.0,"rgb(103,0,31)"],[0.1,"rgb(178,24,43)"],[0.2,"rgb(214,96,77)"],[0.3,"rgb(244,165,130)"],[0.4,"rgb(253,219,199)"],[0.5,"rgb(247,247,247)"],[0.6,"rgb(209,229,240)"],[0.7,"rgb(146,197,222)"],[0.8,"rgb(67,147,195)"],[0.9,"rgb(33,102,172)"],[1.0,"rgb(5,48,97)"]],"sequential":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"sequentialminus":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"colorway":["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"],"font":{"color":"rgb(36,36,36)"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","radialaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"zaxis":{"backgroundcolor":"white","gridcolor":"rgb(232,232,232)","gridwidth":2,"linecolor":"rgb(36,36,36)","showbackground":true,"showgrid":false,"showline":true,"ticks":"outside","zeroline":false,"zerolinecolor":"rgb(36,36,36)"}},"shapedefaults":{"fillcolor":"black","line":{"width":0},"opacity":0.3},"ternary":{"aaxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"baxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"},"bgcolor":"white","caxis":{"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside"}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"},"yaxis":{"automargin":true,"gridcolor":"rgb(232,232,232)","linecolor":"rgb(36,36,36)","showgrid":false,"showline":true,"ticks":"outside","title":{"standoff":15},"zeroline":false,"zerolinecolor":"rgb(36,36,36)"}}},"shapes":[{"line":{"color":"black","width":0.8},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"}],"xaxis":{"title":{"text":"Principal Component"},"dtick":1},"yaxis":{"title":{"text":"Pearson r with sugar content"}},"title":{"text":"Correlation of PC scores with sugar content (g\u002fL)"},"height":350},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('5cfd0a86-f27c-4e7c-9550-39e3c7790b9d');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-correlations-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Pearson correlation between each PC score and sugar content. PCs most correlated with the target are the most useful for PLS.
+</figcaption>
+</figure>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Top 3 PCs most correlated with sugar content:
+  PC3: r = 0.727  (2.9% var. expl.)
+  PC1: r = -0.229  (79.5% var. expl.)
+  PC12: r = -0.163  (0.0% var. expl.)</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="reference" class="level2">
+<h2 class="anchored" data-anchor-id="reference">Reference</h2>
+<p>Wold, S., Esbensen, K., &amp; Geladi, P. (1987). Principal component analysis. <em>Chemometrics and Intelligent Laboratory Systems</em>, 2(1–3), 37–52. <a href="https://doi.org/10.1016/0169-7439(87)80084-9" class="uri">https://doi.org/10.1016/0169-7439(87)80084-9</a></p>
+<hr>
+<p>PCA reveals the latent structure of the spectra but does not directly optimise the link to the response variable. <strong>Part 4: PLS Regression</strong> finds latent components that simultaneously describe <span class="math inline">\(\mathbf{X}\)</span> <em>and</em> predict <span class="math inline">\(\mathbf{y}\)</span>.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>CC BY-SA 4.0 — Maxime Ryckewaert</p>
+</div>   
+    <div class="nav-footer-center">
+<p><a href="https://www.cirad.fr/en">CIRAD</a> / <a href="https://umr-agap.cirad.fr/en">UMR AGAP</a></p>
+</div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

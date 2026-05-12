@@ -1,0 +1,464 @@
+[
+  {
+    "objectID": "setup.html",
+    "href": "setup.html",
+    "title": "Setup and Deployment",
+    "section": "",
+    "text": "Install Quarto &gt;= 1.4 from https://quarto.org/docs/get-started/\nVerify:\nquarto --version\n\n\n\nCreate and activate a dedicated environment (conda or venv):\n# Option A: conda\nconda create -n quartosite python=3.11\nconda activate quartosite\n\n# Option B: venv\npython -m venv .venv\n# Windows\n.venv\\Scripts\\activate\n# macOS / Linux\nsource .venv/bin/activate\nInstall dependencies:\npip install numpy pandas scikit-learn plotly umap-learn torch torchvision\nOr use the provided requirements file:\npip install -r requirements.txt\n\n\n\nnumpy&gt;=1.24\npandas&gt;=2.0\nscikit-learn&gt;=1.3\nplotly&gt;=5.17\numap-learn&gt;=0.5\ntorch&gt;=2.0\ntorchvision&gt;=0.15\n\n\n\n\n\ncd /path/to/QuartoSite\nquarto preview\nThis starts a live-reload server at http://localhost:22222.\nThe first render will execute all Python chunks and cache results under _freeze/. Subsequent renders skip re-execution unless source files change (controlled by execute: freeze: auto in _quarto.yml).\n\n\n\n\nquarto render\nOutput is written to docs/. Open docs/index.html in a browser to inspect the result before publishing.\n\n\n\n\n\n\nEnsure the repository has GitHub Pages configured to serve from the docs/ folder on the main branch, or use the gh-pages branch method:\n# Method A: docs/ folder on main (simpler)\n# In GitHub → Settings → Pages → Source: Deploy from branch → main / docs\nquarto render\ngit add docs/\ngit commit -m \"build: render site\"\ngit push\n\n# Method B: Quarto managed gh-pages branch (recommended)\nquarto publish gh-pages\nFor Method B, the first run will prompt for confirmation and create the gh-pages branch automatically.\n\n\n\nquarto publish gh-pages\nQuarto renders, then pushes to the gh-pages branch. The site is live at https://&lt;your-github-username&gt;.github.io/&lt;repo-name&gt;/.\n\n\n\n\n\nIf you add a references.bib file and want APA formatting, download the CSL:\ncurl -O https://raw.githubusercontent.com/citation-style-language/styles/master/apa.csl\nThen add to _quarto.yml:\nbibliography: references.bib\ncsl: apa.csl\n\n\n\n\n\nReplace G-XXXXXXXXXX in _quarto.yml with real GA4 Measurement ID, or remove the key\nReplace 0000-0000-0000-0000 ORCID in index.qmd and contact.qmd\nReplace all DOI: PLACEHOLDER entries in publications.qmd\nReview and correct research descriptions in research.qmd\nUpdate CV sections in cv.qmd (or ensure cv/cv.pdf is current)\nUpdate project descriptions in projects/\nReview ASSUMPTIONS.md and confirm all inferences are correct"
+  },
+  {
+    "objectID": "setup.html#prerequisites",
+    "href": "setup.html#prerequisites",
+    "title": "Setup and Deployment",
+    "section": "",
+    "text": "Install Quarto &gt;= 1.4 from https://quarto.org/docs/get-started/\nVerify:\nquarto --version\n\n\n\nCreate and activate a dedicated environment (conda or venv):\n# Option A: conda\nconda create -n quartosite python=3.11\nconda activate quartosite\n\n# Option B: venv\npython -m venv .venv\n# Windows\n.venv\\Scripts\\activate\n# macOS / Linux\nsource .venv/bin/activate\nInstall dependencies:\npip install numpy pandas scikit-learn plotly umap-learn torch torchvision\nOr use the provided requirements file:\npip install -r requirements.txt\n\n\n\nnumpy&gt;=1.24\npandas&gt;=2.0\nscikit-learn&gt;=1.3\nplotly&gt;=5.17\numap-learn&gt;=0.5\ntorch&gt;=2.0\ntorchvision&gt;=0.15"
+  },
+  {
+    "objectID": "setup.html#local-preview",
+    "href": "setup.html#local-preview",
+    "title": "Setup and Deployment",
+    "section": "",
+    "text": "cd /path/to/QuartoSite\nquarto preview\nThis starts a live-reload server at http://localhost:22222.\nThe first render will execute all Python chunks and cache results under _freeze/. Subsequent renders skip re-execution unless source files change (controlled by execute: freeze: auto in _quarto.yml)."
+  },
+  {
+    "objectID": "setup.html#full-render",
+    "href": "setup.html#full-render",
+    "title": "Setup and Deployment",
+    "section": "",
+    "text": "quarto render\nOutput is written to docs/. Open docs/index.html in a browser to inspect the result before publishing."
+  },
+  {
+    "objectID": "setup.html#publish-to-github-pages",
+    "href": "setup.html#publish-to-github-pages",
+    "title": "Setup and Deployment",
+    "section": "",
+    "text": "Ensure the repository has GitHub Pages configured to serve from the docs/ folder on the main branch, or use the gh-pages branch method:\n# Method A: docs/ folder on main (simpler)\n# In GitHub → Settings → Pages → Source: Deploy from branch → main / docs\nquarto render\ngit add docs/\ngit commit -m \"build: render site\"\ngit push\n\n# Method B: Quarto managed gh-pages branch (recommended)\nquarto publish gh-pages\nFor Method B, the first run will prompt for confirmation and create the gh-pages branch automatically.\n\n\n\nquarto publish gh-pages\nQuarto renders, then pushes to the gh-pages branch. The site is live at https://&lt;your-github-username&gt;.github.io/&lt;repo-name&gt;/."
+  },
+  {
+    "objectID": "setup.html#apa-citation-style-optional",
+    "href": "setup.html#apa-citation-style-optional",
+    "title": "Setup and Deployment",
+    "section": "",
+    "text": "If you add a references.bib file and want APA formatting, download the CSL:\ncurl -O https://raw.githubusercontent.com/citation-style-language/styles/master/apa.csl\nThen add to _quarto.yml:\nbibliography: references.bib\ncsl: apa.csl"
+  },
+  {
+    "objectID": "setup.html#checklist-before-publishing",
+    "href": "setup.html#checklist-before-publishing",
+    "title": "Setup and Deployment",
+    "section": "",
+    "text": "Replace G-XXXXXXXXXX in _quarto.yml with real GA4 Measurement ID, or remove the key\nReplace 0000-0000-0000-0000 ORCID in index.qmd and contact.qmd\nReplace all DOI: PLACEHOLDER entries in publications.qmd\nReview and correct research descriptions in research.qmd\nUpdate CV sections in cv.qmd (or ensure cv/cv.pdf is current)\nUpdate project descriptions in projects/\nReview ASSUMPTIONS.md and confirm all inferences are correct"
+  },
+  {
+    "objectID": "publications.html",
+    "href": "publications.html",
+    "title": "Publications",
+    "section": "",
+    "text": "Full list also available on Google Scholar."
+  },
+  {
+    "objectID": "publications.html#section",
+    "href": "publications.html#section",
+    "title": "Publications",
+    "section": "2026",
+    "text": "2026\n\nRobustness of high-throughput prediction of leaf ecophysiological traits using near infrared spectroscopy and poro-fluorometry Coindre E., Boulord R., Chir L., Freitas V., Ryckewaert M., Laisné T. et al. The Plant Phenome Journal, 2026 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nApplying the maximum entropy principle to neural networks enhances multi-species distribution models Ryckewaert M., Marcos D., Botella C., Servajean M., Bonnet P., Joly A. Methods in Ecology and Evolution, 2026 ::: {.pub-links} DOI: 10.1111/2041-210x.70262 Code\n\n:::"
+  },
+  {
+    "objectID": "publications.html#section-1",
+    "href": "publications.html#section-1",
+    "title": "Publications",
+    "section": "2025",
+    "text": "2025\n\nCreating the vision of rapid, repeatable, reactive data workflows for policy on biodiversity Groom Q., Abraham L., Adriaens T., Breugelmans L., Clarke D.A., Ryckewaert M. et al. Ecological Solutions and Evidence, 2025 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nEarly detection of Zymoseptoria tritici infection on wheat leaves using hyperspectral imaging data Latchoumane L., Ecarnot M., Bendoula R., Roger J.M., Mas-Garcia S., Ryckewaert M. et al. Data in Brief, 2025 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::"
+  },
+  {
+    "objectID": "publications.html#section-2",
+    "href": "publications.html#section-2",
+    "title": "Publications",
+    "section": "2024",
+    "text": "2024\n\nPROSAC as a selection tool for SO-PLS regression: a strategy for multi-block data fusion Diaz-Olivares J.A., Bendoula R., Saeys W., Ryckewaert M., Adriaens I., Fu X. et al. Analytica Chimica Acta, 2024 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nUsing dynamic laser speckle imaging for plant breeding: A case study of water stress in sunflowers Bouzaouia S., Ryckewaert M., Héran D., Ducanchez A., Bendoula R. Sensors, 2024 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::"
+  },
+  {
+    "objectID": "publications.html#section-3",
+    "href": "publications.html#section-3",
+    "title": "Publications",
+    "section": "2023",
+    "text": "2023\n\nHyperspectral images of grapevine leaves including healthy leaves and leaves with biotic and abiotic symptoms Ryckewaert M., Héran D., Trani J.P., Mas-Garcia S., Feilhes C., Prezman F. et al. Scientific Data, 2023 ::: {.pub-links} DOI: PLACEHOLDER Dataset\n\n:::\n\nIncluding measurement effects and temporal variations in VIS-NIRS models to improve early detection of plant disease Abdelghafour F., Sivarajan S.R., Abdelmeguid I., Ryckewaert M., Roger J.M. et al. Computers and Electronics in Agriculture, 2023 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nA novel approach to combine spatial and spectral information from hyperspectral images Gaci B., Abdelghafour F., Ryckewaert M., Mas-Garcia S., Louargant M. et al. Chemometrics and Intelligent Laboratory Systems, 2023 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nDataset containing spectral data from hyperspectral imaging and sugar content measurements of grape berries Ryckewaert M., Héran D., Feilhes C., Prezman F., Serrano E., Courand A. et al. Data in Brief, 2023 ::: {.pub-links} DOI: PLACEHOLDER Dataset\n\n:::\n\nVisible–Near infrared hyperspectral dataset of healthy and infected apple tree leaf images Gaci B., Abdelghafour F., Ryckewaert M., Mas-Garcia S., Louargant M. et al. Data in Brief, 2023 ::: {.pub-links} DOI: PLACEHOLDER Dataset\n\n:::"
+  },
+  {
+    "objectID": "publications.html#section-4",
+    "href": "publications.html#section-4",
+    "title": "Publications",
+    "section": "2022",
+    "text": "2022\n\nPhysiological variable predictions using VIS–NIR spectroscopy for water stress detection on grapevine: Interest in combining climate data using multiblock method Ryckewaert M., Héran D., Simonneau T., Abdelghafour F., Boulord R. et al. Computers and Electronics in Agriculture, 2022 ::: {.pub-links} DOI: 10.1016/j.compag.2022.106973\n\n:::\n\nEvaluation of a combination of NIR micro-spectrometers to predict chemical properties of sugarcane forage using a multi-block approach Ryckewaert M., Chaix G., Héran D., Zgouz A., Bendoula R. Biosystems Engineering, 2022 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nEvaluation of a robust regression method (RoBoost-PLSR) to predict biochemical variables for agronomic applications: Case study of grape berry maturity monitoring Courand A., Metz M., Héran D., Feilhes C., Prezman F., Serrano E., Ryckewaert M. et al. Chemometrics and Intelligent Laboratory Systems, 2022 ::: {.pub-links} DOI: 10.1016/j.chemolab.2021.104485\n\n:::\n\nRoBoost-PLS2-R: an extension of RoBoost-PLSR method for multi-response Metz M., Ryckewaert M., Mas-Garcia S., Bendoula R., Dardenne P. et al. Chemometrics and Intelligent Laboratory Systems, 2022 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nDiscriminating between absorption and scattering effects in complex turbid media by coupling polarized light spectroscopy with the Mueller matrix concept Ducanchez A., Ryckewaert M., Heran D., Bendoula R. Sensors, 2022 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::"
+  },
+  {
+    "objectID": "publications.html#section-5",
+    "href": "publications.html#section-5",
+    "title": "Publications",
+    "section": "2021",
+    "text": "2021\n\nA generic workflow combining deep learning and chemometrics for processing close-range spectral images to detect drought stress in Arabidopsis thaliana Mishra P., Sadeh R., Ryckewaert M., Bino E., Polder G., Boer M.P. et al. Chemometrics and Intelligent Laboratory Systems, 2021 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nCombination of multivariate curve resolution with factorial discriminant analysis for the detection of grapevine diseases using hyperspectral imaging Mas-Garcia S., Ryckewaert M., Abdelghafour F., Metz M., Moura D., Feilhes C. et al. Analyst, 2021 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nPotential of high-spectral resolution for field phenotyping in plant breeding: Application to maize under water stress Ryckewaert M., Gorretta N., Henriot F., Gobrecht A., Héran D., Moura D. et al. Computers and Electronics in Agriculture, 2021 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nMassive spectral data analysis for plant breeding using parSketch-PLSDA method Ryckewaert M., Metz M., Héran D., George P., Grézes-Besset B., Akbarinia R. et al. Biosystems Engineering, 2021 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::"
+  },
+  {
+    "objectID": "publications.html#section-6",
+    "href": "publications.html#section-6",
+    "title": "Publications",
+    "section": "2020",
+    "text": "2020\n\nReduction of repeatability error for analysis of variance-Simultaneous Component Analysis (REP-ASCA) Ryckewaert M., Gorretta N., Henriot F., Marini F., Roger J.M. Analytica Chimica Acta, 2020 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nA new optical sensor based on laser speckle and chemometrics for precision agriculture Ryckewaert M., Héran D., Faur E., George P., Grézes-Besset B., Chazallet F. et al. Sensors, 2020 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::"
+  },
+  {
+    "objectID": "publications.html#section-7",
+    "href": "publications.html#section-7",
+    "title": "Publications",
+    "section": "2019",
+    "text": "2019\n\nCombining light polarization and speckle measurements with multivariate analysis to predict bulk optical properties of turbid media Héran D., Ryckewaert M., Abautret Y., Zerrad M., Amra C., Bendoula R. Applied Optics, 2019 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nCoupling waveguide-based micro-sensors and spectral multivariate analysis to improve spray deposit characterization in agriculture Taleb Bendiab A., Ryckewaert M., Heran D., Escalier R., Kribich R.K. et al. Sensors, 2019 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::"
+  },
+  {
+    "objectID": "publications.html#section-8",
+    "href": "publications.html#section-8",
+    "title": "Publications",
+    "section": "2017",
+    "text": "2017\n\nIncreasing the total productivity of a land by combining mobile photovoltaic panels and food crops Valle B., Simonneau T., Sourd F., Pechier P., Hamard P., Frisson T., Ryckewaert M. et al. Applied Energy, 2017 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::\n\nPYM: A new, affordable, image-based method using a Raspberry Pi to phenotype plant leaf area in a wide diversity of environments Valle B., Simonneau T., Boulord R., Sourd F., Frisson T., Ryckewaert M. et al. Plant Methods, 2017 ::: {.pub-links} DOI: PLACEHOLDER\n\n:::"
+  },
+  {
+    "objectID": "publications.html#preprint",
+    "href": "publications.html#preprint",
+    "title": "Publications",
+    "section": "Preprint",
+    "text": "Preprint\n\nApplying the maximum entropy principle to multi-species neural networks improves species distribution models Ryckewaert M., Marcos D., Botella C., Servajean M., Bonnet P., Joly A. arXiv, 2024 — published in Methods in Ecology and Evolution, 2026 ::: {.pub-links} arXiv Code\n\n:::"
+  },
+  {
+    "objectID": "projects/index.html",
+    "href": "projects/index.html",
+    "title": "Projects",
+    "section": "",
+    "text": "An overview of current and recent research projects. Each project page contains a description of the scientific question, methods, collaborators, and outputs."
+  },
+  {
+    "objectID": "projects/index.html#species-distribution-modelling-with-deepmaxent",
+    "href": "projects/index.html#species-distribution-modelling-with-deepmaxent",
+    "title": "Projects",
+    "section": "Species Distribution Modelling with DeepMaxEnt",
+    "text": "Species Distribution Modelling with DeepMaxEnt\n\nNeural network-based extension of the MaxEnt framework for multi-species distribution modelling. The model learns non-linear environmental feature interactions while preserving the maximum entropy principle as a regularisation constraint, producing calibrated suitability maps for presence-only data.\nProject page → | Code | DOI: 10.1111/2041-210x.70262"
+  },
+  {
+    "objectID": "projects/index.html#smart-viticulture-and-iot-sensor-fusion",
+    "href": "projects/index.html#smart-viticulture-and-iot-sensor-fusion",
+    "title": "Projects",
+    "section": "Smart Viticulture and IoT Sensor Fusion",
+    "text": "Smart Viticulture and IoT Sensor Fusion\n\nIntegration of IoT sensor networks (microclimate, soil moisture, canopy imaging) with near-infrared spectral data for real-time monitoring of grapevine stress and disease onset. Machine learning models fuse asynchronous, heterogeneous streams to provide decision support for precision viticulture.\nCollaborators: UMR AGAP, INRAE Status: In progress"
+  },
+  {
+    "objectID": "projects/index.html#genomic-selection-and-phenotyping-for-perennial-crops",
+    "href": "projects/index.html#genomic-selection-and-phenotyping-for-perennial-crops",
+    "title": "Projects",
+    "section": "Genomic Selection and Phenotyping for Perennial Crops",
+    "text": "Genomic Selection and Phenotyping for Perennial Crops\n\nMulti-task learning models for genomic estimated breeding value (GEBV) prediction in perennial species (grapevine, tropical trees, maize). Non-destructive spectral phenotyping with NIR is integrated alongside genomic markers to reduce the cost per selection cycle and to characterise genotype-by-environment interactions.\nTeam: GSP — CIRAD / UMR AGAP Status: In progress"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Maxime Ryckewaert",
+    "section": "",
+    "text": "GitHub\n  \n  \n    \n     LinkedIn\n  \n  \n    \n     Email\n  \n  \n     ORCID\n  \n\n  \n  \n\n\nResearcher in Machine Learning/Artificial Intelligence for agricultural systems and environments\nCIRAD — UMR AGAP Institut, GSP team Montpellier, France"
+  },
+  {
+    "objectID": "index.html#maxime-ryckewaert",
+    "href": "index.html#maxime-ryckewaert",
+    "title": "Maxime Ryckewaert",
+    "section": "",
+    "text": "Researcher in Machine Learning/Artificial Intelligence for agricultural systems and environments\nCIRAD — UMR AGAP Institut, GSP team Montpellier, France"
+  },
+  {
+    "objectID": "index.html#research-themes",
+    "href": "index.html#research-themes",
+    "title": "Maxime Ryckewaert",
+    "section": "Research Themes",
+    "text": "Research Themes\nRepresentation learning from complex biological signals. Spectral, temporal, and genomic data share a structural challenge: informative variation is entangled with noise, domain shifts, and missing modalities. My research develops transformer-based architectures and multivariate methods that learn compact, transferable representations, with explicit uncertainty quantification and interpretability constraints.\nMultivariate and multi-modal methods for perennial crop genetics and phenotyping. For perennial crops in tropical and Mediterranean environments, including tropical trees, grapevine, and other long-cycle species, I develop statistical and machine learning methods integrating genomic, spectral, and time-series data. Research directions include multi-task learning, data fusion across modalities, genomic selection, and the characterisation of genotype-by-environment interactions, with an emphasis on model interpretability.\nSpecies distribution modelling and ecological inference. I develop probabilistic and machine learning frameworks to model species distributions from environmental and occurrence data, including for wild plant species. This work focuses on integrating heterogeneous spatial predictors, learning ecologically meaningful latent structures, and producing interpretable outputs to support biodiversity monitoring and ecological forecasting under environmental change."
+  },
+  {
+    "objectID": "index.html#selected-publications",
+    "href": "index.html#selected-publications",
+    "title": "Maxime Ryckewaert",
+    "section": "Selected Publications",
+    "text": "Selected Publications\n\nApplying the maximum entropy principle to neural networks enhances multi-species distribution models Ryckewaert M. et al. — Methods in Ecology and Evolution, 2026 — DOI: 10.1111/2041-210x.70262\n\n\nPhysiological variable predictions using VIS–NIR spectroscopy for water stress detection on grapevine: Interest in combining climate data using multiblock method Ryckewaert M. et al. — Computers and Electronics in Agriculture, 2022 — DOI: 10.1016/j.compag.2022.106973\n\n\nEvaluation of a robust regression method (RoBoost-PLSR) to predict biochemical variables for agronomic applications: Case study of grape berry maturity monitoring Courand A. et al. — Chemometrics and Intelligent Laboratory Systems, 2022 — DOI: 10.1016/j.chemolab.2021.104485\n\nFull publication list →"
+  },
+  {
+    "objectID": "index.html#recent-highlights",
+    "href": "index.html#recent-highlights",
+    "title": "Maxime Ryckewaert",
+    "section": "Recent Highlights",
+    "text": "Recent Highlights\n\n\n\nIrokube — Critical habitat mapping enhanced by data cubes\nThe project Irokube explores the use of biodiversity data cubes combined with satellite and bioclimatic data cubes to identify critical habitats using Deep-SDM and habitat distribution models (HDM). A case study in Belgium illustrated the approach at the B-Cubed Hackathon 2024. Hackathon report\n\n\n\n\n\nTalk at World Biodiversity Forum 2024, Davos\nPresentation on Disentangling Observation Biases for Species Distribution Modeling, addressing sampling biases in presence-only citizen science data. We developed a simulation framework to evaluate point process loss functions in mitigating these biases for deep learning-based SDMs.\n\n\n\n\n\nBest Poster Award — IASIM 2022\nOne of three Best Poster Awards at the International Conference on Spectral Imaging (IASIM 2022) for work on predicting stomatal conductance and transpiration in grapevine from hyperspectral imaging combined with climate data. Conference award"
+  },
+  {
+    "objectID": "docs/courses/01_exploration.html",
+    "href": "docs/courses/01_exploration.html",
+    "title": "Part 1 — Spectral Data Exploration",
+    "section": "",
+    "text": "This notebook introduces the chemometrics dataset used throughout this course: near-infrared spectral measurements from hyperspectral imaging of grape berries, paired with sugar content measurements (g/L). We will explore the dataset structure, visualise the raw spectra, and examine the distribution of the target variable.\n\n\n\nRyckewaert, M. et al. (2023). Dataset containing spectral data from hyperspectral imaging and sugar content measurements of grape berries in various maturity stages. Data in Brief. https://doi.org/10.1016/j.dib.2022.108822\n\n\nimport pandas as pd\nimport numpy as np\nfrom scipy.stats import gaussian_kde\nimport plotly.graph_objects as go\nimport plotly.express as px\nimport plotly.colors as pc\nfrom plotly.subplots import make_subplots\n\nNAVY  = '#1b3a5c'\nTEAL  = '#2a7f7f'\nGREEN = '#78BE20'\nGRAY  = '#868e96'\nCOLORS_VAR = {'SYRAH': NAVY, 'MAUZAC': TEAL, 'FER': GREEN}"
+  },
+  {
+    "objectID": "docs/courses/01_exploration.html#introduction",
+    "href": "docs/courses/01_exploration.html#introduction",
+    "title": "Part 1 — Spectral Data Exploration",
+    "section": "",
+    "text": "This notebook introduces the chemometrics dataset used throughout this course: near-infrared spectral measurements from hyperspectral imaging of grape berries, paired with sugar content measurements (g/L). We will explore the dataset structure, visualise the raw spectra, and examine the distribution of the target variable.\n\n\n\nRyckewaert, M. et al. (2023). Dataset containing spectral data from hyperspectral imaging and sugar content measurements of grape berries in various maturity stages. Data in Brief. https://doi.org/10.1016/j.dib.2022.108822\n\n\nimport pandas as pd\nimport numpy as np\nfrom scipy.stats import gaussian_kde\nimport plotly.graph_objects as go\nimport plotly.express as px\nimport plotly.colors as pc\nfrom plotly.subplots import make_subplots\n\nNAVY  = '#1b3a5c'\nTEAL  = '#2a7f7f'\nGREEN = '#78BE20'\nGRAY  = '#868e96'\nCOLORS_VAR = {'SYRAH': NAVY, 'MAUZAC': TEAL, 'FER': GREEN}"
+  },
+  {
+    "objectID": "docs/courses/01_exploration.html#loading-the-dataset",
+    "href": "docs/courses/01_exploration.html#loading-the-dataset",
+    "title": "Part 1 — Spectral Data Exploration",
+    "section": "Loading the dataset",
+    "text": "Loading the dataset\nThe CSV file uses a semicolon delimiter and the first column is a row index. The Variety column identifies the grape cultivar; Sugar content (g/l) is our response variable; the remaining 204 columns are spectral reflectance values at wavelengths from approximately 397 nm to 1004 nm (visible to near-infrared range).\n\ndf = pd.read_csv('data/chemometrics/DATASET.csv', sep=';', index_col=0)\n\nprint(f\"Dataset shape: {df.shape}  ({df.shape[0]} samples, {df.shape[1]} columns)\")\nprint(f\"Missing values: {df.isnull().sum().sum()}\")\ndf.head(3)"
+  },
+  {
+    "objectID": "docs/courses/01_exploration.html#separating-metadata-target-and-spectral-matrix",
+    "href": "docs/courses/01_exploration.html#separating-metadata-target-and-spectral-matrix",
+    "title": "Part 1 — Spectral Data Exploration",
+    "section": "Separating metadata, target, and spectral matrix",
+    "text": "Separating metadata, target, and spectral matrix\nWe split the dataframe into three parts: - variety: grape cultivar label (SYRAH, MAUZAC, FER) - y: sugar content in g/L (response variable) - X: spectral reflectance matrix, shape (274, 204) - wavelengths: wavelength axis in nm, extracted from column names (x.397.32 → 397.32)\n\nvariety = df['Variety']\ny = df['Sugar content (g/l)']\n\nspectral_cols = [c for c in df.columns if c.startswith('x.')]\nX = df[spectral_cols].values\nwavelengths = np.array([float(c.replace('x.', '', 1)) for c in spectral_cols])\n\nprint(f\"Samples:          {X.shape[0]}\")\nprint(f\"Spectral bands:   {X.shape[1]}\")\nprint(f\"Wavelength range: {wavelengths[0]:.1f} – {wavelengths[-1]:.1f} nm\")\nprint(f\"Varieties:        {variety.value_counts().to_dict()}\")"
+  },
+  {
+    "objectID": "docs/courses/01_exploration.html#raw-spectra-coloured-by-sugar-content",
+    "href": "docs/courses/01_exploration.html#raw-spectra-coloured-by-sugar-content",
+    "title": "Part 1 — Spectral Data Exploration",
+    "section": "Raw spectra — coloured by sugar content",
+    "text": "Raw spectra — coloured by sugar content\nEach line represents one berry sample. A representative subset of 80 samples is coloured by sugar content (blue = low, red = high) to reveal any spectral gradient correlated with the response. The characteristic features of grape berry VIS–NIR spectra include:\n\nA sharp drop in reflectance below ~700 nm due to chlorophyll and anthocyanin absorption\nA progressive increase from ~700 nm toward the NIR plateau\nA water absorption dip around 970 nm reducing reflectance at the right edge\n\n\n# Representative subset (80 evenly-spaced samples) for visualisation\nn_show = 80\nshow_idx = np.linspace(0, len(X) - 1, n_show, dtype=int)\ny_show = y.values[show_idx]\ny_norm_show = (y_show - y_show.min()) / (y_show.max() - y_show.min())\ntrace_colors = pc.sample_colorscale('RdYlBu_r', y_norm_show.tolist())\n\nfig = go.Figure()\n\nfor i, (idx_i, color, sugar) in enumerate(zip(show_idx, trace_colors, y_show)):\n    fig.add_trace(go.Scatter(\n        x=wavelengths, y=X[idx_i],\n        mode='lines',\n        line=dict(color=color, width=0.8),\n        opacity=0.5,\n        showlegend=False,\n        hovertemplate=f'Sugar: {sugar:.1f} g/L&lt;extra&gt;&lt;/extra&gt;'\n    ))\n\n# Invisible trace to generate the colour bar\nfig.add_trace(go.Scatter(\n    x=[None], y=[None], mode='markers',\n    marker=dict(\n        colorscale='RdYlBu_r',\n        color=[float(y.min()), float(y.max())],\n        cmin=float(y.min()), cmax=float(y.max()),\n        colorbar=dict(title='Sugar content (g/L)', thickness=15, len=0.9),\n        showscale=True, size=1\n    ),\n    showlegend=False\n))\n\nfig.update_layout(\n    xaxis_title='Wavelength (nm)',\n    yaxis_title='Reflectance',\n    title=f'VIS–NIR spectra coloured by sugar content ({n_show} representative samples)',\n    template='simple_white',\n    height=430\n)\nfig.show()"
+  },
+  {
+    "objectID": "docs/courses/01_exploration.html#spectra-by-variety",
+    "href": "docs/courses/01_exploration.html#spectra-by-variety",
+    "title": "Part 1 — Spectral Data Exploration",
+    "section": "Spectra by variety",
+    "text": "Spectra by variety\nPlotting individual spectra and the mean per variety helps identify systematic differences in reflectance level or spectral shape between SYRAH, MAUZAC, and FER — inter-variety variability that a calibration model must handle.\n\nfig = go.Figure()\n\nfor var, color in COLORS_VAR.items():\n    mask = (variety == var).values\n    X_var = X[mask]\n    n_var = mask.sum()\n\n    # Individual spectra (faint — skip legend to avoid clutter)\n    for spectrum in X_var:\n        fig.add_trace(go.Scatter(\n            x=wavelengths, y=spectrum,\n            mode='lines',\n            line=dict(color=color, width=0.5),\n            opacity=0.15,\n            showlegend=False,\n            hoverinfo='skip'\n        ))\n\n    # Mean spectrum (bold, with legend entry)\n    fig.add_trace(go.Scatter(\n        x=wavelengths, y=X_var.mean(axis=0),\n        mode='lines',\n        line=dict(color=color, width=2.5),\n        name=f'{var} mean (n={n_var})'\n    ))\n\nfig.update_layout(\n    xaxis_title='Wavelength (nm)',\n    yaxis_title='Reflectance',\n    title='Raw spectra by variety — individual traces and mean',\n    template='simple_white',\n    height=430,\n    legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1)\n)\nfig.show()"
+  },
+  {
+    "objectID": "docs/courses/01_exploration.html#distribution-of-sugar-content",
+    "href": "docs/courses/01_exploration.html#distribution-of-sugar-content",
+    "title": "Part 1 — Spectral Data Exploration",
+    "section": "Distribution of sugar content",
+    "text": "Distribution of sugar content\nSugar content (g/L) is the calibration target. Visualising its distribution allows us to assess range coverage, potential skewness or multimodality (e.g., driven by variety), and whether a stratified train/test split will be necessary.\n\nfig = make_subplots(\n    rows=1, cols=2,\n    subplot_titles=['Distribution by variety', 'Overall kernel density estimate']\n)\n\n# Left panel: overlaid histograms per variety\nfor var, color in COLORS_VAR.items():\n    mask = variety == var\n    fig.add_trace(\n        go.Histogram(\n            x=y[mask].values, nbinsx=15,\n            name=var, opacity=0.65,\n            marker_color=color\n        ),\n        row=1, col=1\n    )\n\n# Right panel: KDE\ny_range = np.linspace(float(y.min()) - 15, float(y.max()) + 15, 300)\nkde_vals = gaussian_kde(y)(y_range)\n\nfig.add_trace(\n    go.Scatter(\n        x=y_range, y=kde_vals,\n        mode='lines', fill='tozeroy',\n        fillcolor='rgba(27,58,92,0.2)',\n        line=dict(color=NAVY, width=2),\n        name='KDE', showlegend=False\n    ),\n    row=1, col=2\n)\n\n# Vertical lines for mean and median\nfor xval, color, label, dash in [\n    (float(y.mean()),   TEAL,  f'Mean = {y.mean():.1f} g/L',   'dash'),\n    (float(y.median()), GREEN, f'Median = {y.median():.1f} g/L', 'dot')\n]:\n    kde_at_x = float(gaussian_kde(y)(xval))\n    fig.add_trace(\n        go.Scatter(\n            x=[xval, xval], y=[0, kde_at_x * 1.1],\n            mode='lines',\n            line=dict(color=color, dash=dash, width=1.8),\n            name=label, showlegend=True\n        ),\n        row=1, col=2\n    )\n\nfig.update_xaxes(title_text='Sugar content (g/L)')\nfig.update_yaxes(title_text='Count', row=1, col=1)\nfig.update_yaxes(title_text='Density', row=1, col=2)\nfig.update_layout(\n    barmode='overlay',\n    template='simple_white',\n    height=380,\n    legend=dict(orientation='h', yanchor='bottom', y=1.05)\n)\nfig.show()"
+  },
+  {
+    "objectID": "docs/courses/01_exploration.html#descriptive-statistics",
+    "href": "docs/courses/01_exploration.html#descriptive-statistics",
+    "title": "Part 1 — Spectral Data Exploration",
+    "section": "Descriptive statistics",
+    "text": "Descriptive statistics\n\nprint(\"=== Sugar content (g/L) — overall ===\")\nprint(y.describe().round(2))\nprint()\nprint(\"=== Per-variety breakdown ===\")\nprint(df.groupby('Variety')['Sugar content (g/l)'].describe().round(2))\nprint()\nprint(\"=== Spectral matrix ===\")\nprint(f\"Reflectance range: {X.min():.5f} – {X.max():.5f}\")\nprint(f\"Mean reflectance:  {X.mean():.5f}\")"
+  },
+  {
+    "objectID": "docs/courses/01_exploration.html#summary",
+    "href": "docs/courses/01_exploration.html#summary",
+    "title": "Part 1 — Spectral Data Exploration",
+    "section": "Summary",
+    "text": "Summary\n\n\n\nProperty\nValue\n\n\n\n\nSamples\n274\n\n\nSpectral bands\n204\n\n\nWavelength range\n397 – 1004 nm (VIS–NIR)\n\n\nVarieties\nSYRAH, MAUZAC, FER\n\n\nSugar content range\n~101 – 283 g/L\n\n\nMissing values\n0\n\n\n\nThe next notebook introduces spectral preprocessing — Savitzky-Golay smoothing and Standard Normal Variate transformation — to reduce noise and scatter effects before modelling."
+  },
+  {
+    "objectID": "courses/index.html",
+    "href": "courses/index.html",
+    "title": "Courses",
+    "section": "",
+    "text": "This section contains pedagogical material developed for graduate courses and workshops. All code is executable with a standard scientific Python stack. See setup.md for the required environment."
+  },
+  {
+    "objectID": "courses/index.html#available-courses",
+    "href": "courses/index.html#available-courses",
+    "title": "Courses",
+    "section": "Available courses",
+    "text": "Available courses\n\nDimensionality Reduction\nPrincipal Component Analysis, t-SNE, and UMAP applied to real-world data. Covers the mathematical foundations of each method and their practical differences. Interactive visualisations built with Plotly.\nTopics: PCA — eigendecomposition — explained variance — t-SNE perplexity — UMAP topology\nPrerequisites: Linear algebra (matrix decomposition), Python basics\n\n\n\nNeural Networks\nPedagogical walkthrough of Multi-Layer Perceptrons and Convolutional Neural Networks. Covers forward pass, backpropagation, training loops, and convolutional feature learning. All examples implemented in PyTorch.\nTopics: Activation functions — gradient descent — backpropagation — convolution — pooling — classification\nPrerequisites: Calculus (chain rule), probability basics, Python basics\n\n\n\nChemometrics: NIR Spectroscopy and PLS\nIntroduction to quantitative spectroscopy with a real grape berry hyperspectral dataset (274 samples, 204 bands, 397–1004 nm). A four-part series covering the full pipeline from raw data to a validated PLS calibration model.\n\n\n\nPart\nNotebook\nTopics\n\n\n\n\n1\nSpectral Data Exploration\nLoad data — raw spectra — target distribution\n\n\n2\nPreprocessing\nSavitzky-Golay smoothing — SNV — scatter correction\n\n\n3\nPCA\nCentred PCA — scree plot — loadings — score plots\n\n\n4\nPLS Regression\nRMSECV — model selection — β coefficients — prediction\n\n\n\nTopics: NIR spectroscopy — Savitzky-Golay — SNV — PCA — PLSRegression — RMSECV — RMSEP\nPrerequisites: Linear algebra basics, Python basics\nDataset: Ryckewaert et al. (2023), Data in Brief, DOI: 10.1016/j.dib.2022.108822\n\n\n\nSpecies Distribution Modelling with DeepMaxEnt\nEnd-to-end walkthrough of the DeepMaxEnt method: from GBIF occurrence records and CHELSA-BIOCLIM+ rasters to a predicted habitat suitability map. Covers the maximum entropy principle, its embedding as a neural network loss (equivalent to Poisson process likelihood), and multi-species modelling.\nTopics: MaxEnt — presence-only data — background sampling — Poisson process loss — habitat suitability mapping\nPrerequisites: Python basics, introductory probability\nBased on: github.com/RYCKEWAERT/deepmaxent"
+  },
+  {
+    "objectID": "courses/index.html#environment",
+    "href": "courses/index.html#environment",
+    "title": "Courses",
+    "section": "Environment",
+    "text": "Environment\nAll courses use Python 3.11+ with the following core packages:\npip install numpy pandas scipy scikit-learn matplotlib plotly umap-learn torch torchvision\nCode chunks are configured with #| echo: true so that all steps are fully visible and reproducible. Figures are static Plotly HTML widgets embedded in the output — no server or callbacks required."
+  },
+  {
+    "objectID": "hobbies.html",
+    "href": "hobbies.html",
+    "title": "Hobbies",
+    "section": "",
+    "text": "I play guitar in Logicorama, an instrumental trio whose compositions work deliberately in unconventional time signatures — 5/8, 7/16, 11/8 — while aiming to make these metric shifts feel natural rather than academic. The current project is the album Memorabilia.\n\n\n\n\n\nUnder the name DataZombie I produce instrumental music that combines guitar with electronic textures — a workable background for focused work or reading."
+  },
+  {
+    "objectID": "hobbies.html#music",
+    "href": "hobbies.html#music",
+    "title": "Hobbies",
+    "section": "",
+    "text": "I play guitar in Logicorama, an instrumental trio whose compositions work deliberately in unconventional time signatures — 5/8, 7/16, 11/8 — while aiming to make these metric shifts feel natural rather than academic. The current project is the album Memorabilia.\n\n\n\n\n\nUnder the name DataZombie I produce instrumental music that combines guitar with electronic textures — a workable background for focused work or reading."
+  },
+  {
+    "objectID": "hobbies.html#other-interests",
+    "href": "hobbies.html#other-interests",
+    "title": "Hobbies",
+    "section": "Other interests",
+    "text": "Other interests\nFantasy and science fiction literature. Long-form speculative fiction, both classic and contemporary. Interested in how these genres construct internally consistent systems; ecological, political, physical."
+  },
+  {
+    "objectID": "projects/project-1.html",
+    "href": "projects/project-1.html",
+    "title": "Species Distribution Modelling with DeepMaxEnt",
+    "section": "",
+    "text": "Predicting where species occur — and how distributions will shift under climate change — is a central challenge in conservation biology and ecology. Classical MaxEnt models this from presence-only occurrence data by selecting the maximum entropy distribution consistent with observed environmental feature expectations. This project extends the MaxEnt framework to neural networks, allowing non-linear feature interactions while preserving the theoretical guarantees of entropy regularisation.\nPublication: Ryckewaert M. et al. (2026). Applying the maximum entropy principle to neural networks enhances multi-species distribution models. Methods in Ecology and Evolution. DOI: 10.1111/2041-210x.70262\nCode & tutorial: github.com/RYCKEWAERT/deepmaxent"
+  },
+  {
+    "objectID": "projects/project-1.html#summary",
+    "href": "projects/project-1.html#summary",
+    "title": "Species Distribution Modelling with DeepMaxEnt",
+    "section": "",
+    "text": "Predicting where species occur — and how distributions will shift under climate change — is a central challenge in conservation biology and ecology. Classical MaxEnt models this from presence-only occurrence data by selecting the maximum entropy distribution consistent with observed environmental feature expectations. This project extends the MaxEnt framework to neural networks, allowing non-linear feature interactions while preserving the theoretical guarantees of entropy regularisation.\nPublication: Ryckewaert M. et al. (2026). Applying the maximum entropy principle to neural networks enhances multi-species distribution models. Methods in Ecology and Evolution. DOI: 10.1111/2041-210x.70262\nCode & tutorial: github.com/RYCKEWAERT/deepmaxent"
+  },
+  {
+    "objectID": "projects/project-1.html#scientific-question",
+    "href": "projects/project-1.html#scientific-question",
+    "title": "Species Distribution Modelling with DeepMaxEnt",
+    "section": "Scientific question",
+    "text": "Scientific question\nCan embedding the maximum entropy principle as a neural network loss function improve the calibration and transferability of multi-species distribution models compared to classical MaxEnt and binary cross-entropy-trained networks, particularly in regions with sparse occurrence records?"
+  },
+  {
+    "objectID": "projects/project-1.html#approach",
+    "href": "projects/project-1.html#approach",
+    "title": "Species Distribution Modelling with DeepMaxEnt",
+    "section": "Approach",
+    "text": "Approach\n\nFrom MaxEnt to neural networks\nClassical MaxEnt finds the distribution \\(\\hat{p}\\) that maximises entropy subject to matching observed feature expectations at occurrence locations:\n\\[\\hat{p} = \\arg\\max_p H(p) \\quad \\text{s.t.} \\quad \\mathbb{E}_p[f_k] = \\mathbb{E}_\\text{occ}[f_k]\\]\nThe solution is a Gibbs distribution with linear feature weights. DeepMaxEnt replaces the linear feature map with a neural network \\(g_\\theta\\), trained by minimising the equivalent Poisson process negative log-likelihood:\n\\[\\mathcal{L}(\\theta) = -\\frac{1}{|\\mathcal{P}|}\\sum_{x \\in \\mathcal{P}} g_\\theta(x) + \\log \\frac{1}{|\\mathcal{B}|}\\sum_{x \\in \\mathcal{B}} e^{g_\\theta(x)}\\]\nwhere \\(\\mathcal{P}\\) are presence sites and \\(\\mathcal{B}\\) are background points approximating the available environmental space.\n\n\nMulti-species architecture\nA shared neural backbone extracts transferable environmental representations across all modelled species. Species-specific linear heads map the shared embedding to per-species log-suitability scores. This joint training improves performance for rare species by borrowing statistical strength from co-occurring species with denser occurrence records.\n\n\nEnvironmental predictors\nModels are trained on CHELSA-BIOCLIM+ global climate layers (Brun et al., 2022) at kilometre resolution, and can incorporate additional remote sensing layers (NDVI time series, canopy height, land cover). Standardisation is performed using background point statistics to ensure ecologically meaningful scaling."
+  },
+  {
+    "objectID": "projects/project-1.html#results",
+    "href": "projects/project-1.html#results",
+    "title": "Species Distribution Modelling with DeepMaxEnt",
+    "section": "Results",
+    "text": "Results\nKey findings from the published study:\n\nThe MaxEnt neural loss consistently outperforms binary cross-entropy on held-out occurrence sites, particularly for species with fewer than 50 presence records.\nMulti-species joint training improves AUC-PR for rare species by an average of X% compared to single-species models.\nPredicted suitability maps show better spatial calibration (lower Brier score) than classical MaxEnt across independent evaluation regions.\n\n(Replace with actual reported results)"
+  },
+  {
+    "objectID": "projects/project-1.html#tutorial",
+    "href": "projects/project-1.html#tutorial",
+    "title": "Species Distribution Modelling with DeepMaxEnt",
+    "section": "Tutorial",
+    "text": "Tutorial\nA step-by-step tutorial notebook covering data preparation (GBIF occurrence records, CHELSA-BIOCLIM+ rasters), model training, and suitability map generation is available in the repository. An abridged version is also presented in the Courses section."
+  },
+  {
+    "objectID": "projects/project-1.html#collaborators-and-funding",
+    "href": "projects/project-1.html#collaborators-and-funding",
+    "title": "Species Distribution Modelling with DeepMaxEnt",
+    "section": "Collaborators and funding",
+    "text": "Collaborators and funding\nAdd collaborator names and funding sources"
+  },
+  {
+    "objectID": "research.html",
+    "href": "research.html",
+    "title": "Research",
+    "section": "",
+    "text": "My research develops machine learning and statistical methods for biological systems that produce high-dimensional, heterogeneous data — from DNA sequences and spectral measurements to satellite imagery and occurrence records. A unifying thread across application domains is the multi-scale structure of biological variation: from the genome, through the individual organ (leaf, root, fruit), to the canopy and the landscape. Exploiting that structure requires methods that can fuse information across scales and modalities while remaining interpretable to biologists and breeders."
+  },
+  {
+    "objectID": "research.html#motivation",
+    "href": "research.html#motivation",
+    "title": "Research",
+    "section": "Motivation",
+    "text": "Motivation\nTwo converging pressures define the context of this work.\nThe data abundance problem. High-throughput phenotyping platforms, genomic arrays, and remote sensing now generate data at scales that exceed classical statistical workflows. A single UAV flight over a trial produces gigabytes of hyperspectral imagery; a genotyping array characterises hundreds of thousands of loci per individual. The bottleneck has shifted from data collection to extraction of reliable biological signal from these streams.\nThe environmental urgency. Perennial crops — grapevine, tropical trees, and others with multi-decade production cycles — face mounting pressure from climate change. Breeding cycles for these species span 10–20 years, making early, accurate prediction of genotype performance under future environments a critical bottleneck for food security and agroecosystem sustainability. Similarly, biodiversity monitoring requires scalable, automated tools to track species distribution shifts across large spatial extents and over time.\nStandard machine learning approaches — developed for clean, balanced, large-scale benchmarks — transfer poorly to these contexts, which are characterised by small annotated datasets, heterogeneous measurement conditions, missing modalities, and strong domain-shift between training and deployment environments."
+  },
+  {
+    "objectID": "research.html#open-questions",
+    "href": "research.html#open-questions",
+    "title": "Research",
+    "section": "Open Questions",
+    "text": "Open Questions\n\nMulti-modal fusion across biological scales\nBiological phenotypes emerge from the interplay of genetic, physiological, and environmental processes operating at different spatial and temporal scales. No single sensor captures all relevant variation. The central methodological question is: how can information from complementary modalities — genomic markers, spectral reflectance, morphological measurements, climatic time series — be fused in a principled way when modalities are partially observed and measured on different subsets of individuals?\nExisting approaches (early fusion, late fusion, kernel methods) make strong assumptions about data alignment that rarely hold in field experiments. Architectures that handle missing modalities and learn cross-modal correspondences in a self-supervised regime are an open research direction.\n\n\nInterpretability under biological constraints\nBlack-box predictions are not sufficient for plant breeding or ecological management: decisions must be justified to stakeholders and grounded in biological knowledge. What architectural and training choices make deep models interpretable without sacrificing predictive performance? Specific questions include the identifiability of latent representations, the faithfulness of attribution methods (SHAP, integrated gradients) on tabular and spectral data, and the design of models that encode domain-specific invariances (e.g. spectral wavelength ordering, phylogenetic structure).\n\n\nNew AI methods for ecological inference\nSpecies distribution models must extrapolate beyond observed conditions — to novel climates, unstudied regions, or future time horizons. How can neural network-based SDMs produce calibrated uncertainty estimates that reflect genuine extrapolation risk, rather than interpolation confidence? Work building on the maximum entropy principle (MaxEnt) applied to neural architectures offers a tractable route: by constraining the learned distribution to maximum entropy subject to feature constraints, the model defaults to conservatism in data-sparse regions rather than overconfident extrapolation."
+  },
+  {
+    "objectID": "research.html#approach",
+    "href": "research.html#approach",
+    "title": "Research",
+    "section": "Approach",
+    "text": "Approach\n\nFrom genome to leaf to canopy\nThe multi-scale structure of plant phenotypes motivates a hierarchical research programme:\n\n\n\n\n\n\n\n\nScale\nData types\nKey questions\n\n\n\n\nGenome\nSNP arrays, sequence variants\nGenomic selection, G×E interaction, polygenic architecture\n\n\nOrgan\nVIS–NIR/SWIR spectra, biochemical assays\nNon-destructive trait prediction, stress detection, quality monitoring\n\n\nPlant / plot\nRGB and multispectral imagery, 3D point clouds\nArchitectural traits, growth dynamics, phenological stages\n\n\nLandscape\nSatellite time series, climate layers, occurrence records\nSpecies distribution, habitat connectivity, ecological forecasting\n\n\n\nEach scale requires specific methods, but the research program seeks bridges: transfer learning from high-data scales to low-data scales, and fusion architectures that integrate information across levels.\n\n\nNear-infrared and VIS–NIR spectroscopy\nReflectance spectroscopy provides a rapid, non-destructive window onto leaf and fruit biochemistry. I develop regression models — from partial least squares to convolutional regressors — that predict agronomic traits (water content, sugar concentration, chlorophyll) from spectral profiles, with explicit handling of inter-instrument variability and domain shift between calibration and application conditions. Applications include water stress detection in grapevine and quality monitoring during berry maturation (Ryckewaert et al., 2022; Courand et al., 2022).\n\n\nGenomic selection and genotype-by-environment modelling\nIn perennial crops, the long juvenile phase makes early marker-assisted selection particularly valuable. I develop multi-task learning and mixed-model frameworks for genomic estimated breeding value (GEBV) prediction that explicitly model G×E interactions and share statistical strength across related environments. Integrating spectral phenotyping with genomic data via multi-block and multi-modal fusion is an active direction.\n\n\nNeural networks for species distribution modelling\nClassical MaxEnt constrains the predicted distribution to maximum entropy while matching empirical feature expectations — a statistically principled form of regularisation for presence-only data. Embedding this principle in neural architectures allows the model to learn non-linear feature interactions while retaining the theoretical guarantees of MaxEnt against overfitting in data-sparse regions (Ryckewaert et al., 2026). Current extensions address multi-species joint modelling and the incorporation of remote sensing predictors.\n\n\nTransformer and attention-based architectures\nSelf-attention mechanisms are naturally suited to spectral and genomic sequences, where local and long-range dependencies coexist. I investigate the application of transformer architectures to 1D spectral regression and to multi-omics integration, with particular attention to attention head interpretability as a route to wavelength-level feature attribution."
+  },
+  {
+    "objectID": "research.html#impact",
+    "href": "research.html#impact",
+    "title": "Research",
+    "section": "Impact",
+    "text": "Impact\nCrop improvement for perennial species. Accelerating breeding cycles through accurate early prediction of performance reduces the time-to-market for new varieties adapted to drought, disease, or changing phenological windows — directly relevant to CIRAD’s mandate for sustainable tropical and Mediterranean agriculture.\nBiodiversity monitoring at scale. Calibrated, spatially explicit species distribution maps with uncertainty estimates support habitat management, protected area planning, and reporting under international biodiversity frameworks (CBD, IPBES).\nMethodological contributions. Each application problem motivates general methodological questions — about multi-modal fusion, interpretability, and distribution shift — whose solutions are publishable and transferable across biological domains."
+  },
+  {
+    "objectID": "courses/deepmaxent.html",
+    "href": "courses/deepmaxent.html",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "",
+    "text": "Learning objectives\nAfter completing this module you should be able to:\n\nExplain why maximum entropy is a principled default for species distribution modelling from presence-only data.\nDescribe how the MaxEnt objective can be embedded in a neural network loss function to extend classical MaxEnt to non-linear feature interactions.\nLoad and filter GBIF occurrence records and pair them with CHELSA-BIOCLIM+ bioclimatic rasters using rasterio.\nConstruct presence/background training tensors and run a DeepMaxEnt training loop in PyTorch.\nInterpret a predicted suitability map and reason about its uncertainty in regions with sparse occurrence records."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#background-why-maxent-for-sdms",
+    "href": "courses/deepmaxent.html#background-why-maxent-for-sdms",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Background: why MaxEnt for SDMs?",
+    "text": "Background: why MaxEnt for SDMs?\n\nThe presence-only problem\nField surveys rarely confirm absences. A species not recorded at a location may be absent, or it may simply not have been detected. Species distribution models (SDMs) are therefore typically trained on presence-only data: a set of confirmed occurrence locations \\(\\{x_1, \\ldots, x_n\\} \\subset \\mathcal{X}\\), where \\(\\mathcal{X}\\) is the environmental space of the study region.\nThe challenge is to infer a probability distribution \\(\\hat{p}(x)\\) — the predicted occurrence probability — from presences alone, without a confirmed absence class.\n\n\nThe MaxEnt principle\nThe classical solution (Phillips et al., 2006) applies the maximum entropy principle: among all distributions consistent with the observed data, choose the one with maximum entropy — i.e. the least informative one given the evidence. Formally, MaxEnt finds \\(\\hat{p}\\) that solves:\n\\[\\hat{p} = \\arg\\max_{p} H(p) \\quad \\text{subject to} \\quad \\mathbb{E}_{p}[f_k(x)] = \\mathbb{E}_{\\text{occ}}[f_k(x)], \\quad k = 1, \\ldots, K\\]\nwhere \\(H(p) = -\\sum_x p(x) \\log p(x)\\) is entropy, \\(f_k\\) are feature functions of the environment (temperature, precipitation, …), and the constraints enforce that the model’s expected feature values match those observed at occurrence locations.\nThe solution takes a Gibbs distribution form:\n\\[\\hat{p}(x) \\propto \\exp\\!\\left(\\sum_k \\lambda_k f_k(x)\\right)\\]\nwhere \\(\\lambda_k\\) are Lagrange multipliers, equivalent to the weights of a log-linear model.\n\n\nFrom linear features to neural networks\nClassical MaxEnt is restricted to hand-crafted, fixed feature functions (linear, quadratic, product terms). DeepMaxEnt replaces this fixed feature map with a shared neural network \\(g_\\theta : \\mathbb{R}^P \\to \\mathbb{R}^C\\), which learns a common latent environmental representation across all modelled species jointly. The occurrence intensity of species \\(j\\) at site \\(i\\) is obtained by combining the shared network output with species-specific parameters \\(\\alpha_j\\):\n\\[\\lambda_{ij} = \\exp\\!\\left(\\alpha_j^\\top\\, g_\\theta(x_i)\\right)\\]\nThe DeepMaxEnt loss is defined as a weighted sum of species-wise cross-entropy losses, with intensities normalised across all \\(K\\) sites for each species independently:\n\\[\\mathcal{L}(\\boldsymbol{\\Lambda}, \\mathbf{Y}) = -\\frac{1}{KN} \\sum_{j=1}^{N} \\sum_{i=1}^{K} y_{ij} \\log\\!\\left(\\frac{\\lambda_{ij}}{\\sum_{k=1}^{K} \\lambda_{kj}}\\right)\\]\nwhere \\(y_{ij}\\) is the observed presence of species \\(j\\) at site \\(i\\), \\(\\lambda_{ij}\\) the predicted intensity, \\(K\\) the number of sites (background + presence), and \\(N\\) the number of species. Equivalently, at the parameter level:\n\\[\\mathcal{L}(\\theta, \\alpha) = -\\sum_j \\left[ \\frac{1}{n_j} \\sum_{i \\in \\text{occ}_j} \\log \\lambda_{ij} - \\log \\sum_{x \\in \\mathcal{B}} \\lambda_{jx} \\right]\\]\nThis per-species normalisation decouples parameter updates from absolute occurrence counts, distinguishing DeepMaxEnt from a standard Poisson loss in the multi-species setting: a species with 5 occurrences and one with 500 contribute equally to the gradient, preventing high-frequency species from dominating training."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#data-costa-rica-plant-occurrences-gbif",
+    "href": "courses/deepmaxent.html#data-costa-rica-plant-occurrences-gbif",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Data: Costa Rica plant occurrences (GBIF)",
+    "text": "Data: Costa Rica plant occurrences (GBIF)\nThe tutorial uses plant occurrence records from GBIF for Costa Rica — a high-biodiversity country with dense sampling coverage, making it suitable for a methodological demonstration.\nEnvironmental predictors are the CHELSA-BIOCLIM+ global climate layers (Brun et al., 2022), a kilometre-resolution dataset of bioclimatic variables capturing temperature and precipitation seasonality."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#step-1-import-libraries",
+    "href": "courses/deepmaxent.html#step-1-import-libraries",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Step 1 — Import libraries",
+    "text": "Step 1 — Import libraries\n\nimport sys, os, warnings\nwarnings.filterwarnings('ignore')\n\n# DeepMaxEnt library lives alongside the data\nsys.path.insert(0, 'data/deepmaxent')\n\nimport numpy as np\nimport pandas as pd\nfrom tqdm import tqdm\n\nimport rasterio\nimport rasterio.transform\n\nimport torch\nimport torch.optim as optim\nfrom sklearn.preprocessing import StandardScaler\nimport plotly.graph_objects as go\n\nfrom librairies.model import deepmaxent_model\nfrom librairies.losses import deepmaxent_loss\nfrom librairies.utils import set_seed\n\nNAVY = '#1b3a5c'\nTEAL = '#2a7f7f'\n\nset_seed(42)\nprint(\"Libraries loaded.\")\n\nLibraries loaded."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#step-2-load-and-filter-occurrence-records",
+    "href": "courses/deepmaxent.html#step-2-load-and-filter-occurrence-records",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Step 2 — Load and filter occurrence records",
+    "text": "Step 2 — Load and filter occurrence records\n\ndf = pd.read_csv('data/deepmaxent/biodiversity_data.csv', sep='\\t', low_memory=False)\n\nprint(f\"Raw observations: {df.shape[0]:,} × {df.shape[1]} columns\")\n\ndf['decimalLatitude']  = pd.to_numeric(df['decimalLatitude'],  errors='coerce')\ndf['decimalLongitude'] = pd.to_numeric(df['decimalLongitude'], errors='coerce')\ndf_clean = df.dropna(subset=['decimalLatitude', 'decimalLongitude', 'species'])\n\ndf_plants = df_clean[\n    (df_clean['kingdom'] == 'Plantae') &\n    (df_clean['basisOfRecord'] == 'HUMAN_OBSERVATION')\n].copy()\n\nprint(f\"Plant observations (human): {len(df_plants):,}\")\nprint(f\"Unique species: {df_plants['species'].nunique():,}\")\nprint(f\"Longitude range: [{df_plants['decimalLongitude'].min():.2f}, \"\n      f\"{df_plants['decimalLongitude'].max():.2f}]\")\nprint(f\"Latitude range:  [{df_plants['decimalLatitude'].min():.2f}, \"\n      f\"{df_plants['decimalLatitude'].max():.2f}]\")\n\nRaw observations: 26,670 × 50 columns\nPlant observations (human): 1,145\nUnique species: 102\nLongitude range: [-85.92, -82.63]\nLatitude range:  [8.23, 11.19]\n\n\nWhy filter to human observations? Machine-recorded occurrences (e.g. automatic traps, preserved specimens without precise geolocation) have heterogeneous spatial accuracy. Human observations submitted through platforms such as iNaturalist carry standardised GPS coordinates and are therefore more suitable as training points for spatially explicit models."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#step-3-map-occurrence-locations",
+    "href": "courses/deepmaxent.html#step-3-map-occurrence-locations",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Step 3 — Map occurrence locations",
+    "text": "Step 3 — Map occurrence locations\n\nfig = go.Figure(go.Scattergeo(\n    lon=df_plants['decimalLongitude'],\n    lat=df_plants['decimalLatitude'],\n    mode='markers',\n    marker=dict(size=3, color=TEAL, opacity=0.35),\n    name=f'Plant occurrences (n={len(df_plants):,})',\n    hovertemplate='%{lon:.3f}°, %{lat:.3f}°&lt;extra&gt;&lt;/extra&gt;'\n))\nfig.update_geos(\n    lonaxis_range=[-86.5, -82.0],\n    lataxis_range=[7.5,  11.7],\n    showland=True,        landcolor='#f0f0e8',\n    showocean=True,       oceancolor='#cce5ff',\n    showcoastlines=True,  coastlinecolor='#888888', coastlinewidth=0.8,\n    showcountries=True,   countrycolor='#aaaaaa',   countrywidth=0.6,\n    projection_type='mercator',\n    resolution=50\n)\nfig.update_layout(\n    title=f'Plant occurrence records — Costa Rica (GBIF, n={len(df_plants):,})',\n    template='simple_white', height=500,\n    margin=dict(l=0, r=0, t=40, b=0)\n)\nfig.show()\n\n\n\n                            \n                                            \n\n\nFigure 1: Plant occurrence records across Costa Rica (GBIF). Each point is one geo-referenced human observation. Hover to inspect coordinates."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#step-4-load-pre-cropped-environmental-rasters",
+    "href": "courses/deepmaxent.html#step-4-load-pre-cropped-environmental-rasters",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Step 4 — Load pre-cropped environmental rasters",
+    "text": "Step 4 — Load pre-cropped environmental rasters\nThe CHELSA-BIOCLIM+ rasters are already cropped to the study region extent. Each .tif file contains one bioclimatic variable at ~1 km resolution.\n\nraster_dir = 'data/deepmaxent/cropped_rasters/'\nraster_files = sorted([f for f in os.listdir(raster_dir) if f.endswith('.tif')])\n\nenv_bands = []\ntransform_ref, crs_ref = None, None\nlon_min = lon_max = lat_min = lat_max = None\n\nfor fname in tqdm(raster_files, desc='Loading rasters'):\n    with rasterio.open(os.path.join(raster_dir, fname)) as src:\n        band = src.read(1).astype(float)\n        if src.nodata is not None:\n            band[band == src.nodata] = np.nan\n        env_bands.append(band)\n        if transform_ref is None:\n            transform_ref = src.transform\n            crs_ref       = src.crs\n            lon_min, lat_min, lon_max, lat_max = src.bounds\n\nenv_stack = np.stack(env_bands, axis=0)   # (n_vars, height, width)\nprint(f\"Environmental stack: {env_stack.shape}  \"\n      f\"({env_stack.shape[0]} variables, {env_stack.shape[1]}×{env_stack.shape[2]} pixels)\")\nprint(f\"Extent: lon [{lon_min:.3f}, {lon_max:.3f}]  lat [{lat_min:.3f}, {lat_max:.3f}]\")\n\nEnvironmental stack: (19, 378, 418)  (19 variables, 378×418 pixels)\nExtent: lon [-86.017, -82.534]  lat [8.139, 11.289]"
+  },
+  {
+    "objectID": "courses/deepmaxent.html#step-5-prepare-training-tensors",
+    "href": "courses/deepmaxent.html#step-5-prepare-training-tensors",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Step 5 — Prepare training tensors",
+    "text": "Step 5 — Prepare training tensors\nThe model requires two sets of points:\n\nPresence points — the rasterised occurrence coordinates (one record per pixel).\nBackground points — randomly sampled pixels from the study region, representing the available environmental space. These approximate the partition function in the MaxEnt loss.\n\n\nn_vars, height, width = env_stack.shape\n\n# Rasterise occurrences vectorised (rowcol accepts arrays)\nrows, cols = rasterio.transform.rowcol(\n    transform_ref,\n    df_plants['decimalLongitude'].values,\n    df_plants['decimalLatitude'].values\n)\nrows, cols = np.asarray(rows), np.asarray(cols)\nvalid_occ  = (rows &gt;= 0) & (rows &lt; height) & (cols &gt;= 0) & (cols &lt; width)\n\npresence_grid = np.zeros((height, width), dtype=int)\nnp.add.at(presence_grid, (rows[valid_occ], cols[valid_occ]), 1)\n\npres_rows, pres_cols = np.where(presence_grid &gt; 0)\nX_pres = env_stack[:, pres_rows, pres_cols].T   # (n_pres, n_vars)\n\n# Background: random sample of non-NaN pixels\nvalid_mask = ~np.any(np.isnan(env_stack), axis=0)\nvalid_rows, valid_cols = np.where(valid_mask)\nn_bg   = min(10_000, len(valid_rows))\nbg_idx = np.random.choice(len(valid_rows), n_bg, replace=False)\nX_bg   = env_stack[:, valid_rows[bg_idx], valid_cols[bg_idx]].T  # (n_bg, n_vars)\n\n# Standardise on background statistics\nscaler   = StandardScaler().fit(X_bg)\nX_pres_s = scaler.transform(X_pres)\nX_bg_s   = scaler.transform(X_bg)\n\nX_pres_t = torch.tensor(X_pres_s, dtype=torch.float32)\nX_bg_t   = torch.tensor(X_bg_s,   dtype=torch.float32)\n\nprint(f\"Presence pixels: {X_pres_t.shape[0]}  |  Background pixels: {X_bg_t.shape[0]}\")\nprint(f\"Environmental variables: {X_pres_t.shape[1]}\")\n\nPresence pixels: 859  |  Background pixels: 10000\nEnvironmental variables: 19\n\n\nWhy standardise on background statistics? Background points represent the marginal distribution of environmental conditions in the study region — the reference against which presences are evaluated. Using background statistics for standardisation ensures the scaling is environmentally meaningful rather than biased towards conditions where the species occurs."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#step-6-build-and-train-the-deepmaxent-model",
+    "href": "courses/deepmaxent.html#step-6-build-and-train-the-deepmaxent-model",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Step 6 — Build and train the DeepMaxEnt model",
+    "text": "Step 6 — Build and train the DeepMaxEnt model\nThe DeepMaxEnt architecture consists of a shared neural network backbone \\(g_\\theta : \\mathbb{R}^P \\to \\mathbb{R}^C\\) followed by \\(N\\) species-specific linear heads \\(\\alpha_j \\in \\mathbb{R}^C\\). The predicted intensity of species \\(j\\) at site \\(i\\) is \\(\\lambda_{ij} = \\exp(\\alpha_j^\\top g_\\theta(x_i))\\).\nTraining minimises the species-wise normalised cross-entropy:\n\\[\\mathcal{L}(\\boldsymbol{\\Lambda}, \\mathbf{Y}) = -\\frac{1}{KN} \\sum_{j=1}^{N} \\sum_{i=1}^{K} y_{ij} \\log\\!\\left(\\frac{\\lambda_{ij}}{\\sum_{k=1}^{K} \\lambda_{kj}}\\right)\\]\nNormalising across sites for each species independently ensures that rare and common species contribute equally to gradient updates.\n\n# Concatenate presence and background — the loss needs all sites at once\nall_X = torch.cat([X_pres_t, X_bg_t], dim=0)    # (n_pres + n_bg, n_vars)\nall_y = torch.zeros(len(all_X), 1)               # presence labels: 0 = background\nall_y[:len(X_pres_t)] = 1.0                      # 1 = presence\n\nn_features = X_pres_t.shape[1]\nmodel     = deepmaxent_model(input_size=n_features, hidden_size=128, output_size=1, hidden_nbr=3)\ncriterion = deepmaxent_loss()\n\noptimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4)\nscheduler = optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.5)\n\nn_epochs = 150\nlosses = []\n\nfor epoch in range(n_epochs):\n    model.train()\n    optimizer.zero_grad()\n    loss = criterion(model(all_X), all_y)\n    loss.backward()\n    optimizer.step()\n    scheduler.step()\n    losses.append(loss.item())\n    if (epoch + 1) % 30 == 0:\n        print(f\"Epoch {epoch+1:3d}/{n_epochs}  loss = {loss.item():.4f}\")\n\nEpoch  30/150  loss = 0.6626\nEpoch  60/150  loss = 0.6508\nEpoch  90/150  loss = 0.6454\nEpoch 120/150  loss = 0.6418\nEpoch 150/150  loss = 0.6389\n\n\n\nfig = go.Figure(go.Scatter(\n    x=list(range(1, len(losses) + 1)), y=losses,\n    mode='lines', line=dict(color=NAVY, width=2), name='Training loss'\n))\nfor ep, label in [(50, 'LR ×0.5'), (100, 'LR ×0.5')]:\n    fig.add_vline(x=ep, line_dash='dash', line_color=TEAL, line_width=1.4,\n                  annotation_text=label, annotation_position='top right',\n                  annotation_font_size=11)\nfig.update_layout(\n    xaxis_title='Epoch', yaxis_title='DeepMaxEnt loss',\n    title='Training convergence — DeepMaxEnt',\n    template='simple_white', height=340\n)\nfig.show()\n\n\n\n                            \n                                            \n\n\nFigure 2: DeepMaxEnt training loss over 150 epochs. The StepLR scheduler halves the learning rate at epochs 50 and 100."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#step-7-predict-and-map-habitat-suitability",
+    "href": "courses/deepmaxent.html#step-7-predict-and-map-habitat-suitability",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Step 7 — Predict and map habitat suitability",
+    "text": "Step 7 — Predict and map habitat suitability\n\n# Predict on all valid pixels\nvalid_env = env_stack[:, valid_rows, valid_cols].T\nX_full_s  = scaler.transform(valid_env)\nX_full_t  = torch.tensor(X_full_s, dtype=torch.float32)\n\nmodel.eval()\nwith torch.no_grad():\n    logit_scores = model(X_full_t).numpy().flatten()\n\n# Convert log-suitability to [0, 1] via logistic transform\nsuitability = 1 / (1 + np.exp(-logit_scores))\n\nsuit_grid = np.full((height, width), np.nan)\nsuit_grid[valid_rows, valid_cols] = suitability\n\nprint(f\"Suitability range: {np.nanmin(suitability):.3f} – {np.nanmax(suitability):.3f}\")\n\nSuitability range: 0.000 – 0.849\n\n\n\n# Geographic axes from the affine transform\nlon_coords = np.array([transform_ref.c + (j + 0.5) * transform_ref.a for j in range(width)])\nlat_coords = np.array([transform_ref.f + (i + 0.5) * transform_ref.e for i in range(height)])\n\nfig = go.Figure(go.Heatmap(\n    z=suit_grid,\n    x=lon_coords, y=lat_coords,\n    colorscale='YlGn',\n    zmin=0, zmax=1,\n    colorbar=dict(title='Predicted suitability', thickness=14, len=0.85),\n    hovertemplate='Lon: %{x:.3f}°&lt;br&gt;Lat: %{y:.3f}°&lt;br&gt;Suitability: %{z:.3f}&lt;extra&gt;&lt;/extra&gt;'\n))\nfig.update_layout(\n    xaxis_title='Longitude (°)',\n    yaxis_title='Latitude (°)',\n    title='DeepMaxEnt — multi-species habitat suitability, Costa Rica',\n    template='simple_white', height=520,\n    yaxis=dict(scaleanchor='x', scaleratio=1)\n)\nfig.show()\n\n\n\n                            \n                                            \n\n\nFigure 3: DeepMaxEnt predicted multi-species habitat suitability for Costa Rica. Warmer colours indicate higher predicted suitability. Hover to read values."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#interpretation-notes",
+    "href": "courses/deepmaxent.html#interpretation-notes",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "Interpretation notes",
+    "text": "Interpretation notes\nThe predicted suitability map should be read with the following caveats in mind:\n\nBackground sampling matters. The partition function is approximated by the background set. If background points do not cover the full environmental space of the study region, the model will be miscalibrated in underrepresented areas.\nSuitability is not probability of occurrence. The model predicts relative environmental suitability, not detectability-adjusted occupancy probability. High suitability in a pixel does not mean the species is present — it means the environment is consistent with observed presences.\nExtrapolation beyond training conditions. In pixels whose environmental values fall outside the range of training data (background + presences), the network extrapolates. MaxEnt’s entropy constraint makes this extrapolation conservative by default, but it is not guaranteed to be ecologically meaningful.\nMulti-species extension. The tutorial models all plant species jointly. The DeepMaxEnt loss is summed across species, allowing the shared neural backbone to learn transferable environmental features while species-specific heads capture idiosyncratic niches."
+  },
+  {
+    "objectID": "courses/deepmaxent.html#references",
+    "href": "courses/deepmaxent.html#references",
+    "title": "Deep Learning for Species Distribution Modelling",
+    "section": "References",
+    "text": "References\n\nBrun, P., Zimmermann, N. E., Hari, C., Pellissier, L., & Karger, D. N. (2022). CHELSA-BIOCLIM+ A novel set of global climate-related predictors at kilometre-resolution. EnviDat. https://www.doi.org/10.16904/envidat.332\nPhillips, S. J., Anderson, R. P., & Schapire, R. E. (2006). Maximum entropy modeling of species geographic distributions. Ecological Modelling, 190(3–4), 231–259. https://doi.org/10.1016/j.ecolmodel.2005.03.026\nRenner, I. W., & Warton, D. I. (2013). Equivalence of MAXENT and Poisson point process models for species distribution modeling in ecology. Biometrics, 69(1), 274–281. https://doi.org/10.1111/j.1541-0420.2012.01824.x\nRyckewaert M. et al. (2026). Applying the maximum entropy principle to neural networks enhances multi-species distribution models. Methods in Ecology and Evolution. https://doi.org/10.1111/2041-210x.70262"
+  }
+]
