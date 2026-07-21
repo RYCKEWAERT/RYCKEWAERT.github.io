@@ -95,35 +95,42 @@
     "href": "index.html#recent-highlights",
     "title": "Maxime Ryckewaert",
     "section": "Recent Highlights",
-    "text": "Recent Highlights\n\n\n\nIrokube — Critical habitat mapping enhanced by data cubes\nThe project Irokube explores the use of biodiversity data cubes combined with satellite and bioclimatic data cubes to identify critical habitats using Deep-SDM and habitat distribution models (HDM). A case study in Belgium illustrated the approach at the B-Cubed Hackathon 2024. Hackathon report\n\n\n\n\n\nTalk at World Biodiversity Forum 2024, Davos\nPresentation on Disentangling Observation Biases for Species Distribution Modeling, addressing sampling biases in presence-only citizen science data. We developed a simulation framework to evaluate point process loss functions in mitigating these biases for deep learning-based SDMs.\n\n\n\n\n\nBest Poster Award — IASIM 2022\nOne of three Best Poster Awards at the International Conference on Spectral Imaging (IASIM 2022) for work on predicting stomatal conductance and transpiration in grapevine from hyperspectral imaging combined with climate data. Conference award"
+    "text": "Recent Highlights\n\n\n\nExplore #8 mobility grant (University of Montpellier) — upcoming visit to CATIE, Costa Rica\nAwarded an Explore #8 mobility grant from the University of Montpellier to visit CATIE (Tropical Agricultural Research and Higher Education Center) in Costa Rica — touring experimental field trials and meeting colleagues from CATIE and CIRAD on site. Looking forward to it, stay tuned! :-)\n\n\n\n\n\nModelling PRIZE of the B-CUBED Hackathon: Irokube — Critical habitat mapping enhanced by data cubes\nThe project Irokube explores the use of biodiversity data cubes combined with satellite and bioclimatic data cubes to identify critical habitats using Deep-SDM and habitat distribution models (HDM). A case study in Belgium illustrated the approach at the B-Cubed Hackathon 2024. Hackathon report\n\n\n\n\n\nTalk at World Biodiversity Forum 2024, Davos\nPresentation on Disentangling Observation Biases for Species Distribution Modeling, addressing sampling biases in presence-only citizen science data. We developed a simulation framework to evaluate point process loss functions in mitigating these biases for deep learning-based SDMs.\n\n\n\n\n\nBest Poster Award — IASIM 2022\nOne of three Best Poster Awards at the International Conference on Spectral Imaging (IASIM 2022) for work on predicting stomatal conductance and transpiration in grapevine from hyperspectral imaging combined with climate data. Conference award"
   },
   {
     "objectID": "cv.html",
     "href": "cv.html",
     "title": "Curriculum Vitae",
     "section": "",
-    "text": "Download CV (PDF)\nThe structured sections below are provided as a text-readable alternative. Replace all placeholder entries with accurate data."
+    "text": "Download CV (PDF)\nThe structured sections below are provided as a text-readable alternative."
+  },
+  {
+    "objectID": "cv.html#overview",
+    "href": "cv.html#overview",
+    "title": "Curriculum Vitae",
+    "section": "Overview",
+    "text": "Overview\nResearcher in artificial intelligence and machine learning, focusing on the analysis of complex multivariate and multimodal data. My work develops advanced methods to extract meaningful information from high-dimensional signals, with applications in agriculture, environmental sciences, biodiversity, and ecology to support sustainable decision-making."
   },
   {
     "objectID": "cv.html#current-position",
     "href": "cv.html#current-position",
     "title": "Curriculum Vitae",
     "section": "Current position",
-    "text": "Current position\nResearcher (CR) — Machine Learning for Biological Systems CIRAD — UMR AGAP Institut, GSP team Montpellier, France — [start year]–present"
+    "text": "Current position\nPermanent Researcher — CIRAD, UMR AGAP Institut, GSP team (Genome and Selection of Perennial Crops) Montpellier, France — since 04/2025\nResearch develops artificial intelligence methods to support sustainable plant breeding in perennial crops such as forests, vineyards, cacao, and coffee. More broadly, this work addresses the tensions between agriculture, biodiversity conservation, and ecological sustainability by integrating genomics, phenotyping, and species distribution modelling. Using AI-driven approaches at large spatial scales, including continental analyses, the aim is to inform land-use management and conservation strategies that balance agricultural production with long-term biodiversity preservation."
   },
   {
     "objectID": "cv.html#education",
     "href": "cv.html#education",
     "title": "Curriculum Vitae",
     "section": "Education",
-    "text": "Education\nPhD — [Field] [University], [City], [Country] — [year] Thesis: [Thesis title] Supervisor: [Name]\nMSc — [Field] [University], [City] — [year]\nBSc / Engineer degree — [Field] [University / École], [City] — [year]"
+    "text": "Education\nPhD Cifre — Limagrain / Irstea / Institut Agro Montpellier — 2016–2019 Thesis: Potential of coupling a high spectral resolution/low spatial resolution sensor with a low spectral resolution/high spatial resolution sensor for varietal selection: application to maize under water stress conditions.\nMaster’s Degree in Physics (Computer Physics) — University of Montpellier — 2011–2013\nBachelor’s Degree in Fundamental Physics — University of Montpellier — 2008–2011"
   },
   {
     "objectID": "cv.html#research-experience",
     "href": "cv.html#research-experience",
     "title": "Curriculum Vitae",
     "section": "Research experience",
-    "text": "Research experience\nPostdoctoral researcher [Institution], [City] — [years] [Brief description]\nResearch engineer [Institution], [City] — [years] [Brief description]"
+    "text": "Research experience\nStarting Research Position, Inria, UMR LIRMM, Zenith team (Montpellier) — 09/2023–03/2025 Project: Horizon Europe B-CUBED — Biodiversity Building Blocks for Policy Responsibilities: Development of deep-learning models using biodiversity data cubes to model species distribution across Europe. Focus on integrating environmental data, remote sensing, and human footprint data to reduce biases from heterogeneous citizen science sampling efforts.\nPostdoctoral Researcher, INRAE, UMR ITAP, COMiC team (Montpellier) — 08/2022–07/2023 Project: Casdar BEETLENIRS Topic: Detection of grain pest insects using hyperspectral imaging Responsibilities: INRAE lead for the development of a new hyperspectral imager and its associated data processing workflows.\nPostdoctoral Researcher, INRAE, UMR ITAP, COMiC team (Montpellier) — 11/2020–07/2022 Project: Interreg Sudoe VINIOT Topic: Detection of water stress, disease identification, and maturity monitoring of vines through hyperspectral imaging Responsibilities: INRAE lead for a work package (scientific coordination, experimentation, data analysis, and dissemination).\nPostdoctoral Researcher, INRAE, UMR ITAP, COMiC team (Montpellier) — 11/2019–10/2020 Project: ANR OPTIPAG Topic: Optical instruments for precision agriculture: sunflower phenotyping using hyperspectral imaging for varietal selection Responsibilities: Big data analysis, speckle imaging, and supervision of junior researchers.\nPhD Candidate Cifre, Limagrain (Clermont-Ferrand) — 11/2016–10/2019 Topic: Potential of coupling a high spectral resolution/low spatial resolution sensor with a low spectral resolution/high spatial resolution sensor for varietal selection: application to maize under water stress conditions."
   },
   {
     "objectID": "cv.html#publications",
@@ -133,39 +140,39 @@
     "text": "Publications\nSee the Publications page for a full, formatted list."
   },
   {
-    "objectID": "cv.html#teaching-and-supervision",
-    "href": "cv.html#teaching-and-supervision",
+    "objectID": "cv.html#teaching",
+    "href": "cv.html#teaching",
     "title": "Curriculum Vitae",
-    "section": "Teaching and supervision",
-    "text": "Teaching and supervision\n\n\n\nYear\nCourse\nLevel\nInstitution\n\n\n\n\n[year]\n[Course name]\nM1/M2\n[Institution]\n\n\n[year]\n[Course name]\nLicence\n[Institution]\n\n\n\nSupervised students: [list or count of supervised interns/PhD students]"
+    "section": "Teaching",
+    "text": "Teaching\n\nDimensionality Reduction (15 hours) — Engineering, Data major, IPF School, Montpellier\nSpectroscopy and Hyperspectral Imaging (70 hours) — Agronomy Engineers (AgroTic), Institut Agro, Montpellier\nChemometrics (42 hours) — Agronomy Engineers (AgroTic specialization), Institut Agro, Montpellier\nScientific Approaches (34 hours equivalent) — Engineering common track, 1st year, Institut Agro, Montpellier\nDrones (5 hours equivalent) — SILAT Master’s program, AgroParisTech, Montpellier"
   },
   {
-    "objectID": "cv.html#invited-talks-and-conferences",
-    "href": "cv.html#invited-talks-and-conferences",
+    "objectID": "cv.html#international-experience",
+    "href": "cv.html#international-experience",
     "title": "Curriculum Vitae",
-    "section": "Invited talks and conferences",
-    "text": "Invited talks and conferences\n\n[Conference name], [City], [year] — “[Talk title]”\n[Conference name], [City], [year] — “[Talk title]”"
+    "section": "International experience",
+    "text": "International experience\n\n\n\n\n\n\n\n\nYear\nInstitution\nContext\n\n\n\n\n2021\nUniversity of L’Aquila, Italy\nExplore mobility project, MUSE\n\n\n2021\nSapienza University of Rome, Italy\nExplore mobility project, MUSE\n\n\n2018\nSapienza University of Rome, Italy\nDoctoral school mobility project"
   },
   {
-    "objectID": "cv.html#grants-and-funding",
-    "href": "cv.html#grants-and-funding",
+    "objectID": "cv.html#patent",
+    "href": "cv.html#patent",
     "title": "Curriculum Vitae",
-    "section": "Grants and funding",
-    "text": "Grants and funding\n\n\n\nYear\nRole\nFunding body\nProject\nAmount\n\n\n\n\n[year]\nPI / Co-I\n[ANR / EU / CIRAD]\n[Project name]\n[€]"
+    "section": "Patent",
+    "text": "Patent\nRyckewaert, M., Moura, D., Gobrecht, A., Roger, J.-M., Bendoula, R., Gorretta, N., & Henriot, F. (2021). System for determining a partially matched image to generate a hyperspectral image."
+  },
+  {
+    "objectID": "cv.html#awards",
+    "href": "cv.html#awards",
+    "title": "Curriculum Vitae",
+    "section": "Awards",
+    "text": "Awards\nBest Poster Award, IASIM Conference (2022, Esbjerg, Denmark) — Hyperspectral imaging data combined with climate data to predict stomatal conductance and transpiration of grapevine plants using Sequentially-Orthogonalized Partial-Least-Square Regression (SO-PLS).\nModeling Award, B-CUBED Hackathon — Team leader of an Inria/Meise team of 7 members for the project Irokube: Deep-SDM and Critical Habitats Mapping Empowered by Data Cubes."
   },
   {
     "objectID": "cv.html#skills",
     "href": "cv.html#skills",
     "title": "Curriculum Vitae",
     "section": "Skills",
-    "text": "Skills\nProgramming: Python (PyTorch, scikit-learn, numpy, plotly), R, bash\nML / statistics: Deep learning, probabilistic modelling, functional data analysis, genomic selection, Bayesian methods\nField / experimental: NIR spectroscopy, field phenotyping protocols, environmental raster processing\nLanguages: French (native), English (professional)"
-  },
-  {
-    "objectID": "cv.html#professional-service",
-    "href": "cv.html#professional-service",
-    "title": "Curriculum Vitae",
-    "section": "Professional service",
-    "text": "Professional service\n\nReviewer: [journal names]\nMember: [scientific societies]"
+    "text": "Skills\nData analysis: Machine learning methods, neural networks, point processes, multivariate statistical data analysis, Bayesian statistics, unsupervised/supervised methods (exploration, discrimination, regression, classification), multi-block methods, robust methods, preprocessing, variance analysis, pan-sharpening, local methods, variable selection, dimensionality reduction, signal processing, multi- and hyperspectral image processing\nMathematics: Linear algebra, numerical analysis, complex analysis, numerical optimization\nPhysics / digital physics: Electromagnetism, optics, statistical physics\nExperimentation: Hyperspectral imaging (VIS-NIR, SWIR), multispectral imaging, spectrometry (FTIR, VIS, NIR, SWIR), speckle and biospeckle imaging\nProgramming: Python, PyTorch, R, MATLAB, C++/C, Java; High-Performance Computing (HPC): GPU, MPI, OpenMP; LaTeX\nLanguages: French (native), English (professional)"
   },
   {
     "objectID": "courses/repasca.html",
